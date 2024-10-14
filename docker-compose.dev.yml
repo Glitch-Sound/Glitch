@@ -1,0 +1,17 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: glitch_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend/app:/app
+      - /app/glitch/node_modules
+    tty: true
+    stdin_open: true
+    depends_on: 
+      - backend
+    networks:
+      - webnet

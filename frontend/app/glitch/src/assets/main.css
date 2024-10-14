@@ -1,0 +1,30 @@
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.no-border {
+    border: 0;
+    box-shadow: none;
+}
+
+.bg-black {
+    background-color: #000000;
+}
+
+a {
+    color: #f0f0f0;
+    text-decoration: none;
+}
+
+.navigation {
+    margin: 5px 0 0 5px;
+    padding: 15px 0;
+    border-radius: 10px;
+}
+
+.main {
+    margin: 5px 5px 0 5px;
+    padding: 0 20px;
+    border-radius: 10px;
+    background-color: #000000;
+}
