@@ -28,3 +28,12 @@ a {
     border-radius: 10px;
     background-color: #000000;
 }
+
+.dialog-title {
+    color: #cfcfcf;
+    font-size: 22px;
+}
+
+.dialog-checkbox {
+    color: #ff0000;
+}

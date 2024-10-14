@@ -20,10 +20,14 @@ const useUserStore = defineStore('user', {
       return result
     },
     async updateUser(user: UserUpdate): Promise<User> {
-      return service_user.updateUser(user)
+      const result = await service_user.updateUser(user)
+      await this.fetchUsers()
+      return result
     },
     async deleteUser(rid: number): Promise<void> {
-      return service_user.deleteUser(rid)
+      const result = await service_user.deleteUser(rid)
+      await this.fetchUsers()
+      return result
     },
     async login(user: Login): Promise<User> {
       const result = await service_user.login(user)

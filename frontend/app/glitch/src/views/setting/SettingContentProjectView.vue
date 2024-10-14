@@ -23,7 +23,7 @@ onMounted(() => {
 <template>
   <v-main>
     <v-sheet class="main">
-      <v-btn width="150px" color="addButton" prepend-icon="mdi-plus-circle">User</v-btn>
+      <v-btn width="150px" color="addButton" prepend-icon="mdi-plus-circle">Project</v-btn>
 
       <v-data-table class="bg-black" :items="store_project.projects" :headers="headers">
         <template v-slot:item="{ item }">

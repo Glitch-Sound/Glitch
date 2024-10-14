@@ -32,7 +32,8 @@ const theme_dark: ThemeDefinition = {
     onSurface: '#f0f0f0',
     primary: '#2196f3',
     icon: '#e0e0e0',
-    addButton: '#940000'
+    addButton: '#940000',
+    checkbox: '#cfcfcf'
   },
   variables: {
     fontFamily: 'Noto Sans JP, sans-serif'
