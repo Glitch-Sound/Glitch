@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 
 import type { User, UserCreate, UserUpdate, Login } from '@/types/User'
+
 import UserService from '@/services/UserService'
 
 const service_user = new UserService()

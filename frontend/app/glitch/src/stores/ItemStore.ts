@@ -14,9 +14,10 @@ import type {
   BugCreate,
   BugUpdate
 } from '@/types/Item'
+
 import ItemService from '@/services/ItemService'
-import useUserStore from '@/stores/UserStore'
 import useProjectStore from '@/stores/ProjectStore'
+import useUserStore from '@/stores/UserStore'
 
 const service_item = new ItemService()
 

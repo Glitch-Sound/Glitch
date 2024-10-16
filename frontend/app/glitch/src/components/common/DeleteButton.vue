@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { type EmitDelete } from '@/components/common/events'
+import { type EmitType } from '@/components/common/events'
 
 const is_enable = ref(false)
 
-const emit = defineEmits<EmitDelete>()
+const emit = defineEmits<EmitType>()
 const emitSelected = () => {
   emit('delete')
 }

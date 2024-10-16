@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { defineExpose } from 'vue'
 
-import { useDialog } from '@/components/dialog/BaseDialog'
 import type { UserUpdate } from '@/types/User'
+import { useDialog } from '@/components/dialog/BaseDialog'
+
 import DeleteButton from '@/components/common/DeleteButton.vue'
 
 const emit = defineEmits(['submit', 'delete'])
@@ -56,7 +57,7 @@ defineExpose({
             color="checkbox"
             :true-value="1"
             :false-value="0"
-            label="Is Admin"
+            label="Manager"
           />
         </v-form>
       </v-card-text>

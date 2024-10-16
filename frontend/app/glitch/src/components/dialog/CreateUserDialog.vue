@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { defineExpose } from 'vue'
 
-import { useDialog } from '@/components/dialog/BaseDialog'
 import type { UserCreate } from '@/types/User'
+import { useDialog } from '@/components/dialog/BaseDialog'
 
 const emit = defineEmits(['submit'])
 const { dialog, valid, form_data, form_ref, rules, submitData } = useDialog<UserCreate>(emit)
@@ -59,7 +59,7 @@ defineExpose({
             color="checkbox"
             :true-value="1"
             :false-value="0"
-            label="Is Admin"
+            label="Manager"
           />
         </v-form>
       </v-card-text>
