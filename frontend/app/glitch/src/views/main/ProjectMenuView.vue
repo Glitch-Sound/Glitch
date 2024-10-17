@@ -99,13 +99,11 @@ const openDialog = () => {}
   margin: 0 15px 0 0;
 }
 
-.link--normal {
-  color: #9f9f9f;
-  text-decoration: none;
+.extract-selected {
+  border-left: 4px solid #196fb3;
 }
 
-.link--active {
-  color: #fcfcfc;
-  text-decoration: none;
+.extract-unselected {
+  border-left: 4px solid transparent;
 }
 </style>

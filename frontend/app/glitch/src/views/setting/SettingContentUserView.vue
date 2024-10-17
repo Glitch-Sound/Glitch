@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import type { UserCreate, UserUpdate } from '@/types/User'
+import type { User, UserCreate, UserUpdate } from '@/types/User'
 
 import useUserStore from '@/stores/UserStore'
 import CreateUserDialog from '@/components/dialog/CreateUserDialog.vue'
@@ -28,7 +28,7 @@ const openEntryDialog = () => {
   dialog_entry.value?.open()
 }
 
-const openUpdateDialog = (data: UserUpdate) => {
+const openUpdateDialog = (data: User) => {
   dialog_update.value?.open(data)
 }
 
