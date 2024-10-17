@@ -3,7 +3,7 @@ import { defineExpose } from 'vue'
 
 import type { ProjectCreate } from '@/types/Item'
 import type { User } from '@/types/User'
-import { useDialog } from '@/components/dialog/BaseDialog'
+import { useFormDialog } from '@/components/dialog/BaseDialog'
 
 import useUserStore from '@/stores/UserStore'
 import UserSelect from '@/components/common/UserSelect.vue'
@@ -11,7 +11,7 @@ import UserSelect from '@/components/common/UserSelect.vue'
 const store_user = useUserStore()
 
 const emit = defineEmits(['submit'])
-const { dialog, valid, form_data, form_ref, rules, submitData } = useDialog<ProjectCreate>(emit)
+const { dialog, valid, form_data, form_ref, rules, submitData } = useFormDialog<ProjectCreate>(emit)
 
 defineExpose({
   open() {

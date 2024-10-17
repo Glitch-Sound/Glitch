@@ -2,13 +2,13 @@
 import { defineExpose } from 'vue'
 
 import type { UserUpdate } from '@/types/User'
-import { useDialog } from '@/components/dialog/BaseDialog'
+import { useFormDialog } from '@/components/dialog/BaseDialog'
 
 import DeleteButton from '@/components/common/DeleteButton.vue'
 
 const emit = defineEmits(['submit', 'delete'])
 const { dialog, valid, form_data, form_ref, rules, submitData, deleteData } =
-  useDialog<UserUpdate>(emit)
+  useFormDialog<UserUpdate>(emit)
 
 defineExpose({
   open(data: UserUpdate) {

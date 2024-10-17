@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-export const useDialog = <T>(emits: any) => {
+export const useFormDialog = <T>(emits: any) => {
   const dialog = ref(false)
   const valid = ref(false)
   const form_data = ref<T>({} as T)

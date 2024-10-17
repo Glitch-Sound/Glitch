@@ -2,10 +2,10 @@
 import { defineExpose } from 'vue'
 
 import type { UserCreate } from '@/types/User'
-import { useDialog } from '@/components/dialog/BaseDialog'
+import { useFormDialog } from '@/components/dialog/BaseDialog'
 
 const emit = defineEmits(['submit'])
-const { dialog, valid, form_data, form_ref, rules, submitData } = useDialog<UserCreate>(emit)
+const { dialog, valid, form_data, form_ref, rules, submitData } = useFormDialog<UserCreate>(emit)
 
 defineExpose({
   open() {

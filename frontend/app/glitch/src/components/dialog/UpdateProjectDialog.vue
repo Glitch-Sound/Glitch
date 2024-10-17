@@ -3,7 +3,7 @@ import { defineExpose } from 'vue'
 
 import { ItemType, ItemState, type ProjectUpdate } from '@/types/Item'
 import type { User } from '@/types/User'
-import { useDialog } from '@/components/dialog/BaseDialog'
+import { useFormDialog } from '@/components/dialog/BaseDialog'
 
 import DeleteButton from '@/components/common/DeleteButton.vue'
 import StateSelect from '@/components/common/StateSelect.vue'
@@ -11,7 +11,7 @@ import UserSelect from '@/components/common/UserSelect.vue'
 
 const emit = defineEmits(['submit', 'delete'])
 const { dialog, valid, form_data, form_ref, rules, submitData, deleteData } =
-  useDialog<ProjectUpdate>(emit)
+  useFormDialog<ProjectUpdate>(emit)
 
 defineExpose({
   open(data: ProjectUpdate) {
