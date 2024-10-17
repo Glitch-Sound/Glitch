@@ -17,34 +17,34 @@ const headers = [
 
 const store_user = useUserStore()
 
-const dialog_entry = ref()
-const dialog_update = ref()
+const dialog_user_create = ref()
+const dialog_user_update = ref()
 
 onMounted(() => {
   store_user.fetchUsers()
 })
 
-const openEntryDialog = () => {
-  dialog_entry.value?.open()
+const openCreateUserDialog = () => {
+  dialog_user_create.value?.open()
 }
 
-const openUpdateDialog = (data: User) => {
-  dialog_update.value?.open(data)
+const openUpdateUserDialog = (data: User) => {
+  dialog_user_update.value?.open(data)
 }
 
 const handleEntry = async (data: UserCreate) => {
   await store_user.createUser(data)
-  dialog_entry.value?.close()
+  dialog_user_create.value?.close()
 }
 
 const handleUpdate = async (data: UserUpdate) => {
   await store_user.updateUser(data)
-  dialog_update.value?.close()
+  dialog_user_update.value?.close()
 }
 
 const handleDelete = async (data: UserUpdate) => {
   await store_user.deleteUser(data.rid)
-  dialog_update.value?.close()
+  dialog_user_update.value?.close()
 }
 </script>
 
@@ -55,7 +55,7 @@ const handleDelete = async (data: UserUpdate) => {
         width="150px"
         color="addButton"
         prepend-icon="mdi-plus-circle"
-        @click="openEntryDialog"
+        @click="openCreateUserDialog"
       >
         User
       </v-btn>
@@ -72,7 +72,7 @@ const handleDelete = async (data: UserUpdate) => {
                 size="small"
                 prepend-icon="mdi-pencil"
                 variant="outlined"
-                @click="openUpdateDialog(item)"
+                @click="openUpdateUserDialog(item)"
               >
                 UPDATE
               </v-btn>
@@ -83,8 +83,8 @@ const handleDelete = async (data: UserUpdate) => {
     </v-sheet>
   </v-main>
 
-  <CreateUserDialog ref="dialog_entry" @submit="handleEntry" />
-  <UpdateUserDialog ref="dialog_update" @submit="handleUpdate" @delete="handleDelete" />
+  <CreateUserDialog ref="dialog_user_create" @submit="handleEntry" />
+  <UpdateUserDialog ref="dialog_user_update" @submit="handleUpdate" @delete="handleDelete" />
 </template>
 
 <style scoped>

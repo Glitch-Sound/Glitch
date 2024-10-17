@@ -1,0 +1,33 @@
+<script setup lang="ts">
+import { defineProps } from 'vue'
+
+import type { Item } from '@/types/Item'
+
+const props = defineProps<{
+  item: Item
+}>()
+</script>
+
+<template>
+  <div class="panel-common">
+    <v-row class="align-baseline">
+      <v-col class="title">
+        {{ props.item.title }}
+      </v-col>
+
+      <v-col cols="auto">
+        {{ props.item.name }}
+      </v-col>
+
+      <v-col cols="auto">
+        <v-btn icon variant="text" size="x-small">
+          <v-icon>mdi-plus-thick</v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
+  </div>
+</template>
+
+<style scoped>
+@import '@/components/panel/panel.css';
+</style>

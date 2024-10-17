@@ -1,22 +1,31 @@
 <script setup lang="ts">
 import { defineExpose } from 'vue'
 
-import { ItemType, ItemState, type ProjectUpdate } from '@/types/Item'
+import type { EventCreate } from '@/types/Item'
 import type { User } from '@/types/User'
 import { useFormDialog } from '@/components/dialog/BaseDialog'
 
-import DeleteButton from '@/components/common/DeleteButton.vue'
-import StateSelect from '@/components/common/StateSelect.vue'
+import useUserStore from '@/stores/UserStore'
+import useProjectStore from '@/stores/ProjectStore'
 import UserSelect from '@/components/common/UserSelect.vue'
 
-const emit = defineEmits(['submit', 'delete'])
-const { dialog, valid, form_data, form_ref, rules, submitData, deleteData } =
-  useFormDialog<ProjectUpdate>(emit)
+const store_user = useUserStore()
+const store_project = useProjectStore()
+
+const emit = defineEmits(['submit'])
+const { dialog, valid, form_data, form_ref, rules, submitData } = useFormDialog<EventCreate>(emit)
 
 defineExpose({
-  open(data: ProjectUpdate) {
+  open() {
     dialog.value = true
-    form_data.value = { ...data }
+    form_data.value = {
+      id_project: store_project.selected_id_project,
+      rid_items: store_project.selected_id_project,
+      rid_users: store_user.login_user?.rid ?? 0,
+      title: '',
+      detail: '',
+      datetime_end: ''
+    }
   },
   close() {
     dialog.value = false
@@ -26,28 +35,18 @@ defineExpose({
 const handleUserSelected = (user: User) => {
   form_data.value.rid_users = user.rid
 }
-
-const handleStateSelected = (state: ItemState) => {
-  form_data.value.state = state
-}
 </script>
 
 <template>
   <v-dialog v-model="dialog" max-width="1300px">
     <v-card>
       <v-card-title>
-        <span class="dialog-title">Update Project</span>
+        <span class="dialog-title">Add Event</span>
       </v-card-title>
 
       <v-card-text>
         <v-form ref="form_ref" v-model="valid" lazy-validation>
           <UserSelect v-model="form_data.rid_users" @itemSelected="handleUserSelected" />
-
-          <StateSelect
-            :type="ItemType.PROJECT"
-            :state="form_data.state"
-            @itemSelected="handleStateSelected"
-          />
 
           <v-text-field
             v-model="form_data.title"
@@ -57,17 +56,9 @@ const handleStateSelected = (state: ItemState) => {
           />
 
           <v-textarea v-model="form_data.detail" label="Detail" />
-          <v-textarea v-model="form_data.result" label="Result" />
 
           <v-text-field
-            v-model="form_data.datetime_start"
-            :rules="[rules.required]"
-            label="Start"
-            type="date"
-            required
-          />
-
-          <v-text-field
+            class="dialog-field"
             v-model="form_data.datetime_end"
             :rules="[rules.required]"
             label="End"
@@ -78,7 +69,6 @@ const handleStateSelected = (state: ItemState) => {
       </v-card-text>
 
       <v-card-actions>
-        <DeleteButton @delete="deleteData" />
         <v-spacer />
         <v-btn @click="dialog = false">Cancel</v-btn>
         <v-btn color="primary" :disabled="!valid" @click="submitData">Submit</v-btn>

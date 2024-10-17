@@ -18,34 +18,34 @@ const headers = [
 
 const store_project = useProjectStore()
 
-const dialog_entry = ref()
-const dialog_update = ref()
+const dialog_project_create = ref()
+const dialog_project_update = ref()
 
 onMounted(() => {
   store_project.fetchProjects()
 })
 
-const openEntryDialog = () => {
-  dialog_entry.value?.open()
+const openCreateProjectDialog = () => {
+  dialog_project_create.value?.open()
 }
 
-const openUpdateDialog = (data: Project) => {
-  dialog_update.value?.open(data)
+const openUpdateProjectDialog = (data: Project) => {
+  dialog_project_update.value?.open(data)
 }
 
 const handleEntry = async (data: ProjectCreate) => {
   await store_project.createProject(data)
-  dialog_entry.value?.close()
+  dialog_project_create.value?.close()
 }
 
 const handleUpdate = async (data: ProjectUpdate) => {
   await store_project.updateProject(data)
-  dialog_update.value?.close()
+  dialog_project_update.value?.close()
 }
 
 const handleDelete = async (data: ProjectUpdate) => {
   await store_project.deleteProject(data.rid)
-  dialog_update.value?.close()
+  dialog_project_update.value?.close()
 }
 </script>
 
@@ -56,7 +56,7 @@ const handleDelete = async (data: ProjectUpdate) => {
         width="150px"
         color="addButton"
         prepend-icon="mdi-plus-circle"
-        @click="openEntryDialog"
+        @click="openCreateProjectDialog"
       >
         Project
       </v-btn>
@@ -75,7 +75,7 @@ const handleDelete = async (data: ProjectUpdate) => {
                 size="small"
                 prepend-icon="mdi-pencil"
                 variant="outlined"
-                @click="openUpdateDialog(item)"
+                @click="openUpdateProjectDialog(item)"
               >
                 UPDATE
               </v-btn>
@@ -86,8 +86,8 @@ const handleDelete = async (data: ProjectUpdate) => {
     </v-sheet>
   </v-main>
 
-  <CreateProjectDialog ref="dialog_entry" @submit="handleEntry" />
-  <UpdateProjectDialog ref="dialog_update" @submit="handleUpdate" @delete="handleDelete" />
+  <CreateProjectDialog ref="dialog_project_create" @submit="handleEntry" />
+  <UpdateProjectDialog ref="dialog_project_update" @submit="handleUpdate" @delete="handleDelete" />
 </template>
 
 <style scoped>

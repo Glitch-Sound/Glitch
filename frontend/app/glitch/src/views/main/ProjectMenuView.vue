@@ -1,18 +1,35 @@
 <script setup lang="ts">
-import { ExtractType } from '@/types/Item'
+import { ref } from 'vue'
+
+import { ExtractType, type EventCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
+import CreateEventDialog from '@/components/dialog/CreateEventDialog.vue'
 
 const store_item = useItemStore()
 
-const openDialog = () => {}
+const dialog_event_create = ref()
+
+const openCreateEventDialog = () => {
+  dialog_event_create.value?.open()
+}
+
+const handleEntry = async (data: EventCreate) => {
+  await store_item.createEvent(data)
+  dialog_event_create.value?.close()
+}
 </script>
 
 <template>
   <v-navigation-drawer class="no-border" color="background">
     <v-sheet class="navigation">
-      <v-list-item class="mb-1">
-        <v-btn width="250px" color="addButton" prepend-icon="mdi-plus-circle" @click="openDialog">
+      <v-list-item class="mb-2">
+        <v-btn
+          width="250px"
+          color="addButton"
+          prepend-icon="mdi-plus-circle"
+          @click="openCreateEventDialog"
+        >
           Event
         </v-btn>
       </v-list-item>
@@ -90,6 +107,8 @@ const openDialog = () => {}
       </v-list-item>
     </v-sheet>
   </v-navigation-drawer>
+
+  <CreateEventDialog ref="dialog_event_create" @submit="handleEntry" />
 </template>
 
 <style scoped>
