@@ -44,6 +44,14 @@ export enum ExtractType {
   SEARCH
 }
 
+export interface PanelRelation {
+  isTop: boolean
+  isBottom: boolean
+  isExistNextEvent: boolean
+  isExistNextFeature: boolean
+  isExistNextStory: boolean
+}
+
 export interface RID {
   rid: number
 }

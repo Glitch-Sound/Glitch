@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 
-import type { Item } from '@/types/Item'
+import type { Item, PanelRelation } from '@/types/Item'
 
 const props = defineProps<{
   item: Item
+  relation: PanelRelation
 }>()
 </script>
 

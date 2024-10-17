@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps, ref } from 'vue'
 
-import type { Item, StoryCreate } from '@/types/Item'
+import type { Item, PanelRelation, StoryCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
 import CreateStoryDialog from '@/components/dialog/CreateStoryDialog.vue'
@@ -10,6 +10,7 @@ const store_item = useItemStore()
 
 const props = defineProps<{
   item: Item
+  relation: PanelRelation
 }>()
 
 const dialog_story_create = ref()

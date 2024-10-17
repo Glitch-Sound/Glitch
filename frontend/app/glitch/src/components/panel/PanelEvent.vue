@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps, ref } from 'vue'
 
-import type { Item, FeatureCreate } from '@/types/Item'
+import type { Item, PanelRelation, FeatureCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
 import CreateFeatureDialog from '@/components/dialog/CreateFeatureDialog.vue'
@@ -10,6 +10,7 @@ const store_item = useItemStore()
 
 const props = defineProps<{
   item: Item
+  relation: PanelRelation
 }>()
 
 const dialog_feature_create = ref()

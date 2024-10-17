@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps, ref } from 'vue'
 
-import type { Item, TaskCreate } from '@/types/Item'
+import type { Item, PanelRelation, TaskCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
 import CreateTaskDialog from '@/components/dialog/CreateTaskDialog.vue'
@@ -10,6 +10,7 @@ const store_item = useItemStore()
 
 const props = defineProps<{
   item: Item
+  relation: PanelRelation
 }>()
 
 const dialog_task_create = ref()
