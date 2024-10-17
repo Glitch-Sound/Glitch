@@ -31,11 +31,11 @@ const handleEntry = async (data: FeatureCreate) => {
         {{ props.item.title }}
       </v-col>
 
-      <v-col cols="auto">
+      <v-col cols="auto" class="user">
         {{ props.item.name }}
       </v-col>
 
-      <v-col cols="auto">
+      <v-col cols="auto" class="button-plus">
         <v-btn icon variant="text" size="x-small" @click="openCreateFeatureDialog()">
           <v-icon>mdi-plus-thick</v-icon>
         </v-btn>
