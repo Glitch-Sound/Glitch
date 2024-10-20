@@ -4,6 +4,7 @@ import { defineProps, ref } from 'vue'
 import type { Item, PanelRelation, FeatureCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
+import RelationEvent from '@/components/panel/RelationEvent.vue'
 import CreateFeatureDialog from '@/components/dialog/CreateFeatureDialog.vue'
 
 const store_item = useItemStore()
@@ -27,7 +28,11 @@ const handleEntry = async (data: FeatureCreate) => {
 
 <template>
   <div class="panel-common">
-    <v-row class="align-baseline">
+    <v-row class="align-center ma-0">
+      <v-col cols="auto" class="relation">
+        <RelationEvent :item="item" :relation="relation" />
+      </v-col>
+
       <v-col class="title">
         {{ props.item.title }}
       </v-col>

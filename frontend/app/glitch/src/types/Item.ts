@@ -45,11 +45,13 @@ export enum ExtractType {
 }
 
 export interface PanelRelation {
-  isTop: boolean
-  isBottom: boolean
-  isExistNextEvent: boolean
-  isExistNextFeature: boolean
-  isExistNextStory: boolean
+  is_top: boolean
+  is_bottom: boolean
+  has_child: boolean
+  is_exist_next_event: boolean
+  is_exist_next_feature: boolean
+  is_exist_next_story: boolean
+  is_exist_next_task_bug: boolean
 }
 
 export interface RID {

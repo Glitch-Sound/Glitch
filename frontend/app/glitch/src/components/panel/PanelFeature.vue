@@ -4,6 +4,7 @@ import { defineProps, ref } from 'vue'
 import type { Item, PanelRelation, StoryCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
+import RelationFeature from '@/components/panel/RelationFeature.vue'
 import CreateStoryDialog from '@/components/dialog/CreateStoryDialog.vue'
 
 const store_item = useItemStore()
@@ -26,8 +27,12 @@ const handleEntry = async (data: StoryCreate) => {
 </script>
 
 <template>
-  <div>
-    <v-row class="align-baseline">
+  <div class="panel-common">
+    <v-row class="align-center ma-0">
+      <v-col cols="auto" class="relation">
+        <RelationFeature :item="item" :relation="relation" />
+      </v-col>
+
       <v-col class="title">
         {{ props.item.title }}
       </v-col>

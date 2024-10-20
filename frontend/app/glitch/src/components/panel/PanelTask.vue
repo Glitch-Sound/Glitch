@@ -3,6 +3,8 @@ import { defineProps } from 'vue'
 
 import type { Item, PanelRelation } from '@/types/Item'
 
+import RelationTask from '@/components/panel/RelationTask.vue'
+
 const props = defineProps<{
   item: Item
   relation: PanelRelation
@@ -11,7 +13,11 @@ const props = defineProps<{
 
 <template>
   <div class="panel-common">
-    <v-row class="align-baseline">
+    <v-row class="align-center ma-0">
+      <v-col cols="auto" class="relation">
+        <RelationTask :item="item" :relation="relation" />
+      </v-col>
+
       <v-col class="title">
         {{ props.item.title }}
       </v-col>
