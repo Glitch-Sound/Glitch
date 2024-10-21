@@ -5,6 +5,7 @@ import type { Item, PanelRelation, FeatureCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
 import RelationEvent from '@/components/panel/RelationEvent.vue'
+import MenuEvent from '@/components/panel/MenuEvent.vue'
 import CreateFeatureDialog from '@/components/dialog/CreateFeatureDialog.vue'
 
 const store_item = useItemStore()
@@ -14,6 +15,7 @@ const props = defineProps<{
   relation: PanelRelation
 }>()
 
+const menu = ref(false)
 const dialog_feature_create = ref()
 
 const openCreateFeatureDialog = () => {
@@ -30,7 +32,13 @@ const handleEntry = async (data: FeatureCreate) => {
   <div class="panel-common">
     <v-row class="align-center ma-0">
       <v-col cols="auto" class="relation">
-        <RelationEvent :item="item" :relation="relation" />
+        <v-menu v-model="menu" activator="parent" offset-y>
+          <template v-slot:activator="{ props }">
+            <RelationEvent v-bind="props" :item="item" :relation="relation" />
+          </template>
+
+          <MenuEvent :item="props.item" />
+        </v-menu>
       </v-col>
 
       <v-col class="title">

@@ -12,7 +12,8 @@ import type {
   TaskCreate,
   TaskUpdate,
   BugCreate,
-  BugUpdate
+  BugUpdate,
+  ItemState
 } from '@/types/Item'
 
 import ItemService from '@/services/ItemService'
@@ -152,6 +153,14 @@ const useItemStore = defineStore('item', {
     setExtractSearchUpdate() {
       this.type_extract = ExtractType.SEARCH
       this.is_update = true
+    },
+    async updateState(target: number, state: ItemState): Promise<Item> {
+      const result = await service_item.updateItemState({
+        rid: target,
+        state: state
+      })
+      this.is_update = true
+      return result
     },
     async createEvent(event: EventCreate): Promise<Item> {
       const result = await service_item.createEvent(event)

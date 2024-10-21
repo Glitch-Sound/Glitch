@@ -2,6 +2,7 @@ import http from '@/services/ApiClient'
 
 import type {
   Item,
+  StateUpdate,
   Project,
   ProjectCreate,
   ProjectUpdate,
@@ -110,12 +111,9 @@ class ItemService {
     }
   }
 
-  public async getItemsSummaryUser(
-    id_project: number | null,
-    target: number | null
-  ): Promise<Item[]> {
+  public async updateItemState(target: StateUpdate): Promise<Item> {
     try {
-      const response = await http.get<Item[]>(`/api/item/summary-user/${id_project}/${target}`)
+      const response = await http.put<Item>('/api/item/state', target)
       return response.data
     } catch (error) {
       console.trace()

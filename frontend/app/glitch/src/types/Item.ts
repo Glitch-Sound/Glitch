@@ -87,6 +87,11 @@ export interface Item {
   bug_workload: number
 }
 
+export interface StateUpdate {
+  rid: number
+  state: number
+}
+
 export interface Project {
   rid: number
   id_project: number
