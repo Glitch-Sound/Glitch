@@ -352,6 +352,28 @@ def getItems(db: Session, params: ItemParam):
         raise e
 
 
+def updateItemState(db: Session, target: int, state: int):
+    try:
+        db.begin()
+        item = db.query(
+            Item
+        )\
+        .filter(Item.rid == target)
+
+        item.update({
+            Item.state: state
+        })
+        db.commit()
+
+        item_updated = item.first()
+        db.refresh(item_updated)
+        return item_updated
+
+    except Exception as e:
+        db.rollback()
+        raise e
+
+
 def getItemRange(db: Session, id_project: int):
     try:
         query = db.query(

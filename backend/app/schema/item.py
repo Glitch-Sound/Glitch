@@ -41,6 +41,14 @@ class Item(BaseModel):
         from_attributes = True
 
 
+class StateUpdate(BaseModel):
+    rid: int
+    state: int
+
+    class Config:
+        from_attributes = True
+    
+
 class Project(BaseModel):
     rid: int
     id_project: int

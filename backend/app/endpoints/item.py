@@ -106,6 +106,18 @@ def get_items_search(id_project: int, target: str, db: Session = Depends(get_db)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'error: {str(e)}')
 
 
+@router.put('/item/state/', response_model=schema_item.Item)
+def update_item_state(target:schema_item.StateUpdate, db: Session = Depends(get_db)):
+    try:
+        result = crud_item.updateItemState(db, target.rid, target.state)
+        return result
+
+    except Exception as e:
+        print(traceback.format_exc())
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'error: {str(e)}')
+
+
+
 @router.get('/projects/', response_model=list[schema_item.Project])
 def get_items(db: Session = Depends(get_db)):
     try:
