@@ -33,7 +33,7 @@ const handleEntry = async (data: TaskCreate) => {
         <RelationStory :item="item" :relation="relation" />
       </v-col>
 
-      <v-col class="title">
+      <v-col class="title ml-8">
         {{ props.item.title }}
       </v-col>
 

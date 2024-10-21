@@ -123,28 +123,28 @@ const props = defineProps<{
       />
 
       <!-- background:state -->
-      <foreignObject x="70" y="3.5" width="30" height="30" opacity="1.0">
+      <foreignObject x="62" y="3.5" width="30" height="30" opacity="1.0">
         <div xmlns="http://www.w3.org/1999/xhtml">
           <v-icon color="#000000" size="14">mdi-circle</v-icon>
         </div>
       </foreignObject>
 
       <!-- task:state -->
-      <foreignObject x="70" y="3.5" width="30" height="30" opacity="1.0">
+      <foreignObject x="62" y="3.5" width="30" height="30" opacity="1.0">
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.IDLE">
-          <v-icon :color="tree.t.color" size="14">mdi-circle-outline</v-icon>
+          <v-icon :color="tree.t.color" size="16">mdi-circle-outline</v-icon>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.RUN">
-          <v-icon :color="tree.t.color" size="14">mdi-circle</v-icon>
+          <v-icon :color="tree.t.color" size="16">mdi-circle</v-icon>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.ALERT">
-          <v-icon :color="tree.t.color" size="14">mdi-alert-circle</v-icon>
+          <v-icon :color="tree.t.color" size="16">mdi-alert-circle</v-icon>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.REVIEW">
-          <v-icon :color="tree.t.color" size="14">mdi-circle-multiple</v-icon>
+          <v-icon :color="tree.t.color" size="16">mdi-circle-multiple</v-icon>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.COMPLETE">
-          <v-icon :color="tree.t.color" size="14">mdi-circle-slice-8</v-icon>
+          <v-icon :color="tree.t.color" size="16">mdi-circle-slice-8</v-icon>
         </div>
       </foreignObject>
     </svg>

@@ -33,7 +33,7 @@ const handleEntry = async (data: StoryCreate) => {
         <RelationFeature :item="item" :relation="relation" />
       </v-col>
 
-      <v-col class="title">
+      <v-col class="title ml-4">
         {{ props.item.title }}
       </v-col>
 

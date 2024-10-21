@@ -18,7 +18,7 @@ const props = defineProps<{
         <RelationBug :item="item" :relation="relation" />
       </v-col>
 
-      <v-col class="title">
+      <v-col class="title ml-12">
         {{ props.item.title }}
       </v-col>
 

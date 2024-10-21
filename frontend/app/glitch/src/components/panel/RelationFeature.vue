@@ -92,14 +92,14 @@ const props = defineProps<{
       />
 
       <!-- background:state -->
-      <foreignObject x="26" y="3.5" width="30" height="30" opacity="1.0">
+      <foreignObject x="23" y="3.5" width="30" height="30" opacity="1.0">
         <div xmlns="http://www.w3.org/1999/xhtml">
           <v-icon color="#000000" size="14">mdi-circle</v-icon>
         </div>
       </foreignObject>
 
       <!-- feature:state -->
-      <foreignObject x="26" y="3.5" width="30" height="30" opacity="1.0">
+      <foreignObject x="23" y="3.5" width="30" height="30" opacity="1.0">
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.IDLE">
           <v-icon :color="tree.f.color" size="14">mdi-circle-outline</v-icon>
         </div>
