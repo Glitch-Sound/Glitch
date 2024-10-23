@@ -8,6 +8,8 @@ import RelationEvent from '@/components/panel/RelationEvent.vue'
 import MenuEvent from '@/components/panel/MenuEvent.vue'
 import CreateFeatureDialog from '@/components/dialog/CreateFeatureDialog.vue'
 
+import { tree } from '@/components/panel/relation'
+
 const store_item = useItemStore()
 
 const props = defineProps<{
@@ -30,7 +32,7 @@ const handleEntry = async (data: FeatureCreate) => {
 
 <template>
   <div class="panel-common">
-    <v-row class="align-center ma-0">
+    <v-row class="align-end ma-0">
       <v-col cols="auto" class="relation">
         <v-menu v-model="menu" activator="parent" offset-y>
           <template v-slot:activator="{ props }">
@@ -41,7 +43,11 @@ const handleEntry = async (data: FeatureCreate) => {
         </v-menu>
       </v-col>
 
-      <v-col class="title">
+      <v-col cols="auto" class="type ml-0">
+        <v-icon size="small" :color="tree.e.color">mdi-calendar-arrow-left</v-icon>
+      </v-col>
+
+      <v-col class="title ml-0">
         {{ props.item.title }}
       </v-col>
 
@@ -59,7 +65,6 @@ const handleEntry = async (data: FeatureCreate) => {
 
   <CreateFeatureDialog ref="dialog_feature_create" @submit="handleEntry" />
 </template>
-
 <style scoped>
 @import '@/components/panel/panel.css';
 </style>

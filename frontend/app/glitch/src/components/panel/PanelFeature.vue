@@ -7,6 +7,8 @@ import useItemStore from '@/stores/ItemStore'
 import RelationFeature from '@/components/panel/RelationFeature.vue'
 import CreateStoryDialog from '@/components/dialog/CreateStoryDialog.vue'
 
+import { tree } from '@/components/panel/relation'
+
 const store_item = useItemStore()
 
 const props = defineProps<{
@@ -28,12 +30,16 @@ const handleEntry = async (data: StoryCreate) => {
 
 <template>
   <div class="panel-common">
-    <v-row class="align-center ma-0">
+    <v-row class="align-end ma-0">
       <v-col cols="auto" class="relation">
         <RelationFeature :item="item" :relation="relation" />
       </v-col>
 
-      <v-col class="title ml-4">
+      <v-col cols="auto" class="type ml-4">
+        <v-icon size="small" :color="tree.f.color">mdi-apps</v-icon>
+      </v-col>
+
+      <v-col class="title ml-0">
         {{ props.item.title }}
       </v-col>
 

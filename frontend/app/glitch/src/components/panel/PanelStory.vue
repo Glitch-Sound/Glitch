@@ -7,6 +7,8 @@ import useItemStore from '@/stores/ItemStore'
 import RelationStory from '@/components/panel/RelationStory.vue'
 import CreateTaskDialog from '@/components/dialog/CreateTaskDialog.vue'
 
+import { tree } from '@/components/panel/relation'
+
 const store_item = useItemStore()
 
 const props = defineProps<{
@@ -28,12 +30,16 @@ const handleEntry = async (data: TaskCreate) => {
 
 <template>
   <div class="panel-common">
-    <v-row class="align-center ma-0">
+    <v-row class="align-end ma-0">
       <v-col cols="auto" class="relation">
         <RelationStory :item="item" :relation="relation" />
       </v-col>
 
-      <v-col class="title ml-8">
+      <v-col cols="auto" class="type ml-8">
+        <v-icon size="small" :color="tree.s.color">mdi-arrow-expand-horizontal</v-icon>
+      </v-col>
+
+      <v-col class="title ml-0">
         {{ props.item.title }}
       </v-col>
 

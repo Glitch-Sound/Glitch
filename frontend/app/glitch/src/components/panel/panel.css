@@ -3,14 +3,19 @@
     padding: 0;
 }
 
+.type {
+    margin: 0;
+    padding: 0 0 8px 20px;
+}
+
 .title {
     margin: 0;
-    padding: 0;
+    padding: 0 0 8px 20px;
 }
 
 .user {
     margin: 0;
-    padding: 0;
+    padding: 0 0 8px 0;
 }
 
 .button-plus {
