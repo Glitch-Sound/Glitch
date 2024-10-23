@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { type EmitType } from '@/components/common/events'
 import { ItemState, type Item } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
@@ -13,11 +12,6 @@ const props = defineProps<{
   item: Item
 }>()
 
-const emit = defineEmits<EmitType>()
-const handleAddFeature = () => {
-  emit('add-feature')
-}
-
 const handleUpdateState = (state: ItemState) => {
   store_item.updateState(props.item.rid, state)
 }
@@ -25,11 +19,11 @@ const handleUpdateState = (state: ItemState) => {
 
 <template>
   <v-list>
-    <v-list-item link @click="handleAddFeature">
+    <v-list-item link>
       <template v-slot:prepend>
-        <v-icon size="small" class="mr-n4" :color="tree.f.color">mdi-apps</v-icon>
+        <v-icon size="small" class="mr-n4" :color="tree.t.color">mdi-comment-plus-outline</v-icon>
       </template>
-      <v-list-item-title>Add Feature</v-list-item-title>
+      <v-list-item-title>Activity</v-list-item-title>
     </v-list-item>
 
     <v-list-item link>
@@ -47,6 +41,13 @@ const handleUpdateState = (state: ItemState) => {
     </v-list-item>
 
     <MenuState @update-state="handleUpdateState" />
+
+    <v-list-item link>
+      <template v-slot:prepend>
+        <v-icon size="small" class="mr-n4">mdi-priority-high</v-icon>
+      </template>
+      <v-list-item-title>Priority High</v-list-item-title>
+    </v-list-item>
 
     <v-list-item link>
       <template v-slot:prepend>

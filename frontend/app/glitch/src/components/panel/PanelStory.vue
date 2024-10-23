@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { defineProps, ref } from 'vue'
 
-import type { Item, PanelRelation, TaskCreate } from '@/types/Item'
+import type { Item, PanelRelation, TaskCreate, BugCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
 import RelationStory from '@/components/panel/RelationStory.vue'
+import MenuStory from '@/components/panel/MenuStory.vue'
 import CreateTaskDialog from '@/components/dialog/CreateTaskDialog.vue'
+import CreateBugDialog from '@/components/dialog/CreateBugDialog.vue'
 
 import { tree } from '@/components/panel/relation'
 
@@ -16,15 +18,26 @@ const props = defineProps<{
   relation: PanelRelation
 }>()
 
-const dialog_task_create = ref()
+const menu = ref(false)
+const dialog_create_task = ref()
+const dialog_create_bug = ref()
 
 const openCreateTaskDialog = () => {
-  dialog_task_create.value?.open(props.item)
+  dialog_create_task.value?.open(props.item)
 }
 
-const handleEntry = async (data: TaskCreate) => {
+const openCreateBugDialog = () => {
+  dialog_create_bug.value?.open(props.item)
+}
+
+const handleEntryTask = async (data: TaskCreate) => {
   await store_item.createTask(data)
-  dialog_task_create.value?.close()
+  dialog_create_task.value?.close()
+}
+
+const handleEntryBug = async (data: BugCreate) => {
+  await store_item.createBug(data)
+  dialog_create_bug.value?.close()
 }
 </script>
 
@@ -32,7 +45,17 @@ const handleEntry = async (data: TaskCreate) => {
   <div class="panel-common">
     <v-row class="align-end ma-0">
       <v-col cols="auto" class="relation">
-        <RelationStory :item="item" :relation="relation" />
+        <v-menu v-model="menu" activator="parent" offset-y>
+          <template v-slot:activator="{ props }">
+            <RelationStory v-bind="props" :item="item" :relation="relation" />
+          </template>
+
+          <MenuStory
+            :item="props.item"
+            @add-task="openCreateTaskDialog"
+            @add-bug="openCreateBugDialog"
+          />
+        </v-menu>
       </v-col>
 
       <v-col cols="auto" class="type ml-8">
@@ -46,16 +69,11 @@ const handleEntry = async (data: TaskCreate) => {
       <v-col cols="auto" class="user">
         {{ props.item.name }}
       </v-col>
-
-      <v-col cols="auto" class="button-plus">
-        <v-btn icon variant="text" size="x-small" @click="openCreateTaskDialog()">
-          <v-icon>mdi-plus-thick</v-icon>
-        </v-btn>
-      </v-col>
     </v-row>
   </div>
 
-  <CreateTaskDialog ref="dialog_task_create" @submit="handleEntry" />
+  <CreateTaskDialog ref="dialog_create_task" @submit="handleEntryTask" />
+  <CreateBugDialog ref="dialog_create_bug" @submit="handleEntryBug" />
 </template>
 
 <style scoped>

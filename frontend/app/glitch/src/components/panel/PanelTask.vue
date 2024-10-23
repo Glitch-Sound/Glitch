@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { defineProps, ref } from 'vue'
 
 import type { Item, PanelRelation } from '@/types/Item'
 
 import RelationTask from '@/components/panel/RelationTask.vue'
+import MenuTask from '@/components/panel/MenuTask.vue'
 
 import { tree } from '@/components/panel/relation'
 
@@ -11,13 +12,21 @@ const props = defineProps<{
   item: Item
   relation: PanelRelation
 }>()
+
+const menu = ref(false)
 </script>
 
 <template>
   <div class="panel-common">
     <v-row class="align-end ma-0">
       <v-col cols="auto" class="relation">
-        <RelationTask :item="item" :relation="relation" />
+        <v-menu v-model="menu" activator="parent" offset-y>
+          <template v-slot:activator="{ props }">
+            <RelationTask v-bind="props" :item="item" :relation="relation" />
+          </template>
+
+          <MenuTask :item="props.item" />
+        </v-menu>
       </v-col>
 
       <v-col cols="auto" class="type ml-12">
@@ -30,12 +39,6 @@ const props = defineProps<{
 
       <v-col cols="auto" class="user">
         {{ props.item.name }}
-      </v-col>
-
-      <v-col cols="auto" class="button-plus">
-        <v-btn icon variant="text" size="x-small">
-          <v-icon>mdi-comment-plus-outline</v-icon>
-        </v-btn>
       </v-col>
     </v-row>
   </div>

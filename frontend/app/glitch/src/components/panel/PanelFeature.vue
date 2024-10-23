@@ -5,6 +5,7 @@ import type { Item, PanelRelation, StoryCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
 import RelationFeature from '@/components/panel/RelationFeature.vue'
+import MenuFeature from '@/components/panel/MenuFeature.vue'
 import CreateStoryDialog from '@/components/dialog/CreateStoryDialog.vue'
 
 import { tree } from '@/components/panel/relation'
@@ -16,15 +17,16 @@ const props = defineProps<{
   relation: PanelRelation
 }>()
 
-const dialog_story_create = ref()
+const menu = ref(false)
+const dialog_create_story = ref()
 
 const openCreateStoryDialog = () => {
-  dialog_story_create.value?.open(props.item)
+  dialog_create_story.value?.open(props.item)
 }
 
 const handleEntry = async (data: StoryCreate) => {
   await store_item.createStory(data)
-  dialog_story_create.value?.close()
+  dialog_create_story.value?.close()
 }
 </script>
 
@@ -32,7 +34,13 @@ const handleEntry = async (data: StoryCreate) => {
   <div class="panel-common">
     <v-row class="align-end ma-0">
       <v-col cols="auto" class="relation">
-        <RelationFeature :item="item" :relation="relation" />
+        <v-menu v-model="menu" activator="parent" offset-y>
+          <template v-slot:activator="{ props }">
+            <RelationFeature v-bind="props" :item="item" :relation="relation" />
+          </template>
+
+          <MenuFeature :item="props.item" @add-story="openCreateStoryDialog" />
+        </v-menu>
       </v-col>
 
       <v-col cols="auto" class="type ml-4">
@@ -46,16 +54,10 @@ const handleEntry = async (data: StoryCreate) => {
       <v-col cols="auto" class="user">
         {{ props.item.name }}
       </v-col>
-
-      <v-col cols="auto" class="button-plus">
-        <v-btn icon variant="text" size="x-small" @click="openCreateStoryDialog()">
-          <v-icon>mdi-plus-thick</v-icon>
-        </v-btn>
-      </v-col>
     </v-row>
   </div>
 
-  <CreateStoryDialog ref="dialog_story_create" @submit="handleEntry" />
+  <CreateStoryDialog ref="dialog_create_story" @submit="handleEntry" />
 </template>
 
 <style scoped>

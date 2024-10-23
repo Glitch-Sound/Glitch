@@ -14,8 +14,11 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<EmitType>()
-const handleAddFeature = () => {
-  emit('add-feature')
+const handleAddTask = () => {
+  emit('add-task')
+}
+const handleAddBug = () => {
+  emit('add-bug')
 }
 
 const handleUpdateState = (state: ItemState) => {
@@ -25,11 +28,18 @@ const handleUpdateState = (state: ItemState) => {
 
 <template>
   <v-list>
-    <v-list-item link @click="handleAddFeature">
+    <v-list-item link @click="handleAddTask">
       <template v-slot:prepend>
-        <v-icon size="small" class="mr-n4" :color="tree.f.color">mdi-apps</v-icon>
+        <v-icon size="small" class="mr-n4" :color="tree.t.color">mdi-label</v-icon>
       </template>
-      <v-list-item-title>Add Feature</v-list-item-title>
+      <v-list-item-title>Add Task</v-list-item-title>
+    </v-list-item>
+
+    <v-list-item link @click="handleAddBug">
+      <template v-slot:prepend>
+        <v-icon size="small" class="mr-n4" :color="tree.b.color">mdi-spider</v-icon>
+      </template>
+      <v-list-item-title>Add Bug</v-list-item-title>
     </v-list-item>
 
     <v-list-item link>

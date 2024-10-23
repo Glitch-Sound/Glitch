@@ -18,15 +18,15 @@ const props = defineProps<{
 }>()
 
 const menu = ref(false)
-const dialog_feature_create = ref()
+const dialog_create_feature = ref()
 
 const openCreateFeatureDialog = () => {
-  dialog_feature_create.value?.open(props.item)
+  dialog_create_feature.value?.open(props.item)
 }
 
 const handleEntry = async (data: FeatureCreate) => {
   await store_item.createFeature(data)
-  dialog_feature_create.value?.close()
+  dialog_create_feature.value?.close()
 }
 </script>
 
@@ -39,7 +39,7 @@ const handleEntry = async (data: FeatureCreate) => {
             <RelationEvent v-bind="props" :item="item" :relation="relation" />
           </template>
 
-          <MenuEvent :item="props.item" />
+          <MenuEvent :item="props.item" @add-feature="openCreateFeatureDialog" />
         </v-menu>
       </v-col>
 
@@ -54,16 +54,10 @@ const handleEntry = async (data: FeatureCreate) => {
       <v-col cols="auto" class="user">
         {{ props.item.name }}
       </v-col>
-
-      <v-col cols="auto" class="button-plus">
-        <v-btn icon variant="text" size="x-small" @click="openCreateFeatureDialog()">
-          <v-icon>mdi-plus-thick</v-icon>
-        </v-btn>
-      </v-col>
     </v-row>
   </div>
 
-  <CreateFeatureDialog ref="dialog_feature_create" @submit="handleEntry" />
+  <CreateFeatureDialog ref="dialog_create_feature" @submit="handleEntry" />
 </template>
 <style scoped>
 @import '@/components/panel/panel.css';
