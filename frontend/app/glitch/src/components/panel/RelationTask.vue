@@ -126,7 +126,7 @@ const props = defineProps<{
       <line
         v-if="props.relation.has_child"
         :x1="tree.t.c"
-        :y1="tree.t.m"
+        :y1="tree.t.m + 8"
         :x2="tree.t.c"
         :y2="tree.t.b"
         :stroke="tree.b.color"

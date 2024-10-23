@@ -4,8 +4,6 @@ import { ItemState, type Item } from '@/types/Item'
 import useItemStore from '@/stores/ItemStore'
 import MenuState from '@/components/panel/MenuState.vue'
 
-import { tree } from '@/components/panel/relation'
-
 const store_item = useItemStore()
 
 const props = defineProps<{
@@ -21,7 +19,7 @@ const handleUpdateState = (state: ItemState) => {
   <v-list>
     <v-list-item link>
       <template v-slot:prepend>
-        <v-icon size="small" class="mr-n4" :color="tree.b.color">mdi-comment-plus-outline</v-icon>
+        <v-icon size="small" class="mr-n4" color="#97c5b0">mdi-comment-plus-outline</v-icon>
       </template>
       <v-list-item-title>Activity</v-list-item-title>
     </v-list-item>
