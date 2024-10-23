@@ -122,6 +122,17 @@ const props = defineProps<{
         :stroke-width="tree.t.sw"
       />
 
+      <!-- task:child -->
+      <line
+        v-if="props.relation.has_child"
+        :x1="tree.t.c"
+        :y1="tree.t.m"
+        :x2="tree.t.c"
+        :y2="tree.t.b"
+        :stroke="tree.b.color"
+        :stroke-width="tree.b.sw"
+      />
+
       <!-- background:state -->
       <foreignObject :x="tree.t.ix" :y="tree.t.iy" :width="tree.t.iw" :height="tree.t.ih">
         <div xmlns="http://www.w3.org/1999/xhtml">

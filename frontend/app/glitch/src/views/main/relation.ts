@@ -7,8 +7,9 @@ const getParentType = (type: ItemType): ItemType | null => {
     case ItemType.STORY:
       return ItemType.FEATURE
     case ItemType.TASK:
-    case ItemType.BUG:
       return ItemType.STORY
+    case ItemType.BUG:
+      return ItemType.TASK
     default:
       return null
   }
@@ -22,6 +23,8 @@ const getChildType = (type: ItemType): ItemType | null => {
       return ItemType.STORY
     case ItemType.STORY:
       return ItemType.TASK
+    case ItemType.TASK:
+      return ItemType.BUG
     default:
       return null
   }
@@ -36,8 +39,9 @@ const getTypeLevel = (type: ItemType): number => {
     case ItemType.STORY:
       return 2
     case ItemType.TASK:
-    case ItemType.BUG:
       return 3
+    case ItemType.BUG:
+      return 4
     default:
       return -1
   }
@@ -90,7 +94,10 @@ export const getPanelRelation = (items: Item[], index: number): PanelRelation =>
   is_top = condition1 || condition2
 
   // is_bottom.
-  const is_bottom = is_last_item || is_next_higher_or_parent
+  let is_bottom = is_last_item || is_next_higher_or_parent
+  if (type_current === ItemType.TASK && type_next === ItemType.BUG) {
+    is_bottom = true
+  }
 
   // has_child.
   const has_child = type_next === child_type
@@ -131,14 +138,16 @@ export const getPanelRelation = (items: Item[], index: number): PanelRelation =>
     is_exist_next_task_bug = !has_parent_in_between
   }
 
-  // console.log('------------------------------------')
-  // console.log('is_top                 : ' + is_top)
-  // console.log('is_bottom              : ' + is_bottom)
-  // console.log('has_child              : ' + has_child)
-  // console.log('is_exist_next_event    : ' + is_exist_next_event)
-  // console.log('is_exist_next_feature  : ' + is_exist_next_feature)
-  // console.log('is_exist_next_story    : ' + is_exist_next_story)
-  // console.log('is_exist_next_task_bug : ' + is_exist_next_task_bug)
+  if (type_current == ItemType.TASK) {
+    console.log('------------------------------------')
+    console.log('is_top                 : ' + is_top)
+    console.log('is_bottom              : ' + is_bottom)
+    console.log('has_child              : ' + has_child)
+    console.log('is_exist_next_event    : ' + is_exist_next_event)
+    console.log('is_exist_next_feature  : ' + is_exist_next_feature)
+    console.log('is_exist_next_story    : ' + is_exist_next_story)
+    console.log('is_exist_next_task_bug : ' + is_exist_next_task_bug)
+  }
 
   return {
     is_top,
