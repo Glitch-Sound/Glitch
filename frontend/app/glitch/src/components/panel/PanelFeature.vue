@@ -43,7 +43,7 @@ const handleEntry = async (data: StoryCreate) => {
         </v-menu>
       </v-col>
 
-      <v-col cols="auto" class="type ml-4">
+      <v-col cols="auto" class="type ml-5">
         <v-icon size="small" :color="tree.f.color">mdi-apps</v-icon>
       </v-col>
 

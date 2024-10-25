@@ -29,7 +29,7 @@ const menu = ref(false)
         </v-menu>
       </v-col>
 
-      <v-col cols="auto" class="type ml-12">
+      <v-col cols="auto" class="type ml-15">
         <v-icon size="small" :color="tree.b.color">mdi-spider</v-icon>
       </v-col>
 

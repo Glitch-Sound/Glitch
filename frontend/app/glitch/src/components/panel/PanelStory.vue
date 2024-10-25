@@ -58,7 +58,7 @@ const handleEntryBug = async (data: BugCreate) => {
         </v-menu>
       </v-col>
 
-      <v-col cols="auto" class="type ml-8">
+      <v-col cols="auto" class="type ml-10">
         <v-icon size="small" :color="tree.s.color">mdi-arrow-expand-horizontal</v-icon>
       </v-col>
 

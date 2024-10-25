@@ -2,6 +2,8 @@ import { ItemType, type Item, type PanelRelation } from '@/types/Item'
 
 const getParentType = (type: ItemType): ItemType | null => {
   switch (type) {
+    case ItemType.EVENT:
+      return ItemType.PROJECT
     case ItemType.FEATURE:
       return ItemType.EVENT
     case ItemType.STORY:
@@ -79,9 +81,10 @@ export const getPanelRelation = (items: Item[], index: number): PanelRelation =>
     const has_parent_in_between =
       parent_type !== null &&
       items.slice(index + 1, next_same_type_index).some((item) => item.type === parent_type)
-    condition1 = !has_parent_in_between
+    condition1 = !has_parent_in_between && previous_type !== type_current
   }
-  const condition2 = previous_type === parent_type
+
+  const condition2 = previous_type !== type_current && previous_type === parent_type
 
   const is_last_item = index === items.length - 1
   const parent_type_level =
@@ -138,7 +141,7 @@ export const getPanelRelation = (items: Item[], index: number): PanelRelation =>
     is_exist_next_task_bug = !has_parent_in_between
   }
 
-  // console.log('------------------------------------')
+  // console.log('type_current           : ' + type_current)
   // console.log('is_top                 : ' + is_top)
   // console.log('is_bottom              : ' + is_bottom)
   // console.log('has_child              : ' + has_child)
