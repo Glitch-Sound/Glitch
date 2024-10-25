@@ -5,6 +5,7 @@ import type { Item, PanelRelation } from '@/types/Item'
 
 import RelationBug from '@/components/panel/RelationBug.vue'
 import MenuBug from '@/components/panel/MenuBug.vue'
+import UserLabel from '@/components/common/UserLabel.vue'
 
 import { tree } from '@/components/panel/relation'
 
@@ -38,7 +39,7 @@ const menu = ref(false)
       </v-col>
 
       <v-col cols="auto" class="user">
-        {{ props.item.name }}
+        <UserLabel :item="props.item" />
       </v-col>
     </v-row>
   </div>

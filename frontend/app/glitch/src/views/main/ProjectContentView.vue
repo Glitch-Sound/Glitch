@@ -14,7 +14,7 @@ const store_item = useItemStore()
 </script>
 
 <template>
-  <v-main class="mt-2">
+  <v-main class="mt-2 ml-n2">
     <v-sheet class="main">
       <template v-for="(item, index) in store_item.items" :key="item.rid">
         <PanelEvent

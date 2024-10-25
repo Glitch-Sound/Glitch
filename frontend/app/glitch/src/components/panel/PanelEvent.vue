@@ -6,6 +6,7 @@ import type { Item, PanelRelation, FeatureCreate } from '@/types/Item'
 import useItemStore from '@/stores/ItemStore'
 import RelationEvent from '@/components/panel/RelationEvent.vue'
 import MenuEvent from '@/components/panel/MenuEvent.vue'
+import UserLabel from '@/components/common/UserLabel.vue'
 import CreateFeatureDialog from '@/components/dialog/CreateFeatureDialog.vue'
 
 import { tree } from '@/components/panel/relation'
@@ -52,7 +53,7 @@ const handleEntry = async (data: FeatureCreate) => {
       </v-col>
 
       <v-col cols="auto" class="user">
-        {{ props.item.name }}
+        <UserLabel :item="props.item" />
       </v-col>
     </v-row>
   </div>

@@ -19,8 +19,8 @@ onMounted(() => {
 
 watch(
   () => store_item.is_update,
-  async (value_new) => {
-    if (value_new) {
+  async (is_update) => {
+    if (is_update) {
       common()
     }
   }

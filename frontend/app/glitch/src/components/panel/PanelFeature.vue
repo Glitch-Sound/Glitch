@@ -6,6 +6,7 @@ import type { Item, PanelRelation, StoryCreate } from '@/types/Item'
 import useItemStore from '@/stores/ItemStore'
 import RelationFeature from '@/components/panel/RelationFeature.vue'
 import MenuFeature from '@/components/panel/MenuFeature.vue'
+import UserLabel from '@/components/common/UserLabel.vue'
 import CreateStoryDialog from '@/components/dialog/CreateStoryDialog.vue'
 
 import { tree } from '@/components/panel/relation'
@@ -52,7 +53,7 @@ const handleEntry = async (data: StoryCreate) => {
       </v-col>
 
       <v-col cols="auto" class="user">
-        {{ props.item.name }}
+        <UserLabel :item="props.item" />
       </v-col>
     </v-row>
   </div>

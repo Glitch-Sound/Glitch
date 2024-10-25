@@ -6,6 +6,7 @@ import type { Item, PanelRelation, TaskCreate, BugCreate } from '@/types/Item'
 import useItemStore from '@/stores/ItemStore'
 import RelationStory from '@/components/panel/RelationStory.vue'
 import MenuStory from '@/components/panel/MenuStory.vue'
+import UserLabel from '@/components/common/UserLabel.vue'
 import CreateTaskDialog from '@/components/dialog/CreateTaskDialog.vue'
 import CreateBugDialog from '@/components/dialog/CreateBugDialog.vue'
 
@@ -67,7 +68,7 @@ const handleEntryBug = async (data: BugCreate) => {
       </v-col>
 
       <v-col cols="auto" class="user">
-        {{ props.item.name }}
+        <UserLabel :item="props.item" />
       </v-col>
     </v-row>
   </div>

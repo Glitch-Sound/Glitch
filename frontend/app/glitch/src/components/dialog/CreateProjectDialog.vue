@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose } from 'vue'
+import { defineExpose, ref, watch } from 'vue'
 
 import type { ProjectCreate } from '@/types/Item'
 import type { User } from '@/types/User'
@@ -10,8 +10,25 @@ import UserSelect from '@/components/common/UserSelect.vue'
 
 const store_user = useUserStore()
 
+const date_min = ref('')
+const date_max = ref('')
+
 const emit = defineEmits(['submit'])
 const { dialog, valid, form_data, form_ref, rules, submitData } = useFormDialog<ProjectCreate>(emit)
+
+watch(
+  () => form_data.value.datetime_start,
+  (datetime_start) => {
+    date_min.value = datetime_start
+  }
+)
+
+watch(
+  () => form_data.value.datetime_end,
+  (datetime_end) => {
+    date_max.value = datetime_end
+  }
+)
 
 defineExpose({
   open() {
@@ -61,6 +78,7 @@ const handleUserSelected = (user: User) => {
             label="Start"
             type="date"
             required
+            :max="date_max"
           />
 
           <v-text-field
@@ -70,6 +88,7 @@ const handleUserSelected = (user: User) => {
             label="End"
             type="date"
             required
+            :min="date_min"
           />
         </v-form>
       </v-card-text>

@@ -116,6 +116,9 @@ const useItemStore = defineStore('item', {
           break
       }
     },
+    async getParentItem(rid_items: number): Promise<Item[]> {
+      return service_item.getParentItem(rid_items)
+    },
     setExtractIncomplete() {
       this.type_extract = ExtractType.INCOMPLETE
       this.is_update = true

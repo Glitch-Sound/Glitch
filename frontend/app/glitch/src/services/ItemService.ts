@@ -19,16 +19,6 @@ import type {
 } from '@/types/Item'
 
 class ItemService {
-  public async getItemsAncestor(rid_items: number | null): Promise<Item[]> {
-    try {
-      const response = await http.get<Item[]>(`/api/item/ancestor/${rid_items}`)
-      return response.data
-    } catch (error) {
-      console.trace()
-      throw new Error('error: ${error}')
-    }
-  }
-
   public async getItemsIncomplete(id_project: number | null): Promise<Item[]> {
     try {
       const response = await http.get<Item[]>(`/api/item/incomplete/${id_project}`)
@@ -104,6 +94,16 @@ class ItemService {
   public async getItemsSearch(id_project: number | null, target: string | null): Promise<Item[]> {
     try {
       const response = await http.get<Item[]>(`/api/item/search/${id_project}/${target}`)
+      return response.data
+    } catch (error) {
+      console.trace()
+      throw new Error('error: ${error}')
+    }
+  }
+
+  public async getParentItem(rid_items: number | null): Promise<Item[]> {
+    try {
+      const response = await http.get<Item[]>(`/api/item/${rid_items}`)
       return response.data
     } catch (error) {
       console.trace()
