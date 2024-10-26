@@ -41,6 +41,18 @@ class Item(BaseModel):
         from_attributes = True
 
 
+class ItemRange(BaseModel):
+    rid: int
+    type: int
+    state: int
+    title: str
+    datetime_start: str
+    datetime_end: str
+
+    class Config:
+        from_attributes = True 
+
+
 class StateUpdate(BaseModel):
     rid: int
     state: int

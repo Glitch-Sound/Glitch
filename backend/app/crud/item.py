@@ -352,25 +352,55 @@ def getItems(db: Session, params: ItemParam):
         raise e
 
 
-def updateItemState(db: Session, target: int, state: int):
+def getItem(db: Session, target: int):
     try:
-        db.begin()
-        item = db.query(
-            Item
-        )\
-        .filter(Item.rid == target)
+        UserAlias1 = aliased(User)
+        UserAlias2 = aliased(User)
 
-        item.update({
-            Item.state: state
-        })
-        db.commit()
+        query = db.query(
+            Item.rid,
+            Item.id_project,
+            Item.type,
+            Item.state,
+            Item.risk,
+            Item.risk_factors,
+            Item.priority,
+            Item.title,
+            Item.detail,
+            Item.result,
+            Item.datetime_entry,
+            Item.datetime_update,
+            UserAlias1.rid.label('rid_users'),
+            UserAlias1.name.label('name'),
+            UserAlias2.rid.label('rid_users_review'),
+            UserAlias2.name.label('name_review'),
+            Project.datetime_start.label('project_datetime_start'),
+            Project.datetime_end.label('project_datetime_end'),
+            Event.datetime_end.label('event_datetime_end'),
+            Story.datetime_start.label('story_datetime_start'),
+            Story.datetime_end.label('story_datetime_end'),
+            Task.type.label('task_type'),
+            Task.workload.label('task_workload'),
+            Task.number_completed.label('task_number_completed'),
+            Task.number_total.label('task_number_total'),
+            Bug.workload.label('bug_workload'))\
+        .outerjoin(UserAlias1,  UserAlias1.rid == Item.rid_users)\
+        .outerjoin(UserAlias2,  UserAlias2.rid == Item.rid_users_review)\
+        .outerjoin(Project, Project.rid_items == Item.rid)\
+        .outerjoin(Event, Event.rid_items == Item.rid)\
+        .outerjoin(Feature, Feature.rid_items == Item.rid)\
+        .outerjoin(Story, Story.rid_items == Item.rid)\
+        .outerjoin(Task, Task.rid_items == Item.rid)\
+        .outerjoin(Bug, Bug.rid_items == Item.rid)\
+        .where(
+            Item.is_deleted == 0,
+            Item.rid == target
+        )
 
-        item_updated = item.first()
-        db.refresh(item_updated)
-        return item_updated
+        result = query.one()
+        return result
 
     except Exception as e:
-        db.rollback()
         raise e
 
 
@@ -412,6 +442,28 @@ def getItemRange(db: Session, id_project: int):
         return result
 
     except Exception as e:
+        raise e
+
+
+def updateItemState(db: Session, target: int, state: int):
+    try:
+        db.begin()
+        item = db.query(
+            Item
+        )\
+        .filter(Item.rid == target)
+
+        item.update({
+            Item.state: state
+        })
+        db.commit()
+
+        item_updated = item.first()
+        db.refresh(item_updated)
+        return item_updated
+
+    except Exception as e:
+        db.rollback()
         raise e
 
 
