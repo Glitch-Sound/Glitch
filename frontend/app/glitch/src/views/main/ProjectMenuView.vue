@@ -14,7 +14,7 @@ const openCreateEventDialog = () => {
   dialog_event_create.value?.open()
 }
 
-const handleEntry = async (data: EventCreate) => {
+const handleCreate = async (data: EventCreate) => {
   await store_item.createEvent(data)
   dialog_event_create.value?.close()
 }
@@ -108,7 +108,7 @@ const handleEntry = async (data: EventCreate) => {
     </v-sheet>
   </v-navigation-drawer>
 
-  <CreateEventDialog ref="dialog_event_create" @submit="handleEntry" />
+  <CreateEventDialog ref="dialog_event_create" @submit="handleCreate" />
 </template>
 
 <style scoped>

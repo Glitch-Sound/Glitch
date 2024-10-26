@@ -121,8 +121,8 @@ export interface ProjectCreate {
   rid_users: number
   title: string
   detail: string
-  datetime_start: string
-  datetime_end: string
+  project_datetime_start: string
+  project_datetime_end: string
 }
 
 export interface ProjectUpdate {
@@ -133,8 +133,8 @@ export interface ProjectUpdate {
   title: string
   detail: string
   result: string
-  datetime_start: string
-  datetime_end: string
+  project_datetime_start: string
+  project_datetime_end: string
 }
 
 export interface EventCreate {
@@ -143,7 +143,7 @@ export interface EventCreate {
   rid_users: number
   title: string
   detail: string
-  datetime_end: string
+  event_datetime_end: string
 }
 
 export interface EventUpdate {
@@ -154,7 +154,7 @@ export interface EventUpdate {
   title: string
   detail: string
   result: string
-  datetime_end: string
+  event_datetime_end: string
 }
 
 export interface FeatureCreate {
@@ -181,8 +181,8 @@ export interface StoryCreate {
   rid_users: number
   title: string
   detail: string
-  datetime_start: string
-  datetime_end: string
+  story_datetime_start: string
+  story_datetime_end: string
 }
 
 export interface StoryUpdate {
@@ -193,8 +193,8 @@ export interface StoryUpdate {
   title: string
   detail: string
   result: string
-  datetime_start: string
-  datetime_end: string
+  story_datetime_start: string
+  story_datetime_end: string
 }
 
 export interface TaskCreate {

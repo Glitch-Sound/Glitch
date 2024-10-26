@@ -15,7 +15,10 @@ const props = defineProps<{
 
 const emit = defineEmits<EmitType>()
 const handleAddFeature = () => {
-  emit('add-feature')
+  emit('create-feature')
+}
+const handleUpdateEvent = () => {
+  emit('update-event')
 }
 
 const handleUpdateState = (state: ItemState) => {
@@ -39,7 +42,7 @@ const handleUpdateState = (state: ItemState) => {
       <v-list-item-title>Detail</v-list-item-title>
     </v-list-item>
 
-    <v-list-item link>
+    <v-list-item link @click="handleUpdateEvent">
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4">mdi-pencil</v-icon>
       </template>

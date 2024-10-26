@@ -1,25 +1,35 @@
 <script setup lang="ts">
-import { defineExpose } from 'vue'
+import { defineExpose, onMounted, ref } from 'vue'
 
-import { ItemType, ItemState, type ProjectUpdate } from '@/types/Item'
+import { ItemType, ItemState, type EventUpdate } from '@/types/Item'
 import type { User } from '@/types/User'
-import { useFormDialog } from '@/components/dialog/BaseDialog'
+import { useFormDialog, getDateRange } from '@/components/dialog/BaseDialog'
 
 import DeleteButton from '@/components/common/DeleteButton.vue'
 import StateSelect from '@/components/common/StateSelect.vue'
 import UserSelect from '@/components/common/UserSelect.vue'
 
+const date_min = ref('')
+const date_max = ref('')
+
 const emit = defineEmits(['submit', 'delete'])
 const { dialog, valid, form_data, form_ref, rules, submitData, deleteData } =
-  useFormDialog<ProjectUpdate>(emit)
+  useFormDialog<EventUpdate>(emit)
 
 defineExpose({
-  open(data: ProjectUpdate) {
+  open(data: EventUpdate) {
     dialog.value = true
     form_data.value = { ...data }
   },
   close() {
     dialog.value = false
+  }
+})
+
+onMounted(async () => {
+  const range = await getDateRange(ItemType.EVENT)
+  if (range) {
+    ;[date_min.value, date_max.value] = range
   }
 })
 
@@ -60,19 +70,13 @@ const handleStateSelected = (state: ItemState) => {
           <v-textarea v-model="form_data.result" label="Result" />
 
           <v-text-field
-            v-model="form_data.project_datetime_start"
-            :rules="[rules.required]"
-            label="Start"
-            type="date"
-            required
-          />
-
-          <v-text-field
-            v-model="form_data.project_datetime_end"
+            v-model="form_data.event_datetime_end"
             :rules="[rules.required]"
             label="End"
             type="date"
             required
+            :min="date_min"
+            :max="date_max"
           />
         </v-form>
       </v-card-text>
