@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps, ref } from 'vue'
 
-import type { Item, PanelRelation, TaskCreate, BugCreate } from '@/types/Item'
+import type { Item, PanelRelation, StoryUpdate, TaskCreate, BugCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
 import RelationStory from '@/components/panel/RelationStory.vue'
@@ -9,6 +9,7 @@ import MenuStory from '@/components/panel/MenuStory.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
 import CreateTaskDialog from '@/components/dialog/CreateTaskDialog.vue'
 import CreateBugDialog from '@/components/dialog/CreateBugDialog.vue'
+import UpdateStoryDialog from '@/components/dialog/UpdateStoryDialog.vue'
 
 import { tree } from '@/components/panel/relation'
 
@@ -22,6 +23,7 @@ const props = defineProps<{
 const menu = ref(false)
 const dialog_create_task = ref()
 const dialog_create_bug = ref()
+const dialog_update_story = ref()
 
 const openCreateTaskDialog = () => {
   dialog_create_task.value?.open(props.item)
@@ -31,14 +33,28 @@ const openCreateBugDialog = () => {
   dialog_create_bug.value?.open(props.item)
 }
 
-const handleEntryTask = async (data: TaskCreate) => {
+const openUpdateStoryDialog = (data: Item) => {
+  dialog_update_story.value?.open(data)
+}
+
+const handleCreateTask = async (data: TaskCreate) => {
   await store_item.createTask(data)
   dialog_create_task.value?.close()
 }
 
-const handleEntryBug = async (data: BugCreate) => {
+const handleCreateBug = async (data: BugCreate) => {
   await store_item.createBug(data)
   dialog_create_bug.value?.close()
+}
+
+const handleUpdateStory = async (data: StoryUpdate) => {
+  await store_item.updateStory(data)
+  dialog_update_story.value?.close()
+}
+
+const handleDeleteStory = async (data: StoryUpdate) => {
+  await store_item.deleteStory(data.rid)
+  dialog_update_story.value?.close()
 }
 </script>
 
@@ -55,6 +71,7 @@ const handleEntryBug = async (data: BugCreate) => {
             :item="props.item"
             @add-task="openCreateTaskDialog"
             @add-bug="openCreateBugDialog"
+            @update-story="openUpdateStoryDialog(props.item)"
           />
         </v-menu>
       </v-col>
@@ -73,8 +90,13 @@ const handleEntryBug = async (data: BugCreate) => {
     </v-row>
   </div>
 
-  <CreateTaskDialog ref="dialog_create_task" @submit="handleEntryTask" />
-  <CreateBugDialog ref="dialog_create_bug" @submit="handleEntryBug" />
+  <CreateTaskDialog ref="dialog_create_task" @submit="handleCreateTask" />
+  <CreateBugDialog ref="dialog_create_bug" @submit="handleCreateBug" />
+  <UpdateStoryDialog
+    ref="dialog_update_story"
+    @submit="handleUpdateStory"
+    @delete="handleDeleteStory"
+  />
 </template>
 
 <style scoped>

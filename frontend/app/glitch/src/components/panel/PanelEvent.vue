@@ -8,9 +8,9 @@ import RelationEvent from '@/components/panel/RelationEvent.vue'
 import MenuEvent from '@/components/panel/MenuEvent.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
 import CreateFeatureDialog from '@/components/dialog/CreateFeatureDialog.vue'
+import UpdateEventDialog from '@/components/dialog/UpdateEventDialog.vue'
 
 import { tree } from '@/components/panel/relation'
-import UpdateEventDialog from '@/components/dialog/UpdateEventDialog.vue'
 
 const store_item = useItemStore()
 

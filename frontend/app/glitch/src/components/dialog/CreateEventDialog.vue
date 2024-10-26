@@ -27,7 +27,7 @@ defineExpose({
       rid_users: store_user.login_user?.rid ?? 0,
       title: '',
       detail: '',
-      datetime_end: ''
+      event_datetime_end: ''
     }
   },
   close() {
@@ -69,7 +69,7 @@ const handleUserSelected = (user: User) => {
 
           <v-text-field
             class="dialog-field"
-            v-model="form_data.datetime_end"
+            v-model="form_data.event_datetime_end"
             :rules="[rules.required]"
             label="End"
             type="date"

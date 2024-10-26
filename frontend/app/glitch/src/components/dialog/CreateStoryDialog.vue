@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { defineExpose } from 'vue'
+import { defineExpose, onMounted, ref } from 'vue'
 
-import type { Item, StoryCreate } from '@/types/Item'
+import { ItemType, type Item, type StoryCreate } from '@/types/Item'
 import type { User } from '@/types/User'
-import { useFormDialog } from '@/components/dialog/BaseDialog'
+import { useFormDialog, getDateRange } from '@/components/dialog/BaseDialog'
 
 import useUserStore from '@/stores/UserStore'
 import useProjectStore from '@/stores/ProjectStore'
@@ -11,6 +11,9 @@ import UserSelect from '@/components/common/UserSelect.vue'
 
 const store_user = useUserStore()
 const store_project = useProjectStore()
+
+const date_min = ref('')
+const date_max = ref('')
 
 const emit = defineEmits(['submit'])
 const { dialog, valid, form_data, form_ref, rules, submitData } = useFormDialog<StoryCreate>(emit)
@@ -24,12 +27,19 @@ defineExpose({
       rid_users: store_user.login_user?.rid ?? 0,
       title: '',
       detail: '',
-      datetime_start: '',
-      datetime_end: ''
+      story_datetime_start: '',
+      story_datetime_end: ''
     }
   },
   close() {
     dialog.value = false
+  }
+})
+
+onMounted(async () => {
+  const range = await getDateRange(ItemType.STORY)
+  if (range) {
+    ;[date_min.value, date_max.value] = range
   }
 })
 
@@ -60,20 +70,24 @@ const handleUserSelected = (user: User) => {
 
           <v-text-field
             class="dialog-field"
-            v-model="form_data.datetime_start"
+            v-model="form_data.story_datetime_start"
             :rules="[rules.required]"
             label="End"
             type="date"
             required
+            :min="date_min"
+            :max="date_max"
           />
 
           <v-text-field
             class="dialog-field"
-            v-model="form_data.datetime_end"
+            v-model="form_data.story_datetime_end"
             :rules="[rules.required]"
             label="End"
             type="date"
             required
+            :min="date_min"
+            :max="date_max"
           />
         </v-form>
       </v-card-text>

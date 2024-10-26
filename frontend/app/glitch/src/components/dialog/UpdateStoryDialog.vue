@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineExpose, onMounted, ref } from 'vue'
 
-import { ItemType, ItemState, type EventUpdate } from '@/types/Item'
+import { ItemType, ItemState, type StoryUpdate } from '@/types/Item'
 import type { User } from '@/types/User'
 import { useFormDialog, getDateRange } from '@/components/dialog/BaseDialog'
 
@@ -14,10 +14,10 @@ const date_max = ref('')
 
 const emit = defineEmits(['submit', 'delete'])
 const { dialog, valid, form_data, form_ref, rules, submitData, deleteData } =
-  useFormDialog<EventUpdate>(emit)
+  useFormDialog<StoryUpdate>(emit)
 
 defineExpose({
-  open(data: EventUpdate) {
+  open(data: StoryUpdate) {
     dialog.value = true
     form_data.value = { ...data }
   },
@@ -27,7 +27,7 @@ defineExpose({
 })
 
 onMounted(async () => {
-  const range = await getDateRange(ItemType.EVENT)
+  const range = await getDateRange(ItemType.STORY)
   if (range) {
     ;[date_min.value, date_max.value] = range
   }
@@ -46,7 +46,7 @@ const handleStateSelected = (state: ItemState) => {
   <v-dialog v-model="dialog" max-width="1300px">
     <v-card>
       <v-card-title>
-        <span class="dialog-title">Update Event</span>
+        <span class="dialog-title">Update Story</span>
       </v-card-title>
 
       <v-card-text>
@@ -70,7 +70,17 @@ const handleStateSelected = (state: ItemState) => {
           <v-textarea v-model="form_data.result" label="Result" />
 
           <v-text-field
-            v-model="form_data.event_datetime_end"
+            v-model="form_data.story_datetime_start"
+            :rules="[rules.required]"
+            label="Start"
+            type="date"
+            required
+            :min="date_min"
+            :max="date_max"
+          />
+
+          <v-text-field
+            v-model="form_data.story_datetime_end"
             :rules="[rules.required]"
             label="End"
             type="date"
