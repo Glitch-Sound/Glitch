@@ -85,8 +85,8 @@ class ProjectCreate(BaseModel):
     rid_users: int
     title: str
     detail: str
-    datetime_start: str
-    datetime_end: str
+    project_datetime_start: str
+    project_datetime_end: str
 
     class Config:
         from_attributes = True
@@ -100,8 +100,8 @@ class ProjectUpdate(BaseModel):
     title: str
     detail: str
     result: str
-    datetime_start: str
-    datetime_end: str
+    project_datetime_start: str
+    project_datetime_end: str
 
     class Config:
         from_attributes = True
@@ -113,7 +113,7 @@ class EventCreate(BaseModel):
     rid_users: int
     title: str
     detail: str
-    datetime_end: str
+    event_datetime_end: str
 
     class Config:
         from_attributes = True
@@ -127,7 +127,7 @@ class EventUpdate(BaseModel):
     title: str
     detail: str
     result: str
-    datetime_end: str
+    event_datetime_end: str
 
     class Config:
         from_attributes = True
@@ -163,8 +163,8 @@ class StoryCreate(BaseModel):
     rid_users: int
     title: str
     detail: str
-    datetime_start: str
-    datetime_end: str
+    story_datetime_start: str
+    story_datetime_end: str
 
     class Config:
         from_attributes = True
@@ -178,8 +178,8 @@ class StoryUpdate(BaseModel):
     title: str
     detail: str
     result: str
-    datetime_start: str
-    datetime_end: str
+    story_datetime_start: str
+    story_datetime_end: str
 
     class Config:
         from_attributes = True

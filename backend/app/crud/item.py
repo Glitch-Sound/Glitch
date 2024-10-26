@@ -532,8 +532,8 @@ def createProject(db: Session, target: schema_item.ProjectCreate):
 
         addition = Project(
             rid_items=item.rid,
-            datetime_start=target.datetime_start,
-            datetime_end=target.datetime_end
+            datetime_start=target.project_datetime_start,
+            datetime_end=target.project_datetime_end
         )
         db.add(addition)
 
@@ -574,8 +574,8 @@ def updateProject(db: Session, target:schema_item.ProjectUpdate):
         .filter(Project.rid_items == target.rid)
 
         addition.update({
-            Project.datetime_start: target.datetime_start,
-            Project.datetime_end: target.datetime_end
+            Project.datetime_start: target.project_datetime_start,
+            Project.datetime_end: target.project_datetime_end
         })
         db.commit()
         db.refresh(item)
@@ -617,7 +617,7 @@ def createEvent(db: Session, target:schema_item.EventCreate):
 
         addition = Event(
             rid_items=item.rid,
-            datetime_end=target.datetime_end
+            datetime_end=target.event_datetime_end
         )
         db.add(addition)
 
@@ -654,7 +654,7 @@ def updateEvent(db: Session, target:schema_item.EventUpdate):
         .filter(Event.rid_items == target.rid)
 
         addition.update({
-            Event.datetime_end: target.datetime_end
+            Event.datetime_end: target.event_datetime_end
         })
         db.commit()
         db.refresh(item)
@@ -765,8 +765,8 @@ def createStory(db: Session, target:schema_item.StoryCreate):
 
         addition = Story(
             rid_items=item.rid,
-            datetime_start=target.datetime_start,
-            datetime_end=target.datetime_end
+            datetime_start=target.story_datetime_start,
+            datetime_end=target.story_datetime_end
         )
         db.add(addition)
 
@@ -803,8 +803,8 @@ def updateStory(db: Session, target:schema_item.StoryUpdate):
         .filter(Story.rid_items == target.rid)
 
         addition.update({
-            Story.datetime_start: target.datetime_start,
-            Story.datetime_end: target.datetime_end
+            Story.datetime_start: target.story_datetime_start,
+            Story.datetime_end: target.story_datetime_end
 
         })
 
