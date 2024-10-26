@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { type EmitType } from '@/components/common/events'
 import { ItemState, type Item } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
@@ -9,6 +10,11 @@ const store_item = useItemStore()
 const props = defineProps<{
   item: Item
 }>()
+
+const emit = defineEmits<EmitType>()
+const handleUpdateTask = () => {
+  emit('update-task')
+}
 
 const handleUpdateState = (state: ItemState) => {
   store_item.updateState(props.item.rid, state)
@@ -31,7 +37,7 @@ const handleUpdateState = (state: ItemState) => {
       <v-list-item-title>Detail</v-list-item-title>
     </v-list-item>
 
-    <v-list-item link>
+    <v-list-item link @click="handleUpdateTask">
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4">mdi-pencil</v-icon>
       </template>

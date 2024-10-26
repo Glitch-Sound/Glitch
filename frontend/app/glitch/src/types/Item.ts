@@ -203,10 +203,10 @@ export interface TaskCreate {
   rid_users: number
   title: string
   detail: string
-  type: number
-  workload: number
-  number_completed: number
-  number_total: number
+  task_type: number
+  task_workload: number
+  task_number_completed: number
+  task_number_total: number
 }
 
 export interface TaskUpdate {
@@ -217,10 +217,10 @@ export interface TaskUpdate {
   title: string
   detail: string
   result: string
-  type: number
-  workload: number
-  number_completed: number
-  number_total: number
+  task_type: number
+  task_workload: number
+  task_number_completed: number
+  task_number_total: number
 }
 
 export interface BugCreate {
@@ -229,7 +229,7 @@ export interface BugCreate {
   rid_users: number
   title: string
   detail: string
-  workload: number
+  bug_workload: number
 }
 
 export interface BugUpdate {
@@ -240,5 +240,5 @@ export interface BugUpdate {
   title: string
   detail: string
   result: string
-  workload: number
+  bug_workload: number
 }

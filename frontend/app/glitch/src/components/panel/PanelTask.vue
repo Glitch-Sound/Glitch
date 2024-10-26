@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { defineProps, ref } from 'vue'
 
-import type { Item, PanelRelation } from '@/types/Item'
+import type { Item, PanelRelation, TaskUpdate } from '@/types/Item'
 
+import useItemStore from '@/stores/ItemStore'
 import RelationTask from '@/components/panel/RelationTask.vue'
 import MenuTask from '@/components/panel/MenuTask.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
+import UpdateTaskDialog from '@/components/dialog/UpdateTaskDialog.vue'
 
 import { tree } from '@/components/panel/relation'
+
+const store_item = useItemStore()
 
 const props = defineProps<{
   item: Item
@@ -15,6 +19,21 @@ const props = defineProps<{
 }>()
 
 const menu = ref(false)
+const dialog_update_task = ref()
+
+const openUpdateTaskDialog = (data: Item) => {
+  dialog_update_task.value?.open(data)
+}
+
+const handleUpdateTask = async (data: TaskUpdate) => {
+  await store_item.updateTask(data)
+  dialog_update_task.value?.close()
+}
+
+const handleDeleteTask = async (data: TaskUpdate) => {
+  await store_item.deleteTask(data.rid)
+  dialog_update_task.value?.close()
+}
 </script>
 
 <template>
@@ -26,7 +45,7 @@ const menu = ref(false)
             <RelationTask v-bind="props" :item="item" :relation="relation" />
           </template>
 
-          <MenuTask :item="props.item" />
+          <MenuTask :item="props.item" @update-task="openUpdateTaskDialog(props.item)" />
         </v-menu>
       </v-col>
 
@@ -43,6 +62,12 @@ const menu = ref(false)
       </v-col>
     </v-row>
   </div>
+
+  <UpdateTaskDialog
+    ref="dialog_update_task"
+    @submit="handleUpdateTask"
+    @delete="handleDeleteTask"
+  />
 </template>
 
 <style scoped>
