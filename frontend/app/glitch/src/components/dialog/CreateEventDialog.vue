@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { defineExpose } from 'vue'
+import { defineExpose, onMounted, ref } from 'vue'
 
-import type { EventCreate } from '@/types/Item'
+import { ItemType, type EventCreate } from '@/types/Item'
 import type { User } from '@/types/User'
-import { useFormDialog } from '@/components/dialog/BaseDialog'
+import { useFormDialog, getDateRange } from '@/components/dialog/BaseDialog'
 
 import useUserStore from '@/stores/UserStore'
 import useProjectStore from '@/stores/ProjectStore'
@@ -11,6 +11,9 @@ import UserSelect from '@/components/common/UserSelect.vue'
 
 const store_user = useUserStore()
 const store_project = useProjectStore()
+
+const date_min = ref('')
+const date_max = ref('')
 
 const emit = defineEmits(['submit'])
 const { dialog, valid, form_data, form_ref, rules, submitData } = useFormDialog<EventCreate>(emit)
@@ -29,6 +32,13 @@ defineExpose({
   },
   close() {
     dialog.value = false
+  }
+})
+
+onMounted(async () => {
+  const range = await getDateRange(ItemType.EVENT)
+  if (range) {
+    ;[date_min.value, date_max.value] = range
   }
 })
 
@@ -64,6 +74,8 @@ const handleUserSelected = (user: User) => {
             label="End"
             type="date"
             required
+            :min="date_min"
+            :max="date_max"
           />
         </v-form>
       </v-card-text>

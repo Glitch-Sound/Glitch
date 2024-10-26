@@ -2,6 +2,7 @@ import http from '@/services/ApiClient'
 
 import type {
   Item,
+  ItemRange,
   StateUpdate,
   Project,
   ProjectCreate,
@@ -101,9 +102,19 @@ class ItemService {
     }
   }
 
-  public async getParentItem(rid_items: number | null): Promise<Item[]> {
+  public async getItem(rid_items: number | null): Promise<Item[]> {
     try {
       const response = await http.get<Item[]>(`/api/item/${rid_items}`)
+      return response.data
+    } catch (error) {
+      console.trace()
+      throw new Error('error: ${error}')
+    }
+  }
+
+  public async getItemRange(id_project: number | null): Promise<ItemRange[]> {
+    try {
+      const response = await http.get<ItemRange[]>(`/api/item/range/${id_project}`)
       return response.data
     } catch (error) {
       console.trace()

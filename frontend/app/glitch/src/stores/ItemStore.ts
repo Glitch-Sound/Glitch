@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { ExtractType } from '@/types/Item'
 import type {
   Item,
+  ItemRange,
   EventCreate,
   EventUpdate,
   FeatureCreate,
@@ -116,8 +117,11 @@ const useItemStore = defineStore('item', {
           break
       }
     },
-    async getParentItem(rid_items: number): Promise<Item[]> {
-      return service_item.getParentItem(rid_items)
+    async getItem(rid_items: number): Promise<Item[]> {
+      return service_item.getItem(rid_items)
+    },
+    async getItemRange(id_project: number): Promise<ItemRange[]> {
+      return service_item.getItemRange(id_project)
     },
     setExtractIncomplete() {
       this.type_extract = ExtractType.INCOMPLETE

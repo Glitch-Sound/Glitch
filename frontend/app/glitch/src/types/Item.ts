@@ -87,6 +87,15 @@ export interface Item {
   bug_workload: number
 }
 
+export interface ItemRange {
+  rid: number
+  type: number
+  state: number
+  title: string
+  datetime_start: string
+  datetime_end: string
+}
+
 export interface StateUpdate {
   rid: number
   state: number
