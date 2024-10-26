@@ -191,10 +191,10 @@ class TaskCreate(BaseModel):
     rid_users: int
     title: str
     detail: str
-    type: int
-    workload: int
-    number_completed: int
-    number_total: int
+    task_type: int
+    task_workload: int
+    task_number_completed: int
+    task_number_total: int
 
     class Config:
         from_attributes = True
@@ -208,10 +208,10 @@ class TaskUpdate(BaseModel):
     title: str
     detail: str
     result: str
-    type: int
-    workload: int
-    number_completed: int
-    number_total: int
+    task_type: int
+    task_workload: int
+    task_number_completed: int
+    task_number_total: int
 
     class Config:
         from_attributes = True
@@ -223,7 +223,7 @@ class BugCreate(BaseModel):
     rid_users: int
     title: str
     detail: str
-    workload: int
+    bug_workload: int
 
     class Config:
         from_attributes = True
@@ -237,7 +237,7 @@ class BugUpdate(BaseModel):
     title: str
     detail: str
     result: str
-    workload: int
+    bug_workload: int
 
     class Config:
         from_attributes = True

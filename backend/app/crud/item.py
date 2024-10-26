@@ -797,9 +797,9 @@ def createTask(db: Session, target:schema_item.TaskCreate):
         addition = Task(
             rid_items=item.rid,
             type=target.type,
-            workload=target.workload,
-            number_completed=target.number_completed,
-            number_total=target.number_total
+            workload=target.task_workload,
+            number_completed=target.task_number_completed,
+            number_total=target.task_number_total
         )
         db.add(addition)
 
@@ -837,10 +837,10 @@ def updateTask(db: Session, target:schema_item.TaskUpdate):
         .filter(Task.rid_items == target.rid)
 
         addition.update({
-            Task.type: target.type,
-            Task.workload: target.workload,
-            Task.number_completed: target.number_completed,
-            Task.number_total: target.number_total
+            Task.type: target.task_type,
+            Task.workload: target.task_workload,
+            Task.number_completed: target.task_number_completed,
+            Task.number_total: target.task_number_total
         })
 
         id_project = db.query(
@@ -889,7 +889,7 @@ def createBug(db: Session, target:schema_item.BugCreate):
 
         addition = Bug(
             rid_items=item.rid,
-            workload=target.workload
+            workload=target.bug_workload
         )
         db.add(addition)
 
@@ -927,7 +927,7 @@ def updateBug(db: Session, target:schema_item.BugUpdate):
         .filter(Bug.rid_items == target.rid)
 
         addition.update({
-            Bug.workload: target.workload
+            Bug.workload: target.bug_workload
         })
 
         id_project = db.query(
