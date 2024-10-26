@@ -26,7 +26,7 @@ const handleUpdateState = (state: ItemState) => {
       </v-list-item>
     </template>
 
-    <v-list>
+    <v-list class="state">
       <v-list-item link @click="handleUpdateState(ItemState.IDLE)">
         <template v-slot:prepend>
           <v-icon color="#b0c0f6" size="x-small" class="mr-n4">mdi-circle-outline</v-icon>
@@ -65,4 +65,8 @@ const handleUpdateState = (state: ItemState) => {
   </v-menu>
 </template>
 
-<style scoped></style>
+<style scoped>
+.state {
+  margin-left: 6px;
+}
+</style>
