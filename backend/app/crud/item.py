@@ -69,39 +69,120 @@ def _createTree(db: Session, type_create: ItemType, rid_parent: int, rid: int):
         raise e
 
 
-def _createSortPathRoot(id_project: int):
-    return id_project * 10000000000000
+def _createSortPathProject(id_project: int):
+    return str(id_project).zfill(4) + "000000000000000000000"
 
 
-def _createSortPath(db: Session, type: ItemType, rid_parent: int):
+def _createSortPathEvent(target:schema_item.EventCreate):
+    return str(target.id_project).zfill(4) + target.event_datetime_end.replace('-', '') + '0000000000000'
+
+
+def _createSortPathFeature(db: Session, target:schema_item.FeatureCreate):
     try:
-        path_sort_parent      = db.query(
+        path_sort_event = db.query(
             Item.path_sort
         )\
-        .filter(Item.rid == rid_parent)\
-        .scalar()
+        .filter(
+            Item.rid == target.rid_items
+        )\
+        .one()[0]
 
         count_rid_descendants = db.query(
             Tree.rid_descendant
         )\
-        .filter(Tree.rid_ancestor == rid_parent)\
+        .filter(Tree.rid_ancestor == target.rid_items)\
         .count()
 
-        path_sort = path_sort_parent
-        match type:
-            case ItemType.EVENT:
-                path_sort += (count_rid_descendants * 1000000000)
+        path_sort_feature = path_sort_event[:12] + str(count_rid_descendants).zfill(4) + '000000000'
+        return path_sort_feature
 
-            case ItemType.FEATURE:
-                path_sort += (count_rid_descendants * 100000)
+    except Exception as e:
+        raise e
 
-            case ItemType.STORY:
-                path_sort += (count_rid_descendants * 10)
 
-            case ItemType.TASK | ItemType.BUG:
-                path_sort += (type.value)
+def _createSortPathStory(db: Session, target:schema_item.StoryCreate):
+    try:
+        path_sort_feature = db.query(
+            Item.path_sort
+        )\
+        .filter(
+            Item.rid == target.rid_items
+        )\
+        .one()[0]
 
-        return path_sort
+        path_sort_story = path_sort_feature[:16] + target.story_datetime_end.replace('-', '') + '0'
+        return path_sort_story
+
+    except Exception as e:
+        raise e
+
+
+def _createSortPathTask(db: Session, target:schema_item.TaskCreate):
+    try:
+        path_sort_story = db.query(
+            Item.path_sort
+        )\
+        .filter(
+            Item.rid == target.rid_items
+        )\
+        .one()[0]
+
+        path_sort_task = path_sort_story[:24] + str(ItemType.TASK.value)
+        return path_sort_task
+
+    except Exception as e:
+        raise e
+
+
+def _createSortPathTask(db: Session, target:schema_item.BugCreate):
+    try:
+        path_sort_story = db.query(
+            Item.path_sort
+        )\
+        .filter(
+            Item.rid == target.rid_items
+        )\
+        .one()[0]
+
+        path_sort_bug = path_sort_story[:24] + str(ItemType.BUG.value)
+        return path_sort_bug
+
+    except Exception as e:
+        raise e
+
+
+def _createSortPath(db: Session, type: ItemType, rid_parent: int):
+    try:
+        return ''
+        
+
+        # path_sort_parent = db.query(
+        #     Item.path_sort
+        # )\
+        # .filter(Item.rid == rid_parent)\
+        # .scalar()
+
+        # count_rid_descendants = db.query(
+        #     Tree.rid_descendant
+        # )\
+        # .filter(Tree.rid_ancestor == rid_parent)\
+        # .count()
+
+        # path_sort = path_sort_parent
+        # match type:
+        #     case ItemType.EVENT:
+        #         path_sort += (count_rid_descendants * 1000000000)
+
+        #     case ItemType.FEATURE:
+        #         path_sort += (count_rid_descendants * 100000)
+
+        #     case ItemType.STORY:
+        #         path_sort += (count_rid_descendants * 10)
+
+        #     case ItemType.TASK | ItemType.BUG:
+        #         path_sort += (type.value)
+
+        # return path_sort
 
     except Exception as e:
         raise e
@@ -464,7 +545,7 @@ def createProject(db: Session, target: schema_item.ProjectCreate):
         max_id_project += 1
 
         item = Item(
-            path_sort=_createSortPathRoot(max_id_project),
+            path_sort=_createSortPathProject(max_id_project),
             rid_users=target.rid_users,
             rid_users_review=None,
             id_project=max_id_project,
@@ -548,7 +629,7 @@ def createEvent(db: Session, target:schema_item.EventCreate):
 
         db.begin()
         item = Item(
-            path_sort=_createSortPath(db, ItemType.EVENT, target.rid_items),
+            path_sort=_createSortPathEvent(target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
@@ -627,7 +708,7 @@ def createFeature(db: Session, target:schema_item.FeatureCreate):
 
         db.begin()
         item = Item(
-            path_sort=_createSortPath(db, ItemType.FEATURE, target.rid_items),
+            path_sort=_createSortPathFeature(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
@@ -696,7 +777,7 @@ def createStory(db: Session, target:schema_item.StoryCreate):
 
         db.begin()
         item = Item(
-            path_sort=_createSortPath(db, ItemType.STORY, target.rid_items),
+            path_sort=_createSortPathStory(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
@@ -779,7 +860,7 @@ def createTask(db: Session, target:schema_item.TaskCreate):
 
         db.begin()
         item = Item(
-            path_sort=_createSortPath(db, ItemType.TASK, target.rid_items),
+            path_sort=_createSortPathTask(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
@@ -872,7 +953,7 @@ def createBug(db: Session, target:schema_item.BugCreate):
 
         db.begin()
         item = Item(
-            path_sort=_createSortPath(db, ItemType.BUG, target.rid_items),
+            path_sort=_createSortPathTask(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
