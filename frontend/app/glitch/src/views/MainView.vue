@@ -1,4 +1,31 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+
+import type { UserCreate } from '@/types/User'
+
+import useUserStore from '@/stores/UserStore'
+import CreateAdministratorDialog from '@/components/dialog/CreateAdministratorDialog.vue'
+
+const store_user = useUserStore()
+
+const dialog_admin_create = ref()
+
+onMounted(async () => {
+  await store_user.fetchUsers()
+  if (store_user.users.length === 0) {
+    dialog_admin_create.value?.open()
+  }
+})
+
+const handleCreate = async (data: UserCreate) => {
+  await store_user.createUser(data)
+  await store_user.login({
+    user: data.user,
+    password: data.password
+  })
+  dialog_admin_create.value?.close()
+}
+</script>
 
 <template>
   <v-main>
@@ -34,6 +61,8 @@
       </v-col>
     </v-row>
   </v-main>
+
+  <CreateAdministratorDialog ref="dialog_admin_create" @submit="handleCreate" />
 </template>
 
 <style scoped>

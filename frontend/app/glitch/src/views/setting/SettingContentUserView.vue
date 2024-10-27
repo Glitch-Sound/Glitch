@@ -32,7 +32,7 @@ const openUpdateUserDialog = (data: User) => {
   dialog_user_update.value?.open(data)
 }
 
-const handleEntry = async (data: UserCreate) => {
+const handleCreate = async (data: UserCreate) => {
   await store_user.createUser(data)
   dialog_user_create.value?.close()
 }
@@ -83,7 +83,7 @@ const handleDelete = async (data: UserUpdate) => {
     </v-sheet>
   </v-main>
 
-  <CreateUserDialog ref="dialog_user_create" @submit="handleEntry" />
+  <CreateUserDialog ref="dialog_user_create" @submit="handleCreate" />
   <UpdateUserDialog ref="dialog_user_update" @submit="handleUpdate" @delete="handleDelete" />
 </template>
 

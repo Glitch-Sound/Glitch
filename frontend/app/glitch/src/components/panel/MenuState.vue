@@ -48,13 +48,6 @@ const handleUpdateState = (state: ItemState) => {
         ALERT
       </v-list-item>
 
-      <v-list-item link @click="handleUpdateState(ItemState.REVIEW)">
-        <template v-slot:prepend>
-          <v-icon color="#dece9c" size="x-small" class="mr-n4">mdi-circle-multiple</v-icon>
-        </template>
-        REVIEW
-      </v-list-item>
-
       <v-list-item link @click="handleUpdateState(ItemState.COMPLETE)">
         <template v-slot:prepend>
           <v-icon color="#a9a9a9" size="x-small" class="mr-n4">mdi-circle-slice-8</v-icon>

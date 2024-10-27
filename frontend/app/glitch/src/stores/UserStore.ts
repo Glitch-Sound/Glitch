@@ -4,12 +4,14 @@ import type { User, UserCreate, UserUpdate, Login } from '@/types/User'
 
 import UserService from '@/services/UserService'
 
+import { saveLoginUser, loadLoginUser } from '@/stores/LocalStorage'
+
 const service_user = new UserService()
 
 const useUserStore = defineStore('user', {
   state: () => ({
     users: [] as Array<User>,
-    login_user: null as User | null
+    login_user: loadLoginUser() as User | null
   }),
   actions: {
     async fetchUsers() {
@@ -33,6 +35,7 @@ const useUserStore = defineStore('user', {
     async login(user: Login): Promise<User> {
       const result = await service_user.login(user)
       this.login_user = result
+      saveLoginUser(result)
       return result
     }
   }
