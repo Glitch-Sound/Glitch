@@ -33,6 +33,9 @@ const emitSelected = () => {
     >
       <StateLabel :state="ItemState.IDLE" />
       <StateLabel :state="ItemState.RUN" />
+      <StateLabel :state="ItemState.ALERT" />
+      <StateLabel :state="ItemState.REVIEW" />
+      <StateLabel :state="ItemState.COMPLETE" />
     </v-chip-group>
 
     <v-chip-group
@@ -56,6 +59,7 @@ const emitSelected = () => {
       <StateLabel :state="ItemState.IDLE" />
       <StateLabel :state="ItemState.RUN" />
       <StateLabel :state="ItemState.REVIEW" />
+      <StateLabel :state="ItemState.COMPLETE" />
     </v-chip-group>
 
     <v-chip-group
@@ -67,6 +71,7 @@ const emitSelected = () => {
       <StateLabel :state="ItemState.IDLE" />
       <StateLabel :state="ItemState.RUN" />
       <StateLabel :state="ItemState.ALERT" />
+      <StateLabel :state="ItemState.COMPLETE" />
     </v-chip-group>
 
     <v-chip-group
@@ -78,6 +83,7 @@ const emitSelected = () => {
       <StateLabel :state="ItemState.IDLE" />
       <StateLabel :state="ItemState.RUN" />
       <StateLabel :state="ItemState.ALERT" />
+      <StateLabel :state="ItemState.REVIEW" />
     </v-chip-group>
   </div>
 </template>
