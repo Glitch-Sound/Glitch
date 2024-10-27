@@ -7,6 +7,7 @@ import useItemStore from '@/stores/ItemStore'
 import RelationTask from '@/components/panel/RelationTask.vue'
 import MenuTask from '@/components/panel/MenuTask.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
+import InformationTask from '@/components/panel/InformationTask.vue'
 import UpdateTaskDialog from '@/components/dialog/UpdateTaskDialog.vue'
 
 import { tree } from '@/components/panel/relation'
@@ -59,6 +60,10 @@ const handleDeleteTask = async (data: TaskUpdate) => {
 
       <v-col cols="auto" class="user">
         <UserLabel :item="props.item" />
+      </v-col>
+
+      <v-col cols="auto" class="information">
+        <InformationTask :item="props.item" />
       </v-col>
     </v-row>
   </div>

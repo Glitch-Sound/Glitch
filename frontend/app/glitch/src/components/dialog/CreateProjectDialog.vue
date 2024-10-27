@@ -17,14 +17,14 @@ const emit = defineEmits(['submit'])
 const { dialog, valid, form_data, form_ref, rules, submitData } = useFormDialog<ProjectCreate>(emit)
 
 watch(
-  () => form_data.value.datetime_start,
+  () => form_data.value.project_datetime_start,
   (datetime_start) => {
     date_min.value = datetime_start
   }
 )
 
 watch(
-  () => form_data.value.datetime_end,
+  () => form_data.value.project_datetime_end,
   (datetime_end) => {
     date_max.value = datetime_end
   }
@@ -37,8 +37,8 @@ defineExpose({
       rid_users: store_user.login_user?.rid ?? 0,
       title: '',
       detail: '',
-      datetime_start: '',
-      datetime_end: ''
+      project_datetime_start: '',
+      project_datetime_end: ''
     }
   },
   close() {
@@ -73,7 +73,7 @@ const handleUserSelected = (user: User) => {
 
           <v-text-field
             class="dialog-field"
-            v-model="form_data.datetime_start"
+            v-model="form_data.project_datetime_start"
             :rules="[rules.required]"
             label="Start"
             type="date"
@@ -83,7 +83,7 @@ const handleUserSelected = (user: User) => {
 
           <v-text-field
             class="dialog-field"
-            v-model="form_data.datetime_end"
+            v-model="form_data.project_datetime_end"
             :rules="[rules.required]"
             label="End"
             type="date"

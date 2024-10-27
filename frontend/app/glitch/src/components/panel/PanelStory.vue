@@ -7,6 +7,7 @@ import useItemStore from '@/stores/ItemStore'
 import RelationStory from '@/components/panel/RelationStory.vue'
 import MenuStory from '@/components/panel/MenuStory.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
+import InformationStory from '@/components/panel/InformationStory.vue'
 import CreateTaskDialog from '@/components/dialog/CreateTaskDialog.vue'
 import CreateBugDialog from '@/components/dialog/CreateBugDialog.vue'
 import UpdateStoryDialog from '@/components/dialog/UpdateStoryDialog.vue'
@@ -86,6 +87,10 @@ const handleDeleteStory = async (data: StoryUpdate) => {
 
       <v-col cols="auto" class="user">
         <UserLabel :item="props.item" />
+      </v-col>
+
+      <v-col cols="auto" class="information">
+        <InformationStory :item="props.item" />
       </v-col>
     </v-row>
   </div>

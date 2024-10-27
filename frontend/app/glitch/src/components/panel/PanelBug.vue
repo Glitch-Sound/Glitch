@@ -7,6 +7,7 @@ import useItemStore from '@/stores/ItemStore'
 import RelationBug from '@/components/panel/RelationBug.vue'
 import MenuBug from '@/components/panel/MenuBug.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
+import InformationBug from '@/components/panel/InformationBug.vue'
 import UpdateBugDialog from '@/components/dialog/UpdateBugDialog.vue'
 
 import { tree } from '@/components/panel/relation'
@@ -59,6 +60,10 @@ const handleDeleteBug = async (data: BugUpdate) => {
 
       <v-col cols="auto" class="user">
         <UserLabel :item="props.item" />
+      </v-col>
+
+      <v-col cols="auto" class="information">
+        <InformationBug :item="props.item" />
       </v-col>
     </v-row>
   </div>

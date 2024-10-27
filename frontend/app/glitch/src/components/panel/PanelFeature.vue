@@ -7,6 +7,7 @@ import useItemStore from '@/stores/ItemStore'
 import RelationFeature from '@/components/panel/RelationFeature.vue'
 import MenuFeature from '@/components/panel/MenuFeature.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
+import InformationFeature from '@/components/panel/InformationFeature.vue'
 import CreateStoryDialog from '@/components/dialog/CreateStoryDialog.vue'
 import UpdateFeatureDialog from '@/components/dialog/UpdateFeatureDialog.vue'
 
@@ -74,6 +75,10 @@ const handleDeleteFeature = async (data: FeatureUpdate) => {
 
       <v-col cols="auto" class="user">
         <UserLabel :item="props.item" />
+      </v-col>
+
+      <v-col cols="auto" class="information">
+        <InformationFeature :item="props.item" />
       </v-col>
     </v-row>
   </div>

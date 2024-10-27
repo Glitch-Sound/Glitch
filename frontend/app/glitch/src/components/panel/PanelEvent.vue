@@ -7,6 +7,7 @@ import useItemStore from '@/stores/ItemStore'
 import RelationEvent from '@/components/panel/RelationEvent.vue'
 import MenuEvent from '@/components/panel/MenuEvent.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
+import InformationEvent from '@/components/panel/InformationEvent.vue'
 import CreateFeatureDialog from '@/components/dialog/CreateFeatureDialog.vue'
 import UpdateEventDialog from '@/components/dialog/UpdateEventDialog.vue'
 
@@ -74,6 +75,10 @@ const handleDeleteEvent = async (data: EventUpdate) => {
 
       <v-col cols="auto" class="user">
         <UserLabel :item="props.item" />
+      </v-col>
+
+      <v-col cols="auto" class="information">
+        <InformationEvent :item="props.item" />
       </v-col>
     </v-row>
   </div>
