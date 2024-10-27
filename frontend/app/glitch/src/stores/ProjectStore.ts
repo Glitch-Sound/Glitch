@@ -3,13 +3,14 @@ import { defineStore } from 'pinia'
 import type { Item, Project, ProjectCreate, ProjectUpdate } from '@/types/Item'
 
 import ItemService from '@/services/ItemService'
+import { saveSelectedProjectID, loadSelectedProjectID } from '@/stores/LocalStorage'
 
 const service_item = new ItemService()
 
 const useProjectStore = defineStore('project', {
   state: () => ({
     projects: [] as Array<Project>,
-    selected_id_project: 0 as number
+    selected_id_project: loadSelectedProjectID() as number
   }),
   actions: {
     async fetchProjects() {
@@ -18,6 +19,7 @@ const useProjectStore = defineStore('project', {
     setSelectedProjectID(id_project: number | null) {
       if (id_project) {
         this.selected_id_project = id_project
+        saveSelectedProjectID(id_project)
       }
     },
     async createProject(project: ProjectCreate): Promise<Item> {

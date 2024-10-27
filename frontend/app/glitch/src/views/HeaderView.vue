@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { ExtractType, type Project } from '@/types/Item'
@@ -21,6 +21,10 @@ const link_progress = ref('/')
 const link_analyze = ref('/')
 
 const dialog_project = ref()
+
+onMounted(() => {
+  common()
+})
 
 const openProjectDialog = () => {
   dialog_project.value?.open()
