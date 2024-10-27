@@ -796,7 +796,7 @@ def createTask(db: Session, target:schema_item.TaskCreate):
 
         addition = Task(
             rid_items=item.rid,
-            type=target.type,
+            type=target.task_type,
             workload=target.task_workload,
             number_completed=target.task_number_completed,
             number_total=target.task_number_total
