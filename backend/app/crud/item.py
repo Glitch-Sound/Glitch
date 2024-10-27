@@ -151,41 +151,12 @@ def _createSortPathTask(db: Session, target:schema_item.BugCreate):
         raise e
 
 
-def _createSortPath(db: Session, type: ItemType, rid_parent: int):
-    try:
-        return ''
-        
+def _updateSortPathEvent(db: Session, rid: int):
+    return
 
-        # path_sort_parent = db.query(
-        #     Item.path_sort
-        # )\
-        # .filter(Item.rid == rid_parent)\
-        # .scalar()
 
-        # count_rid_descendants = db.query(
-        #     Tree.rid_descendant
-        # )\
-        # .filter(Tree.rid_ancestor == rid_parent)\
-        # .count()
-
-        # path_sort = path_sort_parent
-        # match type:
-        #     case ItemType.EVENT:
-        #         path_sort += (count_rid_descendants * 1000000000)
-
-        #     case ItemType.FEATURE:
-        #         path_sort += (count_rid_descendants * 100000)
-
-        #     case ItemType.STORY:
-        #         path_sort += (count_rid_descendants * 10)
-
-        #     case ItemType.TASK | ItemType.BUG:
-        #         path_sort += (type.value)
-
-        # return path_sort
-
-    except Exception as e:
-        raise e
+def _updateSortPathStory(db: Session, rid: int):
+    return
 
 
 def _updateItem(db: Session, target: ItemUpdateCommon):
