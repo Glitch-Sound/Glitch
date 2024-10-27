@@ -1,4 +1,4 @@
-from sqlalchemy import select, distinct, and_, or_, func, case, text
+from sqlalchemy import select, update, distinct, and_, or_, func, case, text, literal
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.sql import func
 
@@ -151,12 +151,66 @@ def _createSortPathTask(db: Session, target:schema_item.BugCreate):
         raise e
 
 
-def _updateSortPathEvent(db: Session, rid: int):
-    return
+def _updateSortPathEvent(db: Session, rid: int, event_datetime_end: str):
+    try:
+        t1 = aliased(Tree)
+        t2 = aliased(Item)
+
+        subquery = (
+            db.query(
+                t2.rid
+            )\
+            .join(t1, t1.rid_descendant == t2.rid)\
+            .filter(t1.rid_ancestor == rid)\
+            .subquery()
+        )
+
+        update_query = (
+            update(Item)
+            .where(Item.rid.in_(subquery))
+            .values(
+                path_sort=(
+                    func.substr(Item.path_sort, 1, 4) +
+                    literal(event_datetime_end.replace('-', '')) +
+                    func.substr(Item.path_sort, 13)
+                )
+            )
+        )
+        db.execute(update_query)
+
+    except Exception as e:
+        raise e
 
 
-def _updateSortPathStory(db: Session, rid: int):
-    return
+def _updateSortPathStory(db: Session, rid: int, story_datetime_end: str):
+    try:
+        t1 = aliased(Tree)
+        t2 = aliased(Item)
+
+        subquery = (
+            db.query(
+                t2.rid
+            )\
+            .join(t1, t1.rid_descendant == t2.rid)\
+            .filter(t1.rid_ancestor == rid)\
+            .subquery()
+        )
+
+        update_query = (
+            update(Item)
+            .where(Item.rid.in_(subquery))
+            .values(
+                path_sort=(
+                    func.substr(Item.path_sort, 1, 16) +
+                    literal(story_datetime_end.replace('-', '')) +
+                    func.substr(Item.path_sort, 25)
+                )
+            )
+        )
+        db.execute(update_query)
+
+    except Exception as e:
+        raise e
 
 
 def _updateItem(db: Session, target: ItemUpdateCommon):
@@ -656,6 +710,8 @@ def updateEvent(db: Session, target:schema_item.EventUpdate):
         addition.update({
             Event.datetime_end: target.event_datetime_end
         })
+
+        _updateSortPathEvent(db, target.rid, target.event_datetime_end)
         db.commit()
         db.refresh(item)
         return item
@@ -808,6 +864,7 @@ def updateStory(db: Session, target:schema_item.StoryUpdate):
 
         })
 
+        _updateSortPathStory(db, target.rid, target.story_datetime_end)
         db.commit()
         db.refresh(item)
         return item

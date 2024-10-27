@@ -15,6 +15,9 @@ const emit = defineEmits<EmitType>()
 const handleUpdateBug = () => {
   emit('update-bug')
 }
+const handleOpenActivity = () => {
+  emit('open-activity')
+}
 
 const handleUpdateState = (state: ItemState) => {
   store_item.updateState(props.item.rid, state)
@@ -23,7 +26,7 @@ const handleUpdateState = (state: ItemState) => {
 
 <template>
   <v-list>
-    <v-list-item link>
+    <v-list-item link @click="handleOpenActivity">
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4" color="#97c5b0">mdi-comment-plus-outline</v-icon>
       </template>

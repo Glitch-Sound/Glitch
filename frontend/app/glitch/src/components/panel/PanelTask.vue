@@ -9,6 +9,7 @@ import MenuTask from '@/components/panel/MenuTask.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
 import InformationTask from '@/components/panel/InformationTask.vue'
 import UpdateTaskDialog from '@/components/dialog/UpdateTaskDialog.vue'
+import ActivityDialog from '@/components/dialog/ActivityDialog.vue'
 
 import { tree } from '@/components/panel/relation'
 
@@ -21,9 +22,14 @@ const props = defineProps<{
 
 const menu = ref(false)
 const dialog_update_task = ref()
+const dialog_activity = ref()
 
 const openUpdateTaskDialog = (data: Item) => {
   dialog_update_task.value?.open(data)
+}
+
+const openActivityDialog = () => {
+  dialog_activity.value?.open(props.item.rid)
 }
 
 const handleUpdateTask = async (data: TaskUpdate) => {
@@ -46,7 +52,11 @@ const handleDeleteTask = async (data: TaskUpdate) => {
             <RelationTask v-bind="props" :item="item" :relation="relation" />
           </template>
 
-          <MenuTask :item="props.item" @update-task="openUpdateTaskDialog(props.item)" />
+          <MenuTask
+            :item="props.item"
+            @update-task="openUpdateTaskDialog(props.item)"
+            @open-activity="openActivityDialog"
+          />
         </v-menu>
       </v-col>
 
@@ -73,6 +83,7 @@ const handleDeleteTask = async (data: TaskUpdate) => {
     @submit="handleUpdateTask"
     @delete="handleDeleteTask"
   />
+  <ActivityDialog ref="dialog_activity" />
 </template>
 
 <style scoped>

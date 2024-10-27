@@ -16,12 +16,15 @@ import type {
   BugUpdate,
   ItemState
 } from '@/types/Item'
+import type { Activity, ActivityCreate, ActivityUpdate } from '@/types/Activity'
 
 import ItemService from '@/services/ItemService'
+import ActivityService from '@/services/ActivityService'
 import useProjectStore from '@/stores/ProjectStore'
 import useUserStore from '@/stores/UserStore'
 
 const service_item = new ItemService()
+const service_activity = new ActivityService()
 
 const useItemStore = defineStore('item', {
   state: () => ({
@@ -238,6 +241,21 @@ const useItemStore = defineStore('item', {
     async deleteBug(rid: number): Promise<void> {
       await service_item.deleteBug(rid)
       this.is_update = true
+    },
+    async getActivities(rid_items: number): Promise<Activity[]> {
+      const result = await service_activity.getActivities(rid_items)
+      return result
+    },
+    async createActivity(activity: ActivityCreate): Promise<Activity> {
+      const result = await service_activity.createActivity(activity)
+      return result
+    },
+    async updateActivity(activity: ActivityUpdate): Promise<Activity> {
+      const result = await service_activity.updateActivity(activity)
+      return result
+    },
+    async deleteActivity(rid: number): Promise<void> {
+      await service_activity.deleteActivity(rid)
     }
   }
 })
