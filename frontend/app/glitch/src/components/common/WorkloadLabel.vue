@@ -10,7 +10,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="d-flex flex-row align-baseline justify-end pr-3">
+  <div class="d-flex flex-row align-baseline justify-start pl-13">
     <template v-if="props.workload == WorkloadType.WITHIN_AN_HOUR">
       <v-icon size="x-small" icon="$vuetify">mdi-hexagon-outline</v-icon>
       <p>1 hour</p>
