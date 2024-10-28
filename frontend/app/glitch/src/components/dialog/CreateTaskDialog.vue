@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { defineExpose } from 'vue'
-
 import { TaskType, type Item, type TaskCreate } from '@/types/Item'
 import type { User } from '@/types/User'
 import { useFormDialog } from '@/components/dialog/BaseDialog'

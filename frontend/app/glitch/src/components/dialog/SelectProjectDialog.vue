@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineExpose, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 import { type EmitType } from '@/components/common/events'
 

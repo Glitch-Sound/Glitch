@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 import { ItemType, ItemState, type EventUpdate } from '@/types/Item'
 import type { User } from '@/types/User'

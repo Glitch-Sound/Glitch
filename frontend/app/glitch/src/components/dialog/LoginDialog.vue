@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { defineExpose } from 'vue'
-
 import type { Login } from '@/types/User'
 import { useFormDialog } from '@/components/dialog/BaseDialog'
 

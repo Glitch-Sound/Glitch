@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineExpose, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 import type { ProjectCreate } from '@/types/Item'
 import type { User } from '@/types/User'
