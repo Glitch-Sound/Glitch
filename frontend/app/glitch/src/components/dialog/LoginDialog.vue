@@ -32,6 +32,7 @@ defineExpose({
             v-model="form_data.user"
             :rules="[rules.required, rules.alphanumeric]"
             label="User"
+            autocomplete="current-user"
             required
           />
 
@@ -40,6 +41,7 @@ defineExpose({
             :rules="[rules.required, rules.password]"
             label="Password"
             type="password"
+            autocomplete="current-password"
             required
           />
         </v-form>
