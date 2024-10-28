@@ -63,7 +63,6 @@ export interface Item {
   id_project: number
   type: ItemType
   state: ItemState
-  risk: number
   risk_factors: number
   priority: number
   title: string
@@ -105,7 +104,6 @@ export interface Project {
   rid: number
   id_project: number
   state: number
-  risk: number
   title: string
   detail: string
   result: string

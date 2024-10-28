@@ -9,8 +9,7 @@ import UpdateProjectDialog from '@/components/dialog/UpdateProjectDialog.vue'
 
 const headers = [
   { title: 'ID', width: ' 50px' },
-  { title: 'STATE', width: '100px' },
-  { title: 'TITLE' },
+  { title: 'TITLE', width: '600px' },
   { title: 'START', width: '200px' },
   { title: 'END', width: '200px' },
   { title: 'USER', width: '200px' }
@@ -65,7 +64,6 @@ const handleDelete = async (data: ProjectUpdate) => {
         <template v-slot:item="{ item }">
           <tr>
             <td>{{ item.id_project }}</td>
-            <td>{{ item.state }}</td>
             <td>{{ item.title }}</td>
             <td>{{ item.project_datetime_start }}</td>
             <td>{{ item.project_datetime_end }}</td>

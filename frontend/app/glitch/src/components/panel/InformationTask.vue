@@ -11,7 +11,7 @@ const props = defineProps<{
 
 <template>
   <div class="align-baseline" v-if="props.item.task_type == TaskType.WORKLOAD">
-    <WorkloadLabel :risk="props.item.risk" :workload="props.item.task_workload" />
+    <WorkloadLabel :workload="props.item.task_workload" />
   </div>
 
   <div class="align-baseline" v-if="props.item.task_type != TaskType.WORKLOAD">

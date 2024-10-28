@@ -11,7 +11,7 @@ const props = defineProps<{
 
 <template>
   <div class="align-baseline">
-    <WorkloadLabel :risk="props.item.risk" :workload="props.item.bug_workload" />
+    <WorkloadLabel :workload="props.item.bug_workload" />
   </div>
 </template>
 

@@ -4,7 +4,6 @@ import { defineProps } from 'vue'
 import { WorkloadType } from '@/types/Item'
 
 const props = defineProps<{
-  risk: number
   workload: WorkloadType
 }>()
 </script>
