@@ -30,16 +30,16 @@ const handleLogin = async (data: Login) => {
     <v-btn variant="text" @click="openLoginDialog">Login</v-btn>
   </div>
   <div v-else>
-    <div class="align-baseline">
-      <span class="mr-1 username">
+    <div class="align-center d-flex">
+      <span class="mr-1">
         {{ store_user.login_user.name }}
       </span>
 
-      <v-btn icon size="small" @click="openLoginDialog">
+      <v-btn icon size="x-small" @click="openLoginDialog">
         <UserIcon
           :rid_users="store_user.login_user.rid"
           :name="store_user.login_user.name"
-          :size="22"
+          :size="24"
         />
       </v-btn>
     </div>

@@ -8,6 +8,7 @@ import useItemStore from '@/stores/ItemStore'
 import useProjectStore from '@/stores/ProjectStore'
 import LoginUser from '@/components/common/LoginUser.vue'
 import SelectProjectDialog from '@/components/dialog/SelectProjectDialog.vue'
+import SearchDialog from '@/components/dialog/SearchDialog.vue'
 
 const title = ref('Glitch')
 
@@ -21,6 +22,7 @@ const link_progress = ref('/')
 const link_analyze = ref('/')
 
 const dialog_project = ref()
+const dialog_search = ref()
 
 onMounted(() => {
   common()
@@ -28,6 +30,10 @@ onMounted(() => {
 
 const openProjectDialog = () => {
   dialog_project.value?.open()
+}
+
+const openSearchDialog = () => {
+  dialog_search.value?.open()
 }
 
 const handleSubmitProject = async (id_project: number) => {
@@ -123,7 +129,7 @@ const common = () => {
       <LoginUser />
     </div>
 
-    <v-btn icon>
+    <v-btn icon @click="openSearchDialog">
       <v-icon color="icon">mdi-magnify</v-icon>
     </v-btn>
 
@@ -135,6 +141,7 @@ const common = () => {
   </v-app-bar>
 
   <SelectProjectDialog ref="dialog_project" @submit="handleSubmitProject" />
+  <SearchDialog ref="dialog_search" />
 </template>
 
 <style scoped></style>
