@@ -6,6 +6,7 @@ import sys
 sys.path.append('~/app')
 
 from crud.common import getWeekAgoDate, getCurrentDatetime, ItemType, ItemState, ExtractType, TaskType
+from crud.summary import createSummaryItem, createSummaryUser
 
 from schema import item as schema_item
 from model.item import Item
@@ -911,6 +912,8 @@ def createTask(db: Session, target:schema_item.TaskCreate):
         _createTree(db, ItemType.TASK, target.rid_items, item.rid)
         db.flush()
 
+        createSummaryItem(db, target.id_project, item.rid)
+        createSummaryUser(db, target.id_project, target.rid_users)
         db.commit()
 
         db.refresh(item)
@@ -953,6 +956,8 @@ def updateTask(db: Session, target:schema_item.TaskUpdate):
         )\
         .filter(Item.rid == target.rid)
 
+        createSummaryItem(db, target.id_project, item.rid)
+        createSummaryUser(db, target.id_project, target.rid_users)
         db.commit()
 
         db.refresh(item)
@@ -1001,6 +1006,8 @@ def createBug(db: Session, target:schema_item.BugCreate):
         _createTree(db, ItemType.BUG, target.rid_items, item.rid)
         db.flush()
 
+        createSummaryItem(db, target.id_project, item.rid)
+        createSummaryUser(db, target.id_project, target.rid_users)
         db.commit()
 
         db.refresh(item)
@@ -1040,6 +1047,8 @@ def updateBug(db: Session, target:schema_item.BugUpdate):
         )\
         .filter(Item.rid == target.rid)
 
+        createSummaryItem(db, target.id_project, item.rid)
+        createSummaryUser(db, target.id_project, target.rid_users)
         db.commit()
 
         db.refresh(item)
