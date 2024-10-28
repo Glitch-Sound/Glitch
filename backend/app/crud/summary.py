@@ -20,7 +20,6 @@ def getSummariesProject(db: Session, id_project: int):
     try:
         query = db.query(
             SummaryItem.rid_items.label('rid'),
-            SummaryItem.risk,
             SummaryItem.task_count_idle,
             SummaryItem.task_count_run,
             SummaryItem.task_count_alert,
@@ -52,7 +51,6 @@ def getSummariesItem(db: Session, rid: int):
     try:
         query = db.query(
             SummaryItem.rid_items.label('rid'),
-            SummaryItem.risk,
             SummaryItem.task_count_idle,
             SummaryItem.task_count_run,
             SummaryItem.task_count_alert,
@@ -90,7 +88,6 @@ def getSummariesUser(db: Session, id_project: int, rid_users: int):
             SummaryUser.id_project,
             UserAlias.rid.label('rid_users'),
             UserAlias.name.label('name'),
-            SummaryUser.risk,
             SummaryUser.task_count_idle,
             SummaryUser.task_count_run,
             SummaryUser.task_count_alert,

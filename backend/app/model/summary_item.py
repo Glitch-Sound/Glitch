@@ -13,7 +13,6 @@ class SummaryItem(Base):
     rid                   = Column(Integer, primary_key=True)
     id_project            = Column(Integer, default=0)
     rid_items             = Column(Integer, ForeignKey('items.rid'))
-    risk                  = Column(Integer, default=0)
     task_count_idle       = Column(Integer, default=0)
     task_count_run        = Column(Integer, default=0)
     task_count_alert      = Column(Integer, default=0)

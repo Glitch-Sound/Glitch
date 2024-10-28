@@ -17,7 +17,6 @@ class Item(Base):
     id_project       = Column(Integer, default=0, index=True)
     type             = Column(Integer, default=0, index=True)
     state            = Column(Integer, default=1, index=True)
-    risk             = Column(Integer, default=0, index=True)
     risk_factors     = Column(Integer, default=0)
     priority         = Column(Integer, default=0, index=True)
     title            = Column(String,  default='')

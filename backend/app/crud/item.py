@@ -235,7 +235,6 @@ def _updateItem(db: Session, target: ItemUpdateCommon):
         else:
             item.update({
                 Item.state: target.state,
-                Item.risk: 0,
                 Item.risk_factors: 0,
                 Item.rid_users: target.rid_users,
                 Item.rid_users_review: target.rid_users_review,
@@ -294,20 +293,20 @@ def _extructItem(db: Session, params: ItemParam):
                 )\
                 .where(Tree.rid_descendant.in_(select(subquery_target)))
 
-            case ExtractType.HIGH_RISK.value:
-                subquery_target = (
-                    select(Item.rid)
-                    .where(
-                        Item.state != ItemState.COMPLETE.value,
-                        400 <= Item.risk
-                    )
-                ).subquery()
+            # case ExtractType.HIGH_RISK.value:
+            #     subquery_target = (
+            #         select(Item.rid)
+            #         .where(
+            #             Item.state != ItemState.COMPLETE.value,
+            #             400 <= Item.risk
+            #         )
+            #     ).subquery()
 
-                cte_extruct = db.query(
-                    distinct(Tree.rid_ancestor).label('rid')
+            #     cte_extruct = db.query(
+            #         distinct(Tree.rid_ancestor).label('rid')
 
-                )\
-                .where(Tree.rid_descendant.in_(select(subquery_target)))
+            #     )\
+            #     .where(Tree.rid_descendant.in_(select(subquery_target)))
 
             case ExtractType.ALERT.value:
                 subquery_target = (
@@ -416,7 +415,6 @@ def getItems(db: Session, params: ItemParam):
             Item.id_project,
             Item.type,
             Item.state,
-            Item.risk,
             Item.risk_factors,
             Item.priority,
             Item.title,
@@ -529,7 +527,6 @@ def getProjects(db: Session):
             Item.rid,
             Item.id_project,
             Item.state,
-            Item.risk,
             Item.risk_factors,
             Item.title,
             Item.detail,
@@ -1175,7 +1172,6 @@ def getItemsNotice(db: Session, id_project, select_date):
             Item.id_project,
             Item.type,
             Item.state,
-            Item.risk,
             Item.risk_factors,
             Item.priority,
             Item.title,
