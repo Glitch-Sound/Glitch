@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import MainView from '@/views/MainView.vue'
 import ProjectView from '@/views/main/ProjectView.vue'
+import ProgressView from '@/views/main/ProgressView.vue'
+import AnalyzeView from '@/views/main/AnalyzeView.vue'
 
 import SettingMainView from '@/views/setting/SettingMainView.vue'
 import SettingUserView from '@/views/setting/SettingUserView.vue'
@@ -17,6 +19,16 @@ const router = createRouter({
     {
       path: '/project/:id_project/:extruct?/:target?',
       component: ProjectView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/progress/:id_project/:target',
+      component: ProgressView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/analyze/:id_project',
+      component: AnalyzeView,
       meta: { requiresAuth: true }
     },
     {

@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 
 import { ExtractType, type Project } from '@/types/Item'
 
+import useUserStore from '@/stores/UserStore'
 import useItemStore from '@/stores/ItemStore'
 import useProjectStore from '@/stores/ProjectStore'
 import LoginUser from '@/components/common/LoginUser.vue'
@@ -13,6 +14,7 @@ import SearchDialog from '@/components/dialog/SearchDialog.vue'
 const title = ref('Glitch')
 
 const route = useRoute()
+const store_user = useUserStore()
 const store_item = useItemStore()
 const store_project = useProjectStore()
 
@@ -53,6 +55,9 @@ const common = () => {
     )?.title || 'Glitch'
 
   link_project.value = '/project/' + store_project.selected_id_project
+  link_progress.value =
+    '/progress/' + store_project.selected_id_project + '/' + store_user.login_user?.rid
+  link_analyze.value = '/analyze/' + store_project.selected_id_project
 
   if (store_project.selected_id_project) {
     link_disabled.value = false
@@ -111,13 +116,13 @@ const common = () => {
       </router-link>
     </v-btn>
 
-    <v-btn icon :disabled="true">
+    <v-btn icon :disabled="link_disabled">
       <router-link :to="link_progress">
         <v-icon color="icon">mdi-account-tag</v-icon>
       </router-link>
     </v-btn>
 
-    <v-btn icon :disabled="true">
+    <v-btn icon :disabled="link_disabled">
       <router-link :to="link_analyze">
         <v-icon color="icon">mdi-chart-scatter-plot-hexbin</v-icon>
       </router-link>
