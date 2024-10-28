@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 import useItemStore from '@/stores/ItemStore'
 
@@ -15,12 +15,18 @@ defineExpose({
 })
 
 const dialog = ref(false)
+const valid = ref(false)
 const target = ref('')
 
 const search = () => {
   store_item.setExtractSearch(target.value)
   dialog.value = false
 }
+
+const rules_search = computed(() => [
+  (value: string) => !!value || 'Required field',
+  (value: string) => value.length >= 2 || 'Please enter at least 2 characters'
+])
 </script>
 
 <template>
@@ -31,15 +37,15 @@ const search = () => {
       </v-card-title>
 
       <v-card-text>
-        <v-form>
-          <v-text-field v-model="target" label="Target" required />
+        <v-form v-model="valid">
+          <v-text-field v-model="target" :rules="rules_search" label="Target" required />
         </v-form>
       </v-card-text>
 
       <v-card-actions>
         <v-spacer />
         <v-btn @click="dialog = false">Cancel</v-btn>
-        <v-btn color="primary" @click="search">Search</v-btn>
+        <v-btn color="primary" :disabled="!valid" @click="search">Search</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
