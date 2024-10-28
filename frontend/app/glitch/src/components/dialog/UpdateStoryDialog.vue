@@ -8,6 +8,7 @@ import { useFormDialog, getDateRange } from '@/components/dialog/BaseDialog'
 import DeleteButton from '@/components/common/DeleteButton.vue'
 import StateSelect from '@/components/common/StateSelect.vue'
 import UserSelect from '@/components/common/UserSelect.vue'
+import UserReviewSelect from '@/components/common/UserReviewSelect.vue'
 
 const date_min = ref('')
 const date_max = ref('')
@@ -37,6 +38,10 @@ const handleUserSelected = (user: User) => {
   form_data.value.rid_users = user.rid
 }
 
+const handleUserReviewSelected = (user: User) => {
+  form_data.value.rid_users_review = user.rid
+}
+
 const handleStateSelected = (state: ItemState) => {
   form_data.value.state = state
 }
@@ -52,6 +57,13 @@ const handleStateSelected = (state: ItemState) => {
       <v-card-text>
         <v-form ref="form_ref" v-model="valid" lazy-validation>
           <UserSelect v-model="form_data.rid_users" @itemSelected="handleUserSelected" />
+
+          <UserReviewSelect
+            v-if="form_data.state == ItemState.REVIEW"
+            :rules="[rules.required]"
+            v-model="form_data.rid_users_review"
+            @itemSelected="handleUserReviewSelected"
+          />
 
           <StateSelect
             :type="ItemType.PROJECT"

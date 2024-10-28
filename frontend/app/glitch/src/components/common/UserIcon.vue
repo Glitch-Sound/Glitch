@@ -5,12 +5,15 @@ import * as CryptoJS from 'crypto-js'
 import { defineProps, computed } from 'vue'
 
 const props = defineProps<{
-  rid_users: number
-  name: string
+  rid_users: number | null
+  name: string | null
   size: number
 }>()
 
 const hash_user = computed(() => {
+  if (props.rid_users == null || props.name == null) {
+    return ''
+  }
   return CryptoJS.MD5(props.rid_users + props.name || '').toString()
 })
 

@@ -956,8 +956,8 @@ def updateTask(db: Session, target:schema_item.TaskUpdate):
         )\
         .filter(Item.rid == target.rid)
 
-        createSummaryItem(db, target.id_project, item.rid)
-        createSummaryUser(db, target.id_project, target.rid_users)
+        createSummaryItem(db, id_project, item.rid)
+        createSummaryUser(db, id_project, target.rid_users)
         db.commit()
 
         db.refresh(item)
@@ -1047,8 +1047,8 @@ def updateBug(db: Session, target:schema_item.BugUpdate):
         )\
         .filter(Item.rid == target.rid)
 
-        createSummaryItem(db, target.id_project, item.rid)
-        createSummaryUser(db, target.id_project, target.rid_users)
+        createSummaryItem(db, id_project, item.rid)
+        createSummaryUser(db, id_project, target.rid_users)
         db.commit()
 
         db.refresh(item)
