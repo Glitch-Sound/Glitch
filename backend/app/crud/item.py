@@ -5,7 +5,7 @@ from sqlalchemy.sql import func
 import sys
 sys.path.append('~/app')
 
-from crud.common import getWeekAgoDate, getCurrentDatetime, ItemType, ItemState, ExtractType, TaskType
+from crud.common import generate_bigrams, getWeekAgoDate, getCurrentDatetime, ItemType, ItemState, ExtractType, TaskType
 from crud.summary import createSummaryItem, createSummaryUser
 
 from schema import item as schema_item
@@ -344,36 +344,27 @@ def _extructItem(db: Session, params: ItemParam):
                 cte_extruct = cte_extruct_ancestor.union(cte_extruct_descendant)
 
             case ExtractType.SEARCH.value:
-                fts_query_title = text("""
-                    SELECT rowid FROM items_fts WHERE items_fts.title MATCH :search_query
-                """)
-                fts_query_detail = text("""
-                    SELECT rowid FROM items_fts WHERE items_fts.detail MATCH :search_query
-                """)
-                fts_query_result= text("""
-                    SELECT rowid FROM items_fts WHERE items_fts.result MATCH :search_query
+                search_bigrams = generate_bigrams(params.search)
+                fts_query_bigrams = text("""
+                    SELECT rowid FROM items_fts WHERE items_fts.bigrams MATCH :search_query
                 """)
 
+                rids = db.execute(fts_query_bigrams, {'search_query': search_bigrams}).scalars().all()
+
+                matching_rids = set(rids)
                 subquery_target = (
                     select(Item.rid)
                     .where(
                         and_(
                             Item.id_project == params.id_project,
-                            or_(
-                                Item.rid.in_(fts_query_title),
-                                Item.rid.in_(fts_query_detail),
-                                Item.rid.in_(fts_query_result)
-                            )
+                            Item.rid.in_(matching_rids)
                         )
                     )
-                )\
-                .params(search_query=params.search)\
-                .subquery()
+                ).subquery()
 
                 cte_extruct = db.query(
                     distinct(Tree.rid_ancestor).label('rid')
-                )\
-                .where(Tree.rid_descendant.in_(select(subquery_target)))
+                ).where(Tree.rid_descendant.in_(select(subquery_target)))
 
             case ExtractType.ANCESTOR.value:
                 cte_extruct = db.query(

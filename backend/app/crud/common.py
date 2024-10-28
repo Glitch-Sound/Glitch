@@ -43,6 +43,14 @@ class WorkloadType(Enum):
     WITHIN_A_WEEK     = 35
 
 
+def generate_bigrams(text):
+    if not text:
+        return ''
+    text = text.replace(' ', '')
+    bigrams = [text[i:i+2] for i in range(len(text)-1)]
+    return ' '.join(bigrams)
+
+
 def getWeekAgoDate():
     current_utc_time = datetime.now(pytz.timezone('Asia/Tokyo'))
     week_date_time = current_utc_time - timedelta(days=7)
