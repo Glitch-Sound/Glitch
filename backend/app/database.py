@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -9,11 +9,18 @@ from crud.common import generate_bigrams
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./glitch.db"
 
+
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
+@event.listens_for(engine, "connect")
+def connect(dbapi_connection, connection_record):
+    dbapi_connection.create_function('generate_bigrams', 1, generate_bigrams)
+
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
@@ -27,18 +34,13 @@ def get_db():
 
 def setup_fts():
     with SessionLocal() as session:
-        conn = session.connection().connection
-        conn.create_function('generate_bigrams', 1, generate_bigrams)
-
         session.execute(text("""
             CREATE VIRTUAL TABLE IF NOT EXISTS items_fts USING fts5(
                 rid UNINDEXED,
                 title,
                 detail,
                 result,
-                bigrams,
-                content='items',
-                content_rowid='rid'
+                bigrams
             );
         """))
 
@@ -46,9 +48,7 @@ def setup_fts():
             CREATE VIRTUAL TABLE IF NOT EXISTS activities_fts USING fts5(
                 rid UNINDEXED,
                 activity,
-                bigrams,
-                content='activities',
-                content_rowid='rid'
+                bigrams
             );
         """))
 
