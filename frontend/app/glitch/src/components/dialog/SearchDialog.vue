@@ -37,7 +37,7 @@ const rules_search = computed(() => [
       </v-card-title>
 
       <v-card-text>
-        <v-form v-model="valid">
+        <v-form v-model="valid" @submit.prevent>
           <v-text-field v-model="target" :rules="rules_search" label="Target" required />
         </v-form>
       </v-card-text>
