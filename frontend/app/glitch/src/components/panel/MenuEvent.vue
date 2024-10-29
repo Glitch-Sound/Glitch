@@ -51,7 +51,7 @@ const handleUpdateState = (state: ItemState) => {
 
     <MenuState @update-state="handleUpdateState" />
 
-    <v-list-item link>
+    <v-list-item link @click="store_item.setExtractItem(props.item.rid)">
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4">mdi-relation-one-to-zero-or-many</v-icon>
       </template>

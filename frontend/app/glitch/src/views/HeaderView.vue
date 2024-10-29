@@ -110,7 +110,7 @@ const common = () => {
       </router-link>
     </v-btn>
 
-    <v-btn icon :disabled="link_disabled">
+    <v-btn icon :disabled="link_disabled" @click="store_item.setExtractIncomplete">
       <router-link :to="link_project">
         <v-icon color="icon">mdi-view-list</v-icon>
       </router-link>
