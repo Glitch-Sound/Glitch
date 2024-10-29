@@ -117,6 +117,18 @@ def get_items_search(id_project: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'error: {str(e)}')
 
 
+@router.get('/item/summary-user/{id_project}/{target}', response_model=list[schema_item.Item])
+def get_items_search(id_project: int, target: int, db: Session = Depends(get_db)):
+    try:
+        params = ItemParam(type_extract=ExtractType.SUMMARY_USER.value, id_project=id_project, rid_users=target)
+        result = crud_item.getItems(db, params)
+        return result
+
+    except Exception as e:
+        print(traceback.format_exc())
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'error: {str(e)}')
+
+
 @router.put('/item/state/', response_model=schema_item.Item)
 def update_item_state(target:schema_item.StateUpdate, db: Session = Depends(get_db)):
     try:
@@ -331,6 +343,17 @@ def delete_bug(target: int, db: Session = Depends(get_db)):
     try:
         crud_item.deleteBug(db, target)
         return {'result': 'success'}
+
+    except Exception as e:
+        print(traceback.format_exc())
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'error: {str(e)}')
+
+
+@router.get("/item/hierarchy/{id_project}", response_model=schema_item.ItemHierarchy)
+def get_hierarchy(id_project: int, db: Session = Depends(get_db)):
+    try:
+        result = crud_item.getHierarchy(db, id_project)
+        return result
 
     except Exception as e:
         print(traceback.format_exc())

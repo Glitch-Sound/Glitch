@@ -238,3 +238,17 @@ class BugUpdate(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ItemHierarchy(BaseModel):
+    rid: int
+    rid_users: int
+    name: str
+    type: int
+    title: str
+    workload_task: Optional[int] = None
+    workload_bug: Optional[int] = None
+    children: Optional[List['ItemHierarchy']] = None
+
+    class Config:
+        from_attributes = True 
