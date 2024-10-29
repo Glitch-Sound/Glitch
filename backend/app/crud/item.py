@@ -5,7 +5,7 @@ from sqlalchemy.sql import func
 import sys
 sys.path.append('~/app')
 
-from crud.common import generate_bigrams, getWeekAgoDate, getCurrentDatetime, ItemType, ItemState, ExtractType, TaskType
+from crud.common import generate_bigrams, getWeekAgoDate, getCurrentDatetime, ItemType, ItemState, ExtractType, TaskType, RiskType
 from crud.summary import createSummaryItem, createSummaryUser
 
 from schema import item as schema_item
@@ -18,6 +18,9 @@ from model.story import Story
 from model.task import Task
 from model.bug import Bug
 from model.user import User
+
+import jpholiday
+import datetime
 
 
 class ItemParam():
@@ -214,6 +217,98 @@ def _updateSortPathStory(db: Session, rid: int, story_datetime_end: str):
         raise e
 
 
+def _getDateLimit(db: Session, rid: int):
+    try:
+        story = db.query(
+            Story.datetime_end
+        )\
+        .join(Tree, Story.rid_items == Tree.rid_ancestor)\
+        .where(
+            Tree.rid_descendant == rid,
+            Tree.type == ItemType.STORY.value
+        )\
+        .one()
+
+        return story.datetime_end
+
+    except Exception as e:
+        raise e
+
+
+def _getTargetItem(db: Session, rid_item: int):
+    try:
+        query = db.query(
+            Item.rid,
+            Task.type.label('task_type'),
+            Task.workload.label('task_workload'),
+            Task.number_total.label('task_number_total'),
+            Bug.workload.label('bug_workload'))\
+        .outerjoin(Task, Task.rid_items == Item.rid)\
+        .outerjoin(Bug, Bug.rid_items == Item.rid)\
+        .filter(Item.rid == rid_item)\
+
+        result = query.one()
+        return result
+
+    except Exception as e:
+        raise e
+
+
+def _getRisk(db: Session, rid_item: int):
+    try:
+        datetime_limit   = _getDateLimit(db, rid_item)
+        datetime_current = getCurrentDatetime()
+
+        date_format  = "%Y-%m-%d"
+        date_limit   = datetime.datetime.strptime(datetime_limit.split(' ')[0], date_format).date()
+        date_current = datetime.datetime.strptime(datetime_current.split(' ')[0], date_format).date()
+
+        day_active = 0
+        delta      = datetime.timedelta(days=1)
+        date       = date_current
+
+        while date <= date_limit:
+            if date.weekday() < 5 and not jpholiday.is_holiday(date):
+                day_active += 1
+            date += delta
+
+        item = _getTargetItem(db, rid_item)
+
+        workload = 0
+        if item.task_workload is not None:
+            workload = item.task_workload
+        else:
+            workload = item.bug_workload
+
+        if (day_active - workload / 7) <= 0:
+            return RiskType.OVER
+
+        if (day_active - workload / 7) <= 2:
+            return RiskType.LIMIT
+
+        return RiskType.NONE
+
+    except Exception as e:
+        raise e
+
+
+def _setRisk(db: Session, rid_item: int):
+    try:
+        risk = _getRisk(db, rid_item)
+
+        target_item = db.query(
+            Item
+        )\
+        .filter(Item.rid == rid_item)
+
+        target_item.update({
+            Item.risk: risk.value
+        })
+
+    except Exception as e:
+        raise e
+
+
 def _updateItem(db: Session, target: ItemUpdateCommon):
     try:
         datetime_current = getCurrentDatetime()
@@ -236,7 +331,7 @@ def _updateItem(db: Session, target: ItemUpdateCommon):
         else:
             item.update({
                 Item.state: target.state,
-                Item.risk_factors: 0,
+                Item.risk: 0,
                 Item.rid_users: target.rid_users,
                 Item.rid_users_review: target.rid_users_review,
                 Item.title: target.title,
@@ -299,7 +394,7 @@ def _extructItem(db: Session, params: ItemParam):
                     select(Item.rid)
                     .where(
                         Item.state != ItemState.COMPLETE.value,
-                        Item.risk_factors != 0
+                        Item.risk != 0
                     )
                 ).subquery()
 
@@ -406,7 +501,7 @@ def getItems(db: Session, params: ItemParam):
             Item.id_project,
             Item.type,
             Item.state,
-            Item.risk_factors,
+            Item.risk,
             Item.priority,
             Item.title,
             Item.detail,
@@ -518,7 +613,7 @@ def getProjects(db: Session):
             Item.rid,
             Item.id_project,
             Item.state,
-            Item.risk_factors,
+            Item.risk,
             Item.title,
             Item.detail,
             Item.result,
@@ -903,6 +998,7 @@ def createTask(db: Session, target:schema_item.TaskCreate):
         _createTree(db, ItemType.TASK, target.rid_items, item.rid)
         db.flush()
 
+        _setRisk(db, item.rid)
         createSummaryItem(db, target.id_project, item.rid)
         createSummaryUser(db, target.id_project, target.rid_users)
         db.commit()
@@ -947,6 +1043,7 @@ def updateTask(db: Session, target:schema_item.TaskUpdate):
         )\
         .filter(Item.rid == target.rid)
 
+        _setRisk(db, item.rid)
         createSummaryItem(db, id_project, item.rid)
         createSummaryUser(db, id_project, target.rid_users)
         db.commit()
@@ -997,6 +1094,7 @@ def createBug(db: Session, target:schema_item.BugCreate):
         _createTree(db, ItemType.BUG, target.rid_items, item.rid)
         db.flush()
 
+        _setRisk(db, item.rid)
         createSummaryItem(db, target.id_project, item.rid)
         createSummaryUser(db, target.id_project, target.rid_users)
         db.commit()
@@ -1038,6 +1136,7 @@ def updateBug(db: Session, target:schema_item.BugUpdate):
         )\
         .filter(Item.rid == target.rid)
 
+        _setRisk(db, item.rid)
         createSummaryItem(db, id_project, item.rid)
         createSummaryUser(db, id_project, target.rid_users)
         db.commit()
@@ -1171,7 +1270,7 @@ def getItemsNotice(db: Session, id_project, select_date):
             Item.id_project,
             Item.type,
             Item.state,
-            Item.risk_factors,
+            Item.risk,
             Item.priority,
             Item.title,
             Item.detail,

@@ -42,6 +42,11 @@ class WorkloadType(Enum):
     WITHIN_3_DAYS     = 21
     WITHIN_A_WEEK     = 35
 
+class RiskType(Enum):
+    NONE  = 0
+    LIMIT = 1
+    OVER  = 2
+
 
 def generate_bigrams(text):
     if not text:

@@ -14,7 +14,7 @@ class Item(BaseModel):
     id_project: int
     type: int
     state: int
-    risk_factors: int
+    risk: int
     priority: int
     title: str
     detail: str
