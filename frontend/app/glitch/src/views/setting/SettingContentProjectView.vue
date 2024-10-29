@@ -9,9 +9,9 @@ import UpdateProjectDialog from '@/components/dialog/UpdateProjectDialog.vue'
 
 const headers = [
   { title: 'ID', width: ' 50px' },
-  { title: 'TITLE', width: '600px' },
-  { title: 'START', width: '200px' },
-  { title: 'END', width: '200px' },
+  { title: 'TITLE', width: '800px' },
+  { title: 'START', width: '150px' },
+  { title: 'END', width: '150px' },
   { title: 'USER', width: '200px' }
 ]
 

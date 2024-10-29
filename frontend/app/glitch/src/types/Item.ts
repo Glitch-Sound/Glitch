@@ -33,6 +33,12 @@ export enum WorkloadType {
   WITHIN_A_WEEK = 35
 }
 
+export enum RiskType {
+  NONE = 0,
+  LIMIT = 1,
+  OVER = 2
+}
+
 export enum ExtractType {
   NONE = 0,
   INCOMPLETE,
@@ -63,7 +69,7 @@ export interface Item {
   id_project: number
   type: ItemType
   state: ItemState
-  risk_factors: number
+  risk: number
   priority: number
   title: string
   detail: string

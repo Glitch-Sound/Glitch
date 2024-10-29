@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 
-import { WorkloadType } from '@/types/Item'
+import { WorkloadType, RiskType } from '@/types/Item'
 
 const props = defineProps<{
   workload: WorkloadType
+  risk: RiskType
 }>()
 </script>
 
 <template>
-  <div class="d-flex flex-row align-baseline justify-start pl-3">
+  <div class="d-flex flex-row align-center justify-start pl-3">
     <template v-if="props.workload == WorkloadType.WITHIN_AN_HOUR">
       <v-icon size="x-small" icon="$vuetify">mdi-hexagon-outline</v-icon>
       <p>1 hour</p>
@@ -39,6 +40,26 @@ const props = defineProps<{
       <v-icon icon="$vuetify">mdi-pentagon</v-icon>
       <p>1 week</p>
     </template>
+
+    <v-chip
+      v-if="props.risk == RiskType.LIMIT"
+      class="ml-1"
+      size="small"
+      prepend-icon="mdi-fire"
+      color="#b1a47c"
+    >
+      LIMIT
+    </v-chip>
+
+    <v-chip
+      v-if="props.risk == RiskType.OVER"
+      class="ml-1"
+      size="small"
+      prepend-icon="mdi-fire"
+      color="#ba374c"
+    >
+      OVER
+    </v-chip>
   </div>
 </template>
 
