@@ -1,5 +1,11 @@
 <script setup lang="ts"></script>
 
-<template><v-main>analyze contents</v-main></template>
+<template>
+  <v-main class="mt-2 ml-n2">
+    <v-sheet class="main"> </v-sheet>
+  </v-main>
+</template>
 
-<style scoped></style>
+<style scoped>
+@import '@/assets/main.css';
+</style>

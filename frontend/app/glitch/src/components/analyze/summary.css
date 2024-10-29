@@ -1,0 +1,36 @@
+.summary {
+    margin: 20px 0 20px 60px;
+    padding: 0;
+}
+  
+.summary-block {
+    margin: 0 10px 0 0;
+    padding: 0;
+}
+  
+.title-sub {
+    font-size: 14px;
+    color: #797979;
+}
+  
+.title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #acacac;
+}
+  
+.value {
+    position: absolute;
+    top: 27px;
+    right: 34px;
+    font-size: 28px;
+    color: #cfcfcf;
+}
+  
+.graph {
+    width: 260px;
+    height: 80px;
+    margin: 10px 10px 0 0;
+    padding: 0;
+    background-color: #070707;
+}

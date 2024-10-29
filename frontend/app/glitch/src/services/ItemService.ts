@@ -16,7 +16,8 @@ import type {
   TaskCreate,
   TaskUpdate,
   BugCreate,
-  BugUpdate
+  BugUpdate,
+  ItemHierarchy
 } from '@/types/Item'
 
 class ItemService {
@@ -115,6 +116,19 @@ class ItemService {
   public async getItemRange(id_project: number | null): Promise<ItemRange[]> {
     try {
       const response = await http.get<ItemRange[]>(`/api/item/range/${id_project}`)
+      return response.data
+    } catch (error) {
+      console.trace()
+      throw new Error('error: ${error}')
+    }
+  }
+
+  public async getItemsSummaryUser(
+    id_project: number | null,
+    target: number | null
+  ): Promise<Item[]> {
+    try {
+      const response = await http.get<Item[]>(`/api/item/summary-user/${id_project}/${target}`)
       return response.data
     } catch (error) {
       console.trace()
@@ -310,6 +324,16 @@ class ItemService {
   public async deleteBug(rid: number): Promise<void> {
     try {
       await http.delete(`/api/bug/${rid}`)
+    } catch (error) {
+      console.trace()
+      throw new Error('error: ${error}')
+    }
+  }
+
+  public async getHierarchy(id_project: number | null): Promise<ItemHierarchy> {
+    try {
+      const response = await http.get<ItemHierarchy>(`/api/item/hierarchy/${id_project}`)
+      return response.data
     } catch (error) {
       console.trace()
       throw new Error('error: ${error}')

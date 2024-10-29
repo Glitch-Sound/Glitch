@@ -16,7 +16,6 @@ class UserService {
   public async getUsersProject(id_project: number | null): Promise<User[]> {
     try {
       const response = await http.get<User[]>(`/api/user/project/${id_project}`)
-      console.log(response.data)
       return response.data
     } catch (error) {
       console.trace()

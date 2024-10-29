@@ -246,3 +246,13 @@ export interface BugUpdate {
   result: string
   bug_workload: number
 }
+
+export interface ItemHierarchy {
+  rid: number
+  rid_users: number
+  name: string
+  title: string
+  workload_task?: number
+  workload_bug?: number
+  children?: ItemHierarchy[]
+}
