@@ -73,12 +73,32 @@ def _createTree(db: Session, type_create: ItemType, rid_parent: int, rid: int):
         raise e
 
 
+def _createNextRID(db: Session):
+    try:
+        next_rid = db.query(
+            func.coalesce(func.max(Item.rid), 0) + 1
+        )\
+        .scalar()
+
+        return next_rid
+
+    except Exception as e:
+        raise e
+
+
 def _createSortPathProject(id_project: int):
-    return str(id_project).zfill(4) + "000000000000000000000"
+    return str(id_project).zfill(4) + "00000000000000000000000000000"
 
 
-def _createSortPathEvent(target:schema_item.EventCreate):
-    return str(target.id_project).zfill(4) + target.event_datetime_end.replace('-', '') + '0000000000000'
+def _createSortPathEvent(db: Session, target:schema_item.EventCreate):
+    try:
+        next_rid  = _createNextRID(db)
+        path_sort = str(target.id_project).zfill(4) + target.event_datetime_end.replace('-', '') + str(next_rid).zfill(4) + '00000000000000000'
+
+        return path_sort
+
+    except Exception as e:
+        raise e
 
 
 def _createSortPathFeature(db: Session, target:schema_item.FeatureCreate):
@@ -91,14 +111,10 @@ def _createSortPathFeature(db: Session, target:schema_item.FeatureCreate):
         )\
         .one()[0]
 
-        count_rid_descendants = db.query(
-            Tree.rid_descendant
-        )\
-        .filter(Tree.rid_ancestor == target.rid_items)\
-        .count()
+        next_rid  = _createNextRID(db)
 
-        path_sort_feature = path_sort_event[:12] + str(count_rid_descendants).zfill(4) + '000000000'
-        return path_sort_feature
+        path_sort = path_sort_event[:16] + str(next_rid).zfill(4) + '0000000000000'
+        return path_sort
 
     except Exception as e:
         raise e
@@ -114,8 +130,10 @@ def _createSortPathStory(db: Session, target:schema_item.StoryCreate):
         )\
         .one()[0]
 
-        path_sort_story = path_sort_feature[:16] + target.story_datetime_end.replace('-', '') + '0'
-        return path_sort_story
+        next_rid  = _createNextRID(db)
+
+        path_sort = path_sort_feature[:20] + target.story_datetime_end.replace('-', '') + str(next_rid).zfill(4) + '0'
+        return path_sort
 
     except Exception as e:
         raise e
@@ -131,14 +149,14 @@ def _createSortPathTask(db: Session, target:schema_item.TaskCreate):
         )\
         .one()[0]
 
-        path_sort_task = path_sort_story[:24] + str(ItemType.TASK.value)
-        return path_sort_task
+        path_sort = path_sort_story[:32] + str(ItemType.TASK.value)
+        return path_sort
 
     except Exception as e:
         raise e
 
 
-def _createSortPathTask(db: Session, target:schema_item.BugCreate):
+def _createSortPathBug(db: Session, target:schema_item.BugCreate):
     try:
         path_sort_story = db.query(
             Item.path_sort
@@ -148,8 +166,8 @@ def _createSortPathTask(db: Session, target:schema_item.BugCreate):
         )\
         .one()[0]
 
-        path_sort_bug = path_sort_story[:24] + str(ItemType.BUG.value)
-        return path_sort_bug
+        path_sort = path_sort_story[:32] + str(ItemType.BUG.value)
+        return path_sort
 
     except Exception as e:
         raise e
@@ -205,9 +223,9 @@ def _updateSortPathStory(db: Session, rid: int, story_datetime_end: str):
             .where(Item.rid.in_(subquery))
             .values(
                 path_sort=(
-                    func.substr(Item.path_sort, 1, 16) +
+                    func.substr(Item.path_sort, 1, 20) +
                     literal(story_datetime_end.replace('-', '')) +
-                    func.substr(Item.path_sort, 25)
+                    func.substr(Item.path_sort, 29)
                 )
             )
         )
@@ -533,7 +551,7 @@ def getItems(db: Session, params: ItemParam):
         .outerjoin(Task, Task.rid_items == Item.rid)\
         .outerjoin(Bug, Bug.rid_items == Item.rid)\
         .where(Item.is_deleted == 0)\
-        .order_by(Item.path_sort, Item.priority.desc())
+        .order_by(Item.path_sort, Item.priority.desc(), Item.rid)
 
         result = query.all()
         return result
@@ -643,14 +661,7 @@ def createProject(db: Session, target: schema_item.ProjectCreate):
         datetime_current = getCurrentDatetime()
 
         db.begin()
-        max_id_project = db.query(
-            func.max(Item.id_project)
-        )\
-        .scalar()
-
-        if max_id_project is None:
-            max_id_project = 0
-        max_id_project += 1
+        max_id_project = _createNextRID(db)
 
         item = Item(
             path_sort=_createSortPathProject(max_id_project),
@@ -737,7 +748,7 @@ def createEvent(db: Session, target:schema_item.EventCreate):
 
         db.begin()
         item = Item(
-            path_sort=_createSortPathEvent(target),
+            path_sort=_createSortPathEvent(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
@@ -1070,7 +1081,7 @@ def createBug(db: Session, target:schema_item.BugCreate):
 
         db.begin()
         item = Item(
-            path_sort=_createSortPathTask(db, target),
+            path_sort=_createSortPathBug(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
