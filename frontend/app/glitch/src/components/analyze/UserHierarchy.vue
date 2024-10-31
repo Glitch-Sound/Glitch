@@ -68,9 +68,9 @@ function createSunburstChart(rid_users: number) {
     .outerRadius((d: any) => radius * radius_ratio_inncer + d.y1)
     .cornerRadius(2)
 
-  const colors = ['#efbf4d', '#9c357c', '#028c06']
+  const colors = ['#efbf4d', '#b34b92', '#028c06']
   const color_task = '#4169e1'
-  const color_bug = '#cd0000'
+  const color_bug = '#a80000'
 
   const max_depth = Math.max(...root.descendants().map((d: any) => d.depth))
 

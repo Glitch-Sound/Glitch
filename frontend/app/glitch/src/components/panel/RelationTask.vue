@@ -4,12 +4,14 @@ import { VIcon } from 'vuetify/components'
 
 import { ItemState, type Item, type PanelRelation } from '@/types/Item'
 
+import useItemStore from '@/stores/ItemStore'
 import { tree } from '@/components/panel/relation'
+
+const store_item = useItemStore()
 
 const props = defineProps<{
   item: Item
   relation: PanelRelation
-  is_hide: boolean
 }>()
 </script>
 
@@ -143,7 +145,7 @@ const props = defineProps<{
 
       <!-- task:state -->
       <foreignObject
-        v-if="!props.is_hide"
+        v-if="!store_item.isClosed(props.item.rid)"
         :x="tree.t.ix"
         :y="tree.t.iy"
         :width="tree.t.iw"

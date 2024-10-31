@@ -16,7 +16,7 @@ export const tree = {
     e: 20 + 20
   },
   f: {
-    color: '#9c357c',
+    color: '#b34b92',
     sw: 1.2,
     ix: 23 + 19,
     iy: 3.5,
@@ -64,7 +64,7 @@ export const tree = {
     e: 0
   },
   b: {
-    color: '#cd0000',
+    color: '#a80000',
     sw: 1.2,
     ix: 62 + 20,
     iy: 3.5,

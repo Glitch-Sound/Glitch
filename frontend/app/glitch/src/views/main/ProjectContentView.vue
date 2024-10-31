@@ -12,22 +12,28 @@ import { getPanelRelation } from '@/views/main/relation'
 
 const store_item = useItemStore()
 
+let latest_closed_item: Item | null = null
+
 const isHide = (item: Item) => {
-  return store_item.isHideItem(item)
-}
+  if (store_item.isClosed(item.rid)) {
+    if (!latest_closed_item || item.type < latest_closed_item.type) {
+      latest_closed_item = item
+    }
+  }
 
-const isHideTarget = (item: Item) => {
-  const latest_hide_type = store_item.latest_hide_type
-  if (latest_hide_type === null) {
+  if (!latest_closed_item) {
     return false
   }
 
-  if (latest_hide_type < item.type) {
+  if (latest_closed_item.type < item.type) {
     return true
-  } else {
-    store_item.clearLaterstHideType()
-    return false
   }
+
+  if (latest_closed_item.rid !== item.rid) {
+    latest_closed_item = null
+  }
+
+  return false
 }
 </script>
 
@@ -36,38 +42,33 @@ const isHideTarget = (item: Item) => {
     <v-sheet class="main">
       <template v-for="(item, index) in store_item.items" :key="item.rid">
         <PanelEvent
-          v-if="item.type == ItemType.EVENT && !isHideTarget(item)"
+          v-if="item.type == ItemType.EVENT && !isHide(item)"
           :item="item"
           :relation="getPanelRelation(store_item.items, index)"
-          :is_hide="isHide(item)"
         />
 
         <PanelFeature
-          v-if="item.type == ItemType.FEATURE && !isHideTarget(item)"
+          v-if="item.type == ItemType.FEATURE && !isHide(item)"
           :item="item"
           :relation="getPanelRelation(store_item.items, index)"
-          :is_hide="isHide(item)"
         />
 
         <PanelStory
-          v-if="item.type == ItemType.STORY && !isHideTarget(item)"
+          v-if="item.type == ItemType.STORY && !isHide(item)"
           :item="item"
           :relation="getPanelRelation(store_item.items, index)"
-          :is_hide="isHide(item)"
         />
 
         <PanelTask
-          v-if="item.type == ItemType.TASK && !isHideTarget(item)"
+          v-if="item.type == ItemType.TASK && !isHide(item)"
           :item="item"
           :relation="getPanelRelation(store_item.items, index)"
-          :is_hide="isHide(item)"
         />
 
         <PanelBug
-          v-if="item.type == ItemType.BUG && !isHideTarget(item)"
+          v-if="item.type == ItemType.BUG && !isHide(item)"
           :item="item"
           :relation="getPanelRelation(store_item.items, index)"
-          :is_hide="isHide(item)"
         />
       </template>
     </v-sheet>

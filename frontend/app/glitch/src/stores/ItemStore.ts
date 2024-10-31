@@ -14,8 +14,7 @@ import type {
   TaskUpdate,
   BugCreate,
   BugUpdate,
-  ItemState,
-  ItemType
+  ItemState
 } from '@/types/Item'
 import type { Activity, ActivityCreate, ActivityUpdate } from '@/types/Activity'
 
@@ -34,8 +33,7 @@ const useItemStore = defineStore('item', {
     items: [] as Array<Item>,
     extract_rid_item: 0 as number,
     extract_search_target: '' as string,
-    items_hide: [] as Array<number>,
-    latest_hide_type: null as ItemType | null
+    items_closed: [] as Array<number>
   }),
   actions: {
     updated() {
@@ -260,32 +258,20 @@ const useItemStore = defineStore('item', {
     async deleteActivity(rid: number): Promise<void> {
       await service_activity.deleteActivity(rid)
     },
-    hideItem(rid: number) {
-      if (!this.items_hide.includes(rid)) {
-        this.items_hide.push(rid)
+    closeItem(rid: number) {
+      if (!this.items_closed.includes(rid)) {
+        console.log('add : ' + rid)
+        this.items_closed.push(rid)
       }
     },
-    displayItem(rid: number) {
-      const index = this.items_hide.indexOf(rid)
+    isClosed(rid: number) {
+      return this.items_closed.includes(rid)
+    },
+    openItem(rid: number) {
+      const index = this.items_closed.indexOf(rid)
       if (index !== -1) {
-        this.items_hide.splice(index, 1)
+        this.items_closed.splice(index, 1)
       }
-    },
-    isHideItem(item: Item) {
-      const is_hide = this.items_hide.includes(item.rid)
-      if (is_hide) {
-        this.latest_hide_type = item.type
-      }
-      return is_hide
-    },
-    isHideMenuItem(rid: number) {
-      return this.items_hide.includes(rid)
-    },
-    setLatestHideType(type: ItemType) {
-      this.latest_hide_type = type
-    },
-    clearLaterstHideType() {
-      this.latest_hide_type = null
     }
   }
 })

@@ -15,7 +15,7 @@ const props = defineProps<{
   item: Item
 }>()
 
-const is_hidden = computed(() => store_item.isHideMenuItem(props.item.rid))
+const is_closed = computed(() => store_item.isClosed(props.item.rid))
 
 const emit = defineEmits<EmitType>()
 const handleAddTask = () => {
@@ -72,13 +72,13 @@ const handleUpdateState = (state: ItemState) => {
       <v-list-item-title>Jump Relation</v-list-item-title>
     </v-list-item>
 
-    <v-list-item v-if="!is_hidden" link @click="store_item.hideItem(props.item.rid)">
+    <v-list-item v-if="!is_closed" link @click="store_item.closeItem(props.item.rid)">
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4">mdi-align-vertical-distribute</v-icon>
       </template>
       <v-list-item-title>Hide</v-list-item-title>
     </v-list-item>
-    <v-list-item v-else link @click="store_item.displayItem(props.item.rid)">
+    <v-list-item v-else link @click="store_item.openItem(props.item.rid)">
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4">mdi-menu</v-icon>
       </template>

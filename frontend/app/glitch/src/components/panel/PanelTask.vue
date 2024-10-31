@@ -18,7 +18,6 @@ const store_item = useItemStore()
 const props = defineProps<{
   item: Item
   relation: PanelRelation
-  is_hide: boolean
 }>()
 
 const menu = ref(false)
@@ -50,7 +49,7 @@ const handleDeleteTask = async (data: TaskUpdate) => {
       <v-col cols="auto" class="relation">
         <v-menu v-model="menu" activator="parent" offset-y>
           <template v-slot:activator="{ props }">
-            <RelationTask v-bind="props" :item="item" :relation="relation" :is_hide="is_hide" />
+            <RelationTask v-bind="props" :item="item" :relation="relation" />
           </template>
 
           <MenuTask
