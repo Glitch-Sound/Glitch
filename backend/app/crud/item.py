@@ -1075,6 +1075,28 @@ def deleteTask(db: Session, rid: int):
         raise e
 
 
+def updateTaskPriority(db: Session, target:schema_item.TaskPriorityUpdate):
+    try:
+        db.begin()
+        item = db.query(
+            Item
+        )\
+        .filter(Item.rid == target.rid)
+
+        item.update({
+            Item.priority: target.priority
+        })
+        db.commit()
+
+        item_updated = item.first()
+        db.refresh(item_updated)
+        return item_updated
+
+    except Exception as e:
+        db.rollback()
+        raise e
+
+
 def createBug(db: Session, target:schema_item.BugCreate):
     try:
         datetime_current = getCurrentDatetime()
@@ -1165,6 +1187,28 @@ def deleteBug(db: Session, rid: int):
         _deleteItem(db, rid)
 
     except Exception as e:
+        raise e
+
+
+def updateBugPriority(db: Session, target:schema_item.BugPriorityUpdate):
+    try:
+        db.begin()
+        item = db.query(
+            Item
+        )\
+        .filter(Item.rid == target.rid)
+
+        item.update({
+            Item.priority: target.priority
+        })
+        db.commit()
+
+        item_updated = item.first()
+        db.refresh(item_updated)
+        return item_updated
+
+    except Exception as e:
+        db.rollback()
         raise e
 
 

@@ -214,6 +214,14 @@ class TaskUpdate(BaseModel):
         from_attributes = True
 
 
+class TaskPriorityUpdate(BaseModel):
+    rid: int
+    priority: int
+
+    class Config:
+        from_attributes = True
+
+
 class BugCreate(BaseModel):
     id_project: int
     rid_items: int
@@ -235,6 +243,14 @@ class BugUpdate(BaseModel):
     detail: str
     result: str
     bug_workload: int
+
+    class Config:
+        from_attributes = True
+
+
+class BugPriorityUpdate(BaseModel):
+    rid: int
+    priority: int
 
     class Config:
         from_attributes = True

@@ -316,6 +316,17 @@ def delete_task(target: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'error: {str(e)}')
 
 
+@router.put('/task/priority', response_model=schema_item.Item)
+def update_task(target:schema_item.TaskPriorityUpdate, db: Session = Depends(get_db)):
+    try:
+        result = crud_item.updateTaskPriority(db, target)
+        return result
+
+    except Exception as e:
+        print(traceback.format_exc())
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'error: {str(e)}')
+
+
 @router.post('/bug/', response_model=schema_item.Item)
 def create_bug(target:schema_item.BugCreate, db: Session = Depends(get_db)):
     try:
@@ -343,6 +354,17 @@ def delete_bug(target: int, db: Session = Depends(get_db)):
     try:
         crud_item.deleteBug(db, target)
         return {'result': 'success'}
+
+    except Exception as e:
+        print(traceback.format_exc())
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'error: {str(e)}')
+
+
+@router.put('/bug/priority', response_model=schema_item.Item)
+def update_task(target:schema_item.BugPriorityUpdate, db: Session = Depends(get_db)):
+    try:
+        result = crud_item.updateBugPriority(db, target)
+        return result
 
     except Exception as e:
         print(traceback.format_exc())
