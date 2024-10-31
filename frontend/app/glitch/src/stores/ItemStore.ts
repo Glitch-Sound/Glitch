@@ -260,7 +260,6 @@ const useItemStore = defineStore('item', {
     },
     closeItem(rid: number) {
       if (!this.items_closed.includes(rid)) {
-        console.log('add : ' + rid)
         this.items_closed.push(rid)
       }
     },
