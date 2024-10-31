@@ -12,8 +12,10 @@ import type {
   StoryUpdate,
   TaskCreate,
   TaskUpdate,
+  TaskPriorityUpdate,
   BugCreate,
   BugUpdate,
+  BugPriorityUpdate,
   ItemState
 } from '@/types/Item'
 import type { Activity, ActivityCreate, ActivityUpdate } from '@/types/Activity'
@@ -244,6 +246,11 @@ const useItemStore = defineStore('item', {
       this.is_update = true
       return result
     },
+    async updatePriorityTask(task_priority: TaskPriorityUpdate): Promise<Item> {
+      const result = await service_item.updatePriorityTask(task_priority)
+      this.is_update = true
+      return result
+    },
     async deleteBug(rid: number): Promise<void> {
       await service_item.deleteBug(rid)
       this.is_update = true
@@ -262,6 +269,11 @@ const useItemStore = defineStore('item', {
     },
     async deleteActivity(rid: number): Promise<void> {
       await service_activity.deleteActivity(rid)
+    },
+    async updatePriorityBug(bug_priority: BugPriorityUpdate): Promise<Item> {
+      const result = await service_item.updatePriorityBug(bug_priority)
+      this.is_update = true
+      return result
     },
     closeItem(rid: number) {
       if (!this.items_closed.includes(rid)) {

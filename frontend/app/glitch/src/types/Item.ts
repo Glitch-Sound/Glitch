@@ -227,6 +227,11 @@ export interface TaskUpdate {
   task_number_total: number
 }
 
+export interface TaskPriorityUpdate {
+  rid: number
+  priority: number
+}
+
 export interface BugCreate {
   id_project: number
   rid_items: number
@@ -245,6 +250,11 @@ export interface BugUpdate {
   detail: string
   result: string
   bug_workload: number
+}
+
+export interface BugPriorityUpdate {
+  rid: number
+  priority: number
 }
 
 export interface ItemHierarchy {

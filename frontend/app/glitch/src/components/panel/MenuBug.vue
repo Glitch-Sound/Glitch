@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type EmitType } from '@/components/common/events'
-import { ItemState, type Item } from '@/types/Item'
+import { ItemState, type Item, type BugPriorityUpdate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
 import MenuState from '@/components/panel/MenuState.vue'
@@ -21,6 +21,14 @@ const handleOpenActivity = () => {
 
 const handleUpdateState = (state: ItemState) => {
   store_item.updateState(props.item.rid, state)
+}
+
+const setPriority = async (priority: number) => {
+  const data: BugPriorityUpdate = {
+    rid: props.item.rid,
+    priority: priority
+  }
+  store_item.updatePriorityBug(data)
 }
 </script>
 
@@ -48,6 +56,19 @@ const handleUpdateState = (state: ItemState) => {
     </v-list-item>
 
     <MenuState @update-state="handleUpdateState" />
+
+    <v-list-item link v-if="props.item.priority == 0" @click="setPriority(1)">
+      <template v-slot:prepend>
+        <v-icon size="small" class="mr-n4">mdi-priority-high</v-icon>
+      </template>
+      <v-list-item-title>Priority High</v-list-item-title>
+    </v-list-item>
+    <v-list-item link v-else @click="setPriority(0)">
+      <template v-slot:prepend>
+        <v-icon size="small" class="mr-n4">mdi-priority-low</v-icon>
+      </template>
+      <v-list-item-title>Priority Low</v-list-item-title>
+    </v-list-item>
 
     <v-list-item link>
       <template v-slot:prepend>

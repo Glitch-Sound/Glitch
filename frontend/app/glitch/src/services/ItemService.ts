@@ -15,8 +15,10 @@ import type {
   StoryUpdate,
   TaskCreate,
   TaskUpdate,
+  TaskPriorityUpdate,
   BugCreate,
   BugUpdate,
+  BugPriorityUpdate,
   ItemHierarchy
 } from '@/types/Item'
 
@@ -301,6 +303,16 @@ class ItemService {
     }
   }
 
+  public async updatePriorityTask(task_priority: TaskPriorityUpdate): Promise<Item> {
+    try {
+      const response = await http.put<Item>('/api/task/priority', task_priority)
+      return response.data
+    } catch (error) {
+      console.trace()
+      throw new Error('error: ${error}')
+    }
+  }
+
   public async createBug(bug: BugCreate): Promise<Item> {
     try {
       const response = await http.post<Item>('/api/bug', bug)
@@ -324,6 +336,16 @@ class ItemService {
   public async deleteBug(rid: number): Promise<void> {
     try {
       await http.delete(`/api/bug/${rid}`)
+    } catch (error) {
+      console.trace()
+      throw new Error('error: ${error}')
+    }
+  }
+
+  public async updatePriorityBug(bug_priority: BugPriorityUpdate): Promise<Item> {
+    try {
+      const response = await http.put<Item>('/api/bug/priority', bug_priority)
+      return response.data
     } catch (error) {
       console.trace()
       throw new Error('error: ${error}')
