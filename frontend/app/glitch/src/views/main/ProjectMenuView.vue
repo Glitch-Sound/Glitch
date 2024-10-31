@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { ExtractType, type EventCreate } from '@/types/Item'
+import { ItemType, ExtractType, type EventCreate } from '@/types/Item'
 
 import useItemStore from '@/stores/ItemStore'
 import CreateEventDialog from '@/components/dialog/CreateEventDialog.vue'
@@ -17,6 +17,10 @@ const openCreateEventDialog = () => {
 const handleCreate = async (data: EventCreate) => {
   await store_item.createEvent(data)
   dialog_event_create.value?.close()
+}
+
+const setEnabledType = (type: ItemType) => {
+  store_item.setEnabledType(type)
 }
 </script>
 
@@ -104,6 +108,44 @@ const handleCreate = async (data: EventCreate) => {
         :disabled="store_item.extract_rid_item === 0"
       >
         <v-icon icon="mdi-relation-many-to-many" />Relation
+      </v-list-item>
+    </v-sheet>
+
+    <v-sheet class="navigation">
+      <v-list-item
+        @click="setEnabledType(ItemType.EVENT)"
+        :variant="ItemType.EVENT <= store_item.type_enabled ? 'text' : 'plain'"
+      >
+        <v-icon icon="mdi-calendar-arrow-left" />
+        Event
+      </v-list-item>
+      <v-list-item
+        @click="setEnabledType(ItemType.FEATURE)"
+        :variant="ItemType.FEATURE <= store_item.type_enabled ? 'text' : 'plain'"
+      >
+        <v-icon icon="mdi-apps" />
+        Feature
+      </v-list-item>
+      <v-list-item
+        @click="setEnabledType(ItemType.STORY)"
+        :variant="ItemType.STORY <= store_item.type_enabled ? 'text' : 'plain'"
+      >
+        <v-icon icon="mdi-arrow-expand-horizontal" />
+        Story
+      </v-list-item>
+      <v-list-item
+        @click="setEnabledType(ItemType.TASK)"
+        :variant="ItemType.TASK <= store_item.type_enabled ? 'text' : 'plain'"
+      >
+        <v-icon icon="mdi-label" />
+        Task
+      </v-list-item>
+      <v-list-item
+        @click="setEnabledType(ItemType.BUG)"
+        :variant="ItemType.BUG <= store_item.type_enabled ? 'text' : 'plain'"
+      >
+        <v-icon icon="mdi-spider" />
+        Bug
       </v-list-item>
     </v-sheet>
   </v-navigation-drawer>

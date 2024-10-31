@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { ExtractType } from '@/types/Item'
+import { ItemType, ExtractType } from '@/types/Item'
 import type {
   Item,
   ItemRange,
@@ -33,6 +33,7 @@ const useItemStore = defineStore('item', {
     items: [] as Array<Item>,
     extract_rid_item: 0 as number,
     extract_search_target: '' as string,
+    type_enabled: ItemType.BUG as ItemType,
     items_closed: [] as Array<number>
   }),
   actions: {
@@ -163,6 +164,10 @@ const useItemStore = defineStore('item', {
     },
     setExtractSearchUpdate() {
       this.type_extract = ExtractType.SEARCH
+      this.is_update = true
+    },
+    setEnabledType(type: ItemType) {
+      this.type_enabled = type
       this.is_update = true
     },
     async updateState(target: number, state: ItemState): Promise<Item> {
