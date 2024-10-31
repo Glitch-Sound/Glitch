@@ -70,13 +70,6 @@ const setPriority = async (priority: number) => {
       <v-list-item-title>Priority Low</v-list-item-title>
     </v-list-item>
 
-    <v-list-item link>
-      <template v-slot:prepend>
-        <v-icon size="small" class="mr-n4">mdi-priority-high</v-icon>
-      </template>
-      <v-list-item-title>Priority High</v-list-item-title>
-    </v-list-item>
-
     <v-list-item link @click="store_item.setExtractItem(props.item.rid)">
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4">mdi-relation-one-to-zero-or-many</v-icon>

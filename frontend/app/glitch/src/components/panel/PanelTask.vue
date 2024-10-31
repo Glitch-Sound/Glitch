@@ -60,7 +60,7 @@ const handleDeleteTask = async (data: TaskUpdate) => {
         </v-menu>
       </v-col>
 
-      <v-col cols="auto" class="type ml-15">
+      <v-col cols="auto" class="type ml-11">
         <v-icon size="small" :color="tree.t.color">mdi-label</v-icon>
       </v-col>
 

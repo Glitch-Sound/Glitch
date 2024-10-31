@@ -156,9 +156,22 @@ const props = defineProps<{
           <v-icon :color="tree.b.color" size="16">mdi-circle-slice-8</v-icon>
         </div>
       </foreignObject>
+
       <foreignObject v-else :x="tree.e.ix" :y="tree.e.iy" :width="tree.e.iw" :height="tree.e.ih">
         <div xmlns="http://www.w3.org/1999/xhtml">
           <v-icon :color="tree.e.color" size="16">mdi-align-vertical-distribute</v-icon>
+        </div>
+      </foreignObject>
+
+      <foreignObject
+        v-if="props.item.priority"
+        :x="tree.b.ix + 20"
+        :y="tree.b.iy"
+        :width="tree.b.iw"
+        :height="tree.b.ih"
+      >
+        <div xmlns="http://www.w3.org/1999/xhtml">
+          <v-icon :color="tree.b.color" size="20">mdi-chevron-triple-up</v-icon>
         </div>
       </foreignObject>
     </svg>

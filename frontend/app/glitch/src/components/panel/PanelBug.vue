@@ -60,7 +60,7 @@ const handleDeleteBug = async (data: BugUpdate) => {
         </v-menu>
       </v-col>
 
-      <v-col cols="auto" class="type ml-15">
+      <v-col cols="auto" class="type ml-11">
         <v-icon size="small" :color="tree.b.color">mdi-spider</v-icon>
       </v-col>
 
