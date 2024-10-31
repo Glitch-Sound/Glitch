@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 import { type EmitType } from '@/components/common/events'
 import { ItemState, type Item } from '@/types/Item'
 
@@ -12,6 +14,8 @@ const store_item = useItemStore()
 const props = defineProps<{
   item: Item
 }>()
+
+const is_hidden = computed(() => store_item.isHideMenuItem(props.item.rid))
 
 const emit = defineEmits<EmitType>()
 const handleAddStory = () => {
@@ -58,6 +62,19 @@ const handleUpdateState = (state: ItemState) => {
         <v-icon size="small" class="mr-n4">mdi-relation-one-to-zero-or-many</v-icon>
       </template>
       <v-list-item-title>Jump Relation</v-list-item-title>
+    </v-list-item>
+
+    <v-list-item v-if="!is_hidden" link @click="store_item.hideItem(props.item.rid)">
+      <template v-slot:prepend>
+        <v-icon size="small" class="mr-n4">mdi-align-vertical-distribute</v-icon>
+      </template>
+      <v-list-item-title>Hide</v-list-item-title>
+    </v-list-item>
+    <v-list-item v-else link @click="store_item.displayItem(props.item.rid)">
+      <template v-slot:prepend>
+        <v-icon size="small" class="mr-n4">mdi-menu</v-icon>
+      </template>
+      <v-list-item-title>Display</v-list-item-title>
     </v-list-item>
   </v-list>
 </template>

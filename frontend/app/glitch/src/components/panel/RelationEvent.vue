@@ -9,6 +9,7 @@ import { tree } from '@/components/panel/relation'
 const props = defineProps<{
   item: Item
   relation: PanelRelation
+  is_hide: boolean
 }>()
 </script>
 
@@ -78,7 +79,13 @@ const props = defineProps<{
       </foreignObject>
 
       <!-- event:state -->
-      <foreignObject :x="tree.e.ix" :y="tree.e.iy" :width="tree.e.iw" :height="tree.e.ih">
+      <foreignObject
+        v-if="!props.is_hide"
+        :x="tree.e.ix"
+        :y="tree.e.iy"
+        :width="tree.e.iw"
+        :height="tree.e.ih"
+      >
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.IDLE">
           <v-icon :color="tree.e.color" size="16">mdi-circle-outline</v-icon>
         </div>
@@ -93,6 +100,11 @@ const props = defineProps<{
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.COMPLETE">
           <v-icon :color="tree.e.color" size="16">mdi-circle-slice-8</v-icon>
+        </div>
+      </foreignObject>
+      <foreignObject v-else :x="tree.e.ix" :y="tree.e.iy" :width="tree.e.iw" :height="tree.e.ih">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+          <v-icon :color="tree.e.color" size="16">mdi-align-vertical-distribute</v-icon>
         </div>
       </foreignObject>
     </svg>
