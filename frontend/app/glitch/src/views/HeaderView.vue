@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { ExtractType, type Project } from '@/types/Item'
 
+import useCommonStore from '@/stores/CommonStore'
 import useUserStore from '@/stores/UserStore'
 import useItemStore from '@/stores/ItemStore'
 import useProjectStore from '@/stores/ProjectStore'
@@ -11,9 +12,12 @@ import LoginUser from '@/components/common/LoginUser.vue'
 import SelectProjectDialog from '@/components/dialog/SelectProjectDialog.vue'
 import SearchDialog from '@/components/dialog/SearchDialog.vue'
 
-const title = ref('Glitch')
+const TITLE_GLITCH = 'Glitch'
+
+const title = ref(TITLE_GLITCH)
 
 const route = useRoute()
+const store_common = useCommonStore()
 const store_user = useUserStore()
 const store_item = useItemStore()
 const store_project = useProjectStore()
@@ -26,9 +30,17 @@ const link_analyze = ref('/')
 const dialog_project = ref()
 const dialog_search = ref()
 
-onMounted(() => {
+onMounted(async () => {
+  await store_project.fetchProjects()
   common()
 })
+
+watch(
+  () => store_common.mode,
+  () => {
+    common()
+  }
+)
 
 const openProjectDialog = () => {
   dialog_project.value?.open()
@@ -49,10 +61,14 @@ const handleSubmitProject = async (id_project: number) => {
 }
 
 const common = () => {
-  title.value =
-    store_project.projects.find(
-      (project: Project) => project.rid == store_project.selected_id_project
-    )?.title || 'Glitch'
+  if (!store_common.isModeHome()) {
+    title.value =
+      store_project.projects.find(
+        (project: Project) => project.rid == store_project.selected_id_project
+      )?.title || TITLE_GLITCH
+  } else {
+    title.value = TITLE_GLITCH
+  }
 
   link_project.value = '/project/' + store_project.selected_id_project
   link_progress.value =

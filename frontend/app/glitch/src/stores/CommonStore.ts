@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 enum Mode {
-  NONE = 0,
+  HOME = 0,
   PROJECT,
   PROGRESS,
   ANALYZE
@@ -9,9 +9,12 @@ enum Mode {
 
 const useCommonStore = defineStore('common', {
   state: () => ({
-    mode: Mode.PROJECT as Mode
+    mode: Mode.HOME as Mode
   }),
   actions: {
+    setModeHome() {
+      this.mode = Mode.HOME
+    },
     setModeProject() {
       this.mode = Mode.PROJECT
     },
@@ -20,6 +23,9 @@ const useCommonStore = defineStore('common', {
     },
     setModeAnalyze() {
       this.mode = Mode.ANALYZE
+    },
+    isModeHome() {
+      return this.mode == Mode.HOME
     },
     isModeProject() {
       return this.mode == Mode.PROJECT

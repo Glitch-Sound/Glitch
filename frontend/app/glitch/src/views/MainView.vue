@@ -3,14 +3,18 @@ import { onMounted, ref } from 'vue'
 
 import type { UserCreate } from '@/types/User'
 
+import useCommonStore from '@/stores/CommonStore'
 import useUserStore from '@/stores/UserStore'
 import CreateAdministratorDialog from '@/components/dialog/CreateAdministratorDialog.vue'
 
+const store_common = useCommonStore()
 const store_user = useUserStore()
 
 const dialog_admin_create = ref()
 
 onMounted(async () => {
+  store_common.setModeHome()
+
   await store_user.fetchUsers()
   if (store_user.users.length === 0) {
     dialog_admin_create.value?.open()
