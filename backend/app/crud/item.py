@@ -1401,4 +1401,42 @@ def getFrequency(db: Session, id_project):
 
 
 def updateSummary(db: Session):
-    return
+    try:
+        db.begin()
+
+        targets_item = db.query(
+            Item.rid,
+            Item.id_project
+        )\
+        .filter(
+            Item.is_deleted == 0,
+            Item.type.in_([5, 6]),
+            Item.state != ItemState.COMPLETE.value,
+        )\
+        .all()
+
+        for target in targets_item:
+            createSummaryItem(db, target.id_project, target.rid)
+
+        targets_user = db.query(
+            Item.id_project,
+            Item.rid_users
+        )\
+        .filter(
+            Item.is_deleted == 0,
+            Item.type.in_([5, 6]),
+            Item.state != ItemState.COMPLETE.value,
+        )\
+        .group_by(
+            Item.id_project,
+            Item.rid_users
+        )\
+        .all()
+
+        for target in targets_user:
+            createSummaryUser(db, target.id_project, target.rid_users)
+
+        db.commit()
+
+    except Exception as e:
+        raise e
