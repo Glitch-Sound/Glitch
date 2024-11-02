@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
 
 import { ItemType } from '@/types/Item'
 
@@ -19,7 +18,6 @@ import PanelBug from '@/components/panel/PanelBug.vue'
 
 import { getPanelRelation } from '@/views/main/relation'
 
-const router = useRouter()
 const store_project = useProjectStore()
 const store_item = useItemStore()
 const store_analyze = useAnalyzeStore()
@@ -38,7 +36,7 @@ watch(
 )
 
 const common = async () => {
-  await store_item.fetchItems(router)
+  store_item.updated()
   await store_analyze.fetchItems(store_project.selected_id_project)
 }
 </script>
@@ -61,35 +59,35 @@ const common = async () => {
       </v-row>
 
       <div class="mt-10">
-        <template v-for="(item, index) in store_item.items" :key="item.rid">
+        <template v-for="(item, index) in store_analyze.items" :key="item.rid">
           <PanelEvent
             v-if="item.type == ItemType.EVENT"
             :item="item"
-            :relation="getPanelRelation(store_item.items, index)"
+            :relation="getPanelRelation(store_analyze.items, index)"
           />
 
           <PanelFeature
             v-if="item.type == ItemType.FEATURE"
             :item="item"
-            :relation="getPanelRelation(store_item.items, index)"
+            :relation="getPanelRelation(store_analyze.items, index)"
           />
 
           <PanelStory
             v-if="item.type == ItemType.STORY"
             :item="item"
-            :relation="getPanelRelation(store_item.items, index)"
+            :relation="getPanelRelation(store_analyze.items, index)"
           />
 
           <PanelTask
             v-if="item.type == ItemType.TASK"
             :item="item"
-            :relation="getPanelRelation(store_item.items, index)"
+            :relation="getPanelRelation(store_analyze.items, index)"
           />
 
           <PanelBug
             v-if="item.type == ItemType.BUG"
             :item="item"
-            :relation="getPanelRelation(store_item.items, index)"
+            :relation="getPanelRelation(store_analyze.items, index)"
           />
         </template>
       </div>

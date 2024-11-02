@@ -58,7 +58,8 @@ const common = async () => {
       store_project.selected_id_project,
       store_progress.rid_users
     )
-    await store_item.fetchItems(router)
+
+    store_item.updated()
     await store_progress.fetchItems(store_project.selected_id_project, store_progress.rid_users)
   }
 }
@@ -91,35 +92,35 @@ const common = async () => {
       </v-row>
 
       <div class="mt-10">
-        <template v-for="(item, index) in store_item.items" :key="item.rid">
+        <template v-for="(item, index) in store_progress.items" :key="item.rid">
           <PanelEvent
             v-if="item.type == ItemType.EVENT"
             :item="item"
-            :relation="getPanelRelation(store_item.items, index)"
+            :relation="getPanelRelation(store_progress.items, index)"
           />
 
           <PanelFeature
             v-if="item.type == ItemType.FEATURE"
             :item="item"
-            :relation="getPanelRelation(store_item.items, index)"
+            :relation="getPanelRelation(store_progress.items, index)"
           />
 
           <PanelStory
             v-if="item.type == ItemType.STORY"
             :item="item"
-            :relation="getPanelRelation(store_item.items, index)"
+            :relation="getPanelRelation(store_progress.items, index)"
           />
 
           <PanelTask
             v-if="item.type == ItemType.TASK"
             :item="item"
-            :relation="getPanelRelation(store_item.items, index)"
+            :relation="getPanelRelation(store_progress.items, index)"
           />
 
           <PanelBug
             v-if="item.type == ItemType.BUG"
             :item="item"
-            :relation="getPanelRelation(store_item.items, index)"
+            :relation="getPanelRelation(store_progress.items, index)"
           />
         </template>
       </div>

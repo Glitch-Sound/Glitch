@@ -11,12 +11,12 @@ const service_summary = new SummaryService()
 
 const useAnalyzeStore = defineStore('analyze', {
   state: () => ({
-    items_notice: [] as Array<Item>,
+    items: [] as Array<Item>,
     summaries_project: [] as Array<SummaryItem>
   }),
   actions: {
     async fetchItems(id_project: number | null) {
-      this.items_notice = await service_item.getItemsNotice(id_project)
+      this.items = await service_item.getItemsNotice(id_project)
     },
     async fetchSummaryProject(id_project: number | null) {
       if (id_project) {
