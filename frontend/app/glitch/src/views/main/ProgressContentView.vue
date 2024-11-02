@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, watch, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { ItemType } from '@/types/Item'
 
@@ -19,6 +19,7 @@ import PanelBug from '@/components/panel/PanelBug.vue'
 import { getPanelRelation } from '@/views/main/relation'
 
 const route = useRoute()
+const router = useRouter()
 const store_project = useProjectStore()
 const store_item = useItemStore()
 const store_progress = useProgressStore()
@@ -28,6 +29,7 @@ const rid_user = computed(() => route.params.target)
 onMounted(async () => {
   store_progress.setUser(Number(rid_user.value))
   if (store_project.selected_id_project) {
+    await store_item.fetchItems(router)
     common()
   }
 })

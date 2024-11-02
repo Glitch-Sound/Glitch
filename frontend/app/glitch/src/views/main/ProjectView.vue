@@ -2,6 +2,7 @@
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import useCommonStore from '@/stores/CommonStore'
 import useProjectStore from '@/stores/ProjectStore'
 import useItemStore from '@/stores/ItemStore'
 import ProjectMenuView from '@/views/main/ProjectMenuView.vue'
@@ -9,10 +10,12 @@ import ProjectContentView from '@/views/main/ProjectContentView.vue'
 
 const route = useRoute()
 const router = useRouter()
+const store_common = useCommonStore()
 const store_project = useProjectStore()
 const store_item = useItemStore()
 
 onMounted(() => {
+  store_common.setModeProject()
   store_project.setSelectedProjectID(Number(route.params.id_project))
   common()
 })

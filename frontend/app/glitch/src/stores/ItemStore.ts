@@ -22,8 +22,9 @@ import type { Activity, ActivityCreate, ActivityUpdate } from '@/types/Activity'
 
 import ItemService from '@/services/ItemService'
 import ActivityService from '@/services/ActivityService'
-import useProjectStore from '@/stores/ProjectStore'
+import useCommonStore from '@/stores/CommonStore'
 import useUserStore from '@/stores/UserStore'
+import useProjectStore from '@/stores/ProjectStore'
 
 const service_item = new ItemService()
 const service_activity = new ActivityService()
@@ -46,6 +47,7 @@ const useItemStore = defineStore('item', {
     async fetchItems(router: any) {
       this.is_update = false
 
+      const store_common = useCommonStore()
       const store_user = useUserStore()
       const store_project = useProjectStore()
 
@@ -56,8 +58,10 @@ const useItemStore = defineStore('item', {
           {
             this.items = await service_item.getItemsIncomplete(store_project.selected_id_project)
 
-            const query = { extruct: this.type_extract }
-            router.push({ path, query })
+            if (store_common.isModeProject()) {
+              const query = { extruct: this.type_extract }
+              router.push({ path, query })
+            }
           }
           break
 
@@ -65,8 +69,10 @@ const useItemStore = defineStore('item', {
           {
             this.items = await service_item.getItemsAll(store_project.selected_id_project)
 
-            const query = { extruct: this.type_extract }
-            router.push({ path, query })
+            if (store_common.isModeProject()) {
+              const query = { extruct: this.type_extract }
+              router.push({ path, query })
+            }
           }
           break
 
@@ -74,8 +80,10 @@ const useItemStore = defineStore('item', {
           {
             this.items = await service_item.getItemsHighRisk(store_project.selected_id_project)
 
-            const query = { extruct: this.type_extract }
-            router.push({ path, query })
+            if (store_common.isModeProject()) {
+              const query = { extruct: this.type_extract }
+              router.push({ path, query })
+            }
           }
           break
 
@@ -83,8 +91,10 @@ const useItemStore = defineStore('item', {
           {
             this.items = await service_item.getItemsAlert(store_project.selected_id_project)
 
-            const query = { extruct: this.type_extract }
-            router.push({ path, query })
+            if (store_common.isModeProject()) {
+              const query = { extruct: this.type_extract }
+              router.push({ path, query })
+            }
           }
           break
 
@@ -95,8 +105,10 @@ const useItemStore = defineStore('item', {
               store_user.login_user?.rid
             )
 
-            const query = { extruct: this.type_extract, target: store_user.login_user?.rid }
-            router.push({ path, query })
+            if (store_common.isModeProject()) {
+              const query = { extruct: this.type_extract, target: store_user.login_user?.rid }
+              router.push({ path, query })
+            }
           }
           break
 
@@ -107,8 +119,10 @@ const useItemStore = defineStore('item', {
               this.extract_rid_item
             )
 
-            const query = { extruct: this.type_extract, target: this.extract_rid_item }
-            router.push({ path, query })
+            if (store_common.isModeProject()) {
+              const query = { extruct: this.type_extract, target: this.extract_rid_item }
+              router.push({ path, query })
+            }
           }
           break
 
@@ -119,8 +133,10 @@ const useItemStore = defineStore('item', {
               this.extract_search_target
             )
 
-            const query = { extruct: this.type_extract, target: this.extract_search_target }
-            router.push({ path, query })
+            if (store_common.isModeProject()) {
+              const query = { extruct: this.type_extract, target: this.extract_search_target }
+              router.push({ path, query })
+            }
           }
           break
       }
