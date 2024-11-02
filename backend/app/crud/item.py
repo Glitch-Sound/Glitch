@@ -560,6 +560,93 @@ def getItems(db: Session, params: ItemParam):
         raise e
 
 
+def getItemsNotice(db: Session, id_project):
+    try:
+        UserAlias1 = aliased(User)
+        UserAlias2 = aliased(User)
+
+        cte_extruct_ancestor = db.query(
+            Tree.rid_ancestor.label('rid')
+        )\
+        .join(Item,  Item.rid == Tree.rid_descendant)\
+        .join(Story, Item.rid == Story.rid_items)\
+        .where(
+            Item.id_project == id_project,
+            Item.state != ItemState.COMPLETE.value
+        )
+
+        cte_extruct_descendant = db.query(
+            Tree.rid_descendant.label('rid')
+        )\
+        .join(Item, Item.rid == Tree.rid_ancestor)\
+        .join(Story, Item.rid == Story.rid_items)\
+        .where(
+            Item.id_project == id_project,
+            Item.state != ItemState.COMPLETE.value
+        )
+
+        cte_extruct = cte_extruct_ancestor.union(cte_extruct_descendant).cte(name='targets')
+
+        query = db.query(
+            Item.rid,
+            Item.id_project,
+            Item.type,
+            Item.state,
+            Item.risk,
+            Item.priority,
+            Item.title,
+            Item.detail,
+            Item.result,
+            Item.datetime_entry,
+            Item.datetime_update,
+            UserAlias1.rid.label('rid_users'),
+            UserAlias1.name.label('name'),
+            UserAlias2.rid.label('rid_users_review'),
+            UserAlias2.name.label('name_review'),
+            Project.datetime_start.label('project_datetime_start'),
+            Project.datetime_end.label('project_datetime_end'),
+            Event.datetime_end.label('event_datetime_end'),
+            Story.datetime_start.label('story_datetime_start'),
+            Story.datetime_end.label('story_datetime_end'),
+            Task.type.label('task_type'),
+            Task.workload.label('task_workload'),
+            Task.number_completed.label('task_number_completed'),
+            Task.number_total.label('task_number_total'),
+            Bug.workload.label('bug_workload'))\
+        .select_from(cte_extruct)\
+        .join(Item, Item.rid == cte_extruct.c.rid)\
+        .outerjoin(UserAlias1,  UserAlias1.rid == Item.rid_users)\
+        .outerjoin(UserAlias2,  UserAlias2.rid == Item.rid_users_review)\
+        .outerjoin(Project, Project.rid_items == Item.rid)\
+        .outerjoin(Event, Event.rid_items == Item.rid)\
+        .outerjoin(Feature, Feature.rid_items == Item.rid)\
+        .outerjoin(Story, Story.rid_items == Item.rid)\
+        .outerjoin(Task, Task.rid_items == Item.rid)\
+        .outerjoin(Bug, Bug.rid_items == Item.rid)\
+        .filter(
+            and_(
+                Item.is_deleted == 0,
+                or_(
+                    Item.type.in_([
+                        ItemType.PROJECT.value,
+                        ItemType.EVENT.value,
+                        ItemType.FEATURE.value,
+                        ItemType.STORY.value,
+                        ItemType.BUG.value
+                    ]),
+                    Item.state == ItemState.ALERT.value
+                )
+            )
+        )\
+        .order_by(Item.path_sort)
+
+        result = query.all()
+        return result
+
+    except Exception as e:
+        raise e
+
+
 def getItemRange(db: Session, id_project: int):
     try:
         query = db.query(
@@ -1289,95 +1376,6 @@ def getHierarchy(db: Session, id_project: int, visited=None):
         "workload_bug": ancestor.bug_workload,
         "children": [child for child in children if child]
     }
-
-
-def getItemsNotice(db: Session, id_project, select_date):
-    try:
-        UserAlias1 = aliased(User)
-        UserAlias2 = aliased(User)
-
-        cte_extruct_ancestor = db.query(
-            Tree.rid_ancestor.label('rid')
-        )\
-        .join(Item,  Item.rid == Tree.rid_descendant)\
-        .join(Story, Item.rid == Story.rid_items)\
-        .where(
-            Item.id_project == id_project,
-            Item.state != ItemState.COMPLETE.value,
-            Story.datetime_start <= select_date
-        )
-
-        cte_extruct_descendant = db.query(
-            Tree.rid_descendant.label('rid')
-        )\
-        .join(Item, Item.rid == Tree.rid_ancestor)\
-        .join(Story, Item.rid == Story.rid_items)\
-        .where(
-            Item.id_project == id_project,
-            Item.state != ItemState.COMPLETE.value,
-            Story.datetime_start <= select_date
-        )
-
-        cte_extruct = cte_extruct_ancestor.union(cte_extruct_descendant).cte(name='targets')
-
-        query = db.query(
-            Item.rid,
-            Item.id_project,
-            Item.type,
-            Item.state,
-            Item.risk,
-            Item.priority,
-            Item.title,
-            Item.detail,
-            Item.result,
-            Item.datetime_entry,
-            Item.datetime_update,
-            UserAlias1.rid.label('rid_users'),
-            UserAlias1.name.label('name'),
-            UserAlias2.rid.label('rid_users_review'),
-            UserAlias2.name.label('name_review'),
-            Project.datetime_start.label('project_datetime_start'),
-            Project.datetime_end.label('project_datetime_end'),
-            Event.datetime_end.label('event_datetime_end'),
-            Story.datetime_start.label('story_datetime_start'),
-            Story.datetime_end.label('story_datetime_end'),
-            Task.type.label('task_type'),
-            Task.workload.label('task_workload'),
-            Task.number_completed.label('task_number_completed'),
-            Task.number_total.label('task_number_total'),
-            Bug.workload.label('bug_workload'))\
-        .select_from(cte_extruct)\
-        .join(Item, Item.rid == cte_extruct.c.rid)\
-        .outerjoin(UserAlias1,  UserAlias1.rid == Item.rid_users)\
-        .outerjoin(UserAlias2,  UserAlias2.rid == Item.rid_users_review)\
-        .outerjoin(Project, Project.rid_items == Item.rid)\
-        .outerjoin(Event, Event.rid_items == Item.rid)\
-        .outerjoin(Feature, Feature.rid_items == Item.rid)\
-        .outerjoin(Story, Story.rid_items == Item.rid)\
-        .outerjoin(Task, Task.rid_items == Item.rid)\
-        .outerjoin(Bug, Bug.rid_items == Item.rid)\
-        .filter(
-            and_(
-                Item.is_deleted == 0,
-                or_(
-                    Item.type.in_([
-                        ItemType.PROJECT.value,
-                        ItemType.EVENT.value,
-                        ItemType.FEATURE.value,
-                        ItemType.STORY.value,
-                        ItemType.BUG.value
-                    ]),
-                    Item.state == ItemState.ALERT.value
-                )
-            )
-        )\
-        .order_by(Item.path_sort)
-
-        result = query.all()
-        return result
-
-    except Exception as e:
-        raise e
 
 
 def getFrequency(db: Session, id_project):
