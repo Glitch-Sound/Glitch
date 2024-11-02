@@ -160,7 +160,7 @@ const setEnabledType = (type: ItemType) => {
 
     <v-sheet class="information">
       <v-list-item>
-        <v-switch color="primary" v-model="is_enabled_close" label="Enable closed" hide-details />
+        <v-switch color="#f0f0f0" v-model="is_enabled_close" label="Enable closed" hide-details />
       </v-list-item>
     </v-sheet>
   </v-navigation-drawer>

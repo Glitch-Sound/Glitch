@@ -64,7 +64,12 @@ const handleUpdateState = (state: ItemState) => {
       <v-list-item-title>Jump Relation</v-list-item-title>
     </v-list-item>
 
-    <v-list-item v-if="!is_closed" link @click="store_item.closeItem(props.item.rid)">
+    <v-list-item
+      v-if="!is_closed"
+      link
+      @click="store_item.closeItem(props.item.rid)"
+      :disabled="!store_item.is_enable_closed"
+    >
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4">mdi-align-vertical-distribute</v-icon>
       </template>
