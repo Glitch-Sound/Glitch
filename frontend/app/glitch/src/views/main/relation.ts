@@ -141,15 +141,6 @@ export const getPanelRelation = (items: Item[], index: number): PanelRelation =>
     is_exist_next_task_bug = !has_parent_in_between
   }
 
-  // console.log('type_current           : ' + type_current)
-  // console.log('is_top                 : ' + is_top)
-  // console.log('is_bottom              : ' + is_bottom)
-  // console.log('has_child              : ' + has_child)
-  // console.log('is_exist_next_event    : ' + is_exist_next_event)
-  // console.log('is_exist_next_feature  : ' + is_exist_next_feature)
-  // console.log('is_exist_next_story    : ' + is_exist_next_story)
-  // console.log('is_exist_next_task_bug : ' + is_exist_next_task_bug)
-
   return {
     is_top,
     is_bottom,
