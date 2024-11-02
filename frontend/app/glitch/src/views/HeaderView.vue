@@ -75,7 +75,7 @@ const common = () => {
     '/progress/' + store_project.selected_id_project + '/' + store_user.login_user?.rid
   link_analyze.value = '/analyze/' + store_project.selected_id_project
 
-  if (store_project.selected_id_project) {
+  if (store_user.login_user && store_project.selected_id_project) {
     link_disabled.value = false
 
     switch (Number(route.query.extruct)) {
@@ -150,7 +150,7 @@ const common = () => {
       <LoginUser />
     </div>
 
-    <v-btn icon @click="openSearchDialog">
+    <v-btn icon :disabled="link_disabled" @click="openSearchDialog">
       <v-icon color="icon">mdi-magnify</v-icon>
     </v-btn>
 

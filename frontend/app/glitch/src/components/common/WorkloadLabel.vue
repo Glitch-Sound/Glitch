@@ -43,7 +43,7 @@ const props = defineProps<{
 
     <v-chip
       v-if="props.risk == RiskType.LIMIT"
-      class="ml-1"
+      class="ml-5"
       size="small"
       prepend-icon="mdi-fire"
       color="#b1a47c"
@@ -53,7 +53,7 @@ const props = defineProps<{
 
     <v-chip
       v-if="props.risk == RiskType.OVER"
-      class="ml-1"
+      class="ml-5"
       size="small"
       prepend-icon="mdi-fire"
       color="#ba374c"

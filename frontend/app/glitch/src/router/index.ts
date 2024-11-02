@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import useUserStore from '@/stores/UserStore'
+
 import MainView from '@/views/MainView.vue'
 import ProjectView from '@/views/main/ProjectView.vue'
 import ProgressView from '@/views/main/ProgressView.vue'
@@ -50,6 +52,17 @@ const router = createRouter({
       meta: { requiresAuth: true }
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+
+  if (requiresAuth && !userStore.login_user) {
+    next('/')
+  } else {
+    next()
+  }
 })
 
 export default router
