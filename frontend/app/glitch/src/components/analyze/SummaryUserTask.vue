@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 
-// @ts-ignore
 import * as d3 from 'd3'
 
 import type { SummaryItem } from '@/types/Summary'

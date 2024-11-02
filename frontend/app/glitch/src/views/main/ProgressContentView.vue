@@ -10,6 +10,7 @@ import useProgressStore from '@/stores/ProgressStore'
 import UserHierarchy from '@/components/analyze/UserHierarchy.vue'
 import SummaryUserTask from '@/components/analyze/SummaryUserTask.vue'
 import SummaryUserBug from '@/components/analyze/SummaryUserBug.vue'
+
 import PanelEvent from '@/components/panel/PanelEvent.vue'
 import PanelFeature from '@/components/panel/PanelFeature.vue'
 import PanelStory from '@/components/panel/PanelStory.vue'
@@ -57,6 +58,7 @@ const common = async () => {
       store_project.selected_id_project,
       store_progress.rid_users
     )
+    await store_item.fetchItems(router)
     await store_progress.fetchItems(store_project.selected_id_project, store_progress.rid_users)
   }
 }
