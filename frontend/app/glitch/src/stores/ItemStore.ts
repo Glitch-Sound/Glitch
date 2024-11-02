@@ -36,7 +36,8 @@ const useItemStore = defineStore('item', {
     extract_rid_item: 0 as number,
     extract_search_target: '' as string,
     type_enabled: ItemType.BUG as ItemType,
-    items_closed: [] as Array<number>
+    items_closed: [] as Array<number>,
+    is_enable_closed: true as boolean
   }),
   actions: {
     updated() {
@@ -288,6 +289,9 @@ const useItemStore = defineStore('item', {
       if (index !== -1) {
         this.items_closed.splice(index, 1)
       }
+    },
+    setEnableClosed(is_enable_closed: boolean) {
+      this.is_enable_closed = is_enable_closed
     }
   }
 })

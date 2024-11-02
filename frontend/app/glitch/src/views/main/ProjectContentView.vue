@@ -15,6 +15,10 @@ const store_item = useItemStore()
 let latest_closed_item: Item | null = null
 
 const isHide = (item: Item) => {
+  if (!store_item.is_enable_closed) {
+    return false
+  }
+
   if (store_item.isClosed(item.rid)) {
     if (!latest_closed_item || item.type < latest_closed_item.type) {
       latest_closed_item = item

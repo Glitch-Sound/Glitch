@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 import { ItemType, ExtractType, type EventCreate } from '@/types/Item'
 
@@ -9,6 +9,11 @@ import CreateEventDialog from '@/components/dialog/CreateEventDialog.vue'
 const store_item = useItemStore()
 
 const dialog_event_create = ref()
+const is_enabled_close = ref(true)
+
+watch(is_enabled_close, (is_enabled) => {
+  store_item.setEnableClosed(is_enabled)
+})
 
 const openCreateEventDialog = () => {
   dialog_event_create.value?.open()
@@ -119,6 +124,7 @@ const setEnabledType = (type: ItemType) => {
         <v-icon icon="mdi-calendar-arrow-left" />
         Event
       </v-list-item>
+
       <v-list-item
         @click="setEnabledType(ItemType.FEATURE)"
         :variant="ItemType.FEATURE <= store_item.type_enabled ? 'text' : 'plain'"
@@ -126,6 +132,7 @@ const setEnabledType = (type: ItemType) => {
         <v-icon icon="mdi-apps" />
         Feature
       </v-list-item>
+
       <v-list-item
         @click="setEnabledType(ItemType.STORY)"
         :variant="ItemType.STORY <= store_item.type_enabled ? 'text' : 'plain'"
@@ -133,6 +140,7 @@ const setEnabledType = (type: ItemType) => {
         <v-icon icon="mdi-arrow-expand-horizontal" />
         Story
       </v-list-item>
+
       <v-list-item
         @click="setEnabledType(ItemType.TASK)"
         :variant="ItemType.TASK <= store_item.type_enabled ? 'text' : 'plain'"
@@ -140,12 +148,19 @@ const setEnabledType = (type: ItemType) => {
         <v-icon icon="mdi-label" />
         Task
       </v-list-item>
+
       <v-list-item
         @click="setEnabledType(ItemType.BUG)"
         :variant="ItemType.BUG <= store_item.type_enabled ? 'text' : 'plain'"
       >
         <v-icon icon="mdi-spider" />
         Bug
+      </v-list-item>
+    </v-sheet>
+
+    <v-sheet class="information">
+      <v-list-item>
+        <v-switch color="primary" v-model="is_enabled_close" label="Enable closed" hide-details />
       </v-list-item>
     </v-sheet>
   </v-navigation-drawer>

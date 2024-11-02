@@ -103,7 +103,10 @@ const props = defineProps<{
 
       <!-- feature:state -->
       <foreignObject
-        v-if="!store_item.isClosed(props.item.rid)"
+        v-if="
+          !store_item.isClosed(props.item.rid) ||
+          (!store_item.is_enable_closed && store_item.isClosed(props.item.rid))
+        "
         :x="tree.f.ix"
         :y="tree.f.iy"
         :width="tree.f.iw"
