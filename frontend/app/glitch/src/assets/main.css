@@ -25,6 +25,7 @@ a {
 .information {
     margin: 5px 0 0 5px;
     padding: 0;
+    background-color: #000000;
 }
 
 .main {
