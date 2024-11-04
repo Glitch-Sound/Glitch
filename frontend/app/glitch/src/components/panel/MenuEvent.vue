@@ -21,6 +21,9 @@ const emit = defineEmits<EmitType>()
 const handleAddFeature = () => {
   emit('create-feature')
 }
+const handleDetailEvent = () => {
+  emit('detail-event')
+}
 const handleUpdateEvent = () => {
   emit('update-event')
 }
@@ -39,7 +42,7 @@ const handleUpdateState = (state: ItemState) => {
       <v-list-item-title>Add Feature</v-list-item-title>
     </v-list-item>
 
-    <v-list-item link>
+    <v-list-item link @click="handleDetailEvent">
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4">mdi-view-list</v-icon>
       </template>

@@ -8,6 +8,7 @@ import RelationBug from '@/components/panel/RelationBug.vue'
 import MenuBug from '@/components/panel/MenuBug.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
 import InformationBug from '@/components/panel/InformationBug.vue'
+import DetailBugDialog from '@/components/dialog/DetailBugDialog.vue'
 import UpdateBugDialog from '@/components/dialog/UpdateBugDialog.vue'
 import ActivityDialog from '@/components/dialog/ActivityDialog.vue'
 
@@ -23,6 +24,11 @@ const props = defineProps<{
 const menu = ref(false)
 const dialog_update_bug = ref()
 const dialog_activity = ref()
+const dialog_detail_bug = ref()
+
+const openDetailBugDialog = (data: Item) => {
+  dialog_detail_bug.value?.open(data)
+}
 
 const openUpdateBugDialog = (data: Item) => {
   dialog_update_bug.value?.open(data)
@@ -30,6 +36,10 @@ const openUpdateBugDialog = (data: Item) => {
 
 const openActivityDialog = () => {
   dialog_activity.value?.open(props.item.rid)
+}
+
+const handleDetailEditBug = () => {
+  dialog_update_bug.value?.open(props.item)
 }
 
 const handleUpdateBug = async (data: BugUpdate) => {
@@ -56,6 +66,7 @@ const handleDeleteBug = async (data: BugUpdate) => {
             :item="props.item"
             @update-bug="openUpdateBugDialog(props.item)"
             @open-activity="openActivityDialog"
+            @detail-bug="openDetailBugDialog(props.item)"
           />
         </v-menu>
       </v-col>
@@ -78,6 +89,7 @@ const handleDeleteBug = async (data: BugUpdate) => {
     </v-row>
   </div>
 
+  <DetailBugDialog ref="dialog_detail_bug" @edit="handleDetailEditBug" />
   <UpdateBugDialog ref="dialog_update_bug" @submit="handleUpdateBug" @delete="handleDeleteBug" />
   <ActivityDialog ref="dialog_activity" />
 </template>

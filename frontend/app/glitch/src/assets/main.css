@@ -43,3 +43,30 @@ a {
 .dialog-field {
     color: #cfcfcf;
 }
+
+.dialog-detail-icon-main-title {
+    margin-right: 10px;
+}
+
+.dialog-detail-title {
+    color: #afafaf;
+}
+
+.dialog-detail-detail {
+    min-height: 100px;
+    margin: 0 0 20px;
+    padding: 10px;
+    background-color: #1f1f1f;
+}
+
+.dialog-detail-detail-end {
+    min-height: 100px;
+    margin: 0;
+    padding: 10px;
+    background-color: #1f1f1f;
+}
+
+
+.dialog-detail-icon-edit {
+    margin-right: 8px;
+}

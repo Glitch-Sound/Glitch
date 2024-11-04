@@ -9,6 +9,7 @@ import MenuFeature from '@/components/panel/MenuFeature.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
 import InformationFeature from '@/components/panel/InformationFeature.vue'
 import CreateStoryDialog from '@/components/dialog/CreateStoryDialog.vue'
+import DetailFeatureDialog from '@/components/dialog/DetailFeatureDialog.vue'
 import UpdateFeatureDialog from '@/components/dialog/UpdateFeatureDialog.vue'
 
 import { tree } from '@/components/panel/relation'
@@ -22,10 +23,15 @@ const props = defineProps<{
 
 const menu = ref(false)
 const dialog_create_story = ref()
+const dialog_detail_feature = ref()
 const dialog_update_feature = ref()
 
 const openCreateStoryDialog = () => {
   dialog_create_story.value?.open(props.item)
+}
+
+const openDetailFeatureDialog = (data: Item) => {
+  dialog_detail_feature.value?.open(data)
 }
 
 const openUpdateFeatureDialog = (data: Item) => {
@@ -35,6 +41,10 @@ const openUpdateFeatureDialog = (data: Item) => {
 const handleCreateStory = async (data: StoryCreate) => {
   await store_item.createStory(data)
   dialog_create_story.value?.close()
+}
+
+const handleDetailEditFeature = () => {
+  dialog_update_feature.value?.open(props.item)
 }
 
 const handleUpdateFeature = async (data: FeatureUpdate) => {
@@ -60,6 +70,7 @@ const handleDeleteFeature = async (data: FeatureUpdate) => {
           <MenuFeature
             :item="props.item"
             @create-story="openCreateStoryDialog"
+            @detail-feature="openDetailFeatureDialog(props.item)"
             @update-feature="openUpdateFeatureDialog(props.item)"
           />
         </v-menu>
@@ -84,6 +95,7 @@ const handleDeleteFeature = async (data: FeatureUpdate) => {
   </div>
 
   <CreateStoryDialog ref="dialog_create_story" @submit="handleCreateStory" />
+  <DetailFeatureDialog ref="dialog_detail_feature" @edit="handleDetailEditFeature" />
   <UpdateFeatureDialog
     ref="dialog_update_feature"
     @submit="handleUpdateFeature"

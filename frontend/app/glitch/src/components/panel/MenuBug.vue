@@ -18,6 +18,9 @@ const handleUpdateBug = () => {
 const handleOpenActivity = () => {
   emit('open-activity')
 }
+const handleDetailBug = () => {
+  emit('detail-bug')
+}
 
 const handleUpdateState = (state: ItemState) => {
   store_item.updateState(props.item.rid, state)
@@ -41,7 +44,7 @@ const setPriority = async (priority: number) => {
       <v-list-item-title>Activity</v-list-item-title>
     </v-list-item>
 
-    <v-list-item link>
+    <v-list-item link @click="handleDetailBug">
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4">mdi-view-list</v-icon>
       </template>

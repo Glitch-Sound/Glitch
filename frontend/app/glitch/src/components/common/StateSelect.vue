@@ -4,7 +4,7 @@ import { defineProps, onMounted, ref } from 'vue'
 import { ItemType, ItemState } from '@/types/Item'
 import { type EmitType } from '@/components/common/events'
 
-import StateLabel from '@/components/common/StateLabel.vue'
+import StateSelectLabel from '@/components/common/StateSelectLabel.vue'
 
 const props = defineProps<{
   type: ItemType
@@ -31,11 +31,11 @@ const emitSelected = () => {
       v-if="selected_state_src === ItemState.IDLE"
       @update:modelValue="emitSelected"
     >
-      <StateLabel :state="ItemState.IDLE" />
-      <StateLabel :state="ItemState.RUN" />
-      <StateLabel :state="ItemState.ALERT" />
-      <StateLabel :state="ItemState.REVIEW" />
-      <StateLabel :state="ItemState.COMPLETE" />
+      <StateSelectLabel :state="ItemState.IDLE" />
+      <StateSelectLabel :state="ItemState.RUN" />
+      <StateSelectLabel :state="ItemState.ALERT" />
+      <StateSelectLabel :state="ItemState.REVIEW" />
+      <StateSelectLabel :state="ItemState.COMPLETE" />
     </v-chip-group>
 
     <v-chip-group
@@ -43,11 +43,11 @@ const emitSelected = () => {
       v-if="selected_state_src === ItemState.RUN"
       @update:modelValue="emitSelected"
     >
-      <StateLabel :state="ItemState.RUN" />
-      <StateLabel :state="ItemState.IDLE" />
-      <StateLabel :state="ItemState.ALERT" />
-      <StateLabel :state="ItemState.REVIEW" />
-      <StateLabel :state="ItemState.COMPLETE" />
+      <StateSelectLabel :state="ItemState.RUN" />
+      <StateSelectLabel :state="ItemState.IDLE" />
+      <StateSelectLabel :state="ItemState.ALERT" />
+      <StateSelectLabel :state="ItemState.REVIEW" />
+      <StateSelectLabel :state="ItemState.COMPLETE" />
     </v-chip-group>
 
     <v-chip-group
@@ -55,11 +55,11 @@ const emitSelected = () => {
       v-if="selected_state_src === ItemState.ALERT"
       @update:modelValue="emitSelected"
     >
-      <StateLabel :state="ItemState.ALERT" />
-      <StateLabel :state="ItemState.IDLE" />
-      <StateLabel :state="ItemState.RUN" />
-      <StateLabel :state="ItemState.REVIEW" />
-      <StateLabel :state="ItemState.COMPLETE" />
+      <StateSelectLabel :state="ItemState.ALERT" />
+      <StateSelectLabel :state="ItemState.IDLE" />
+      <StateSelectLabel :state="ItemState.RUN" />
+      <StateSelectLabel :state="ItemState.REVIEW" />
+      <StateSelectLabel :state="ItemState.COMPLETE" />
     </v-chip-group>
 
     <v-chip-group
@@ -67,11 +67,11 @@ const emitSelected = () => {
       v-if="selected_state_src === ItemState.REVIEW"
       @update:modelValue="emitSelected"
     >
-      <StateLabel :state="ItemState.REVIEW" />
-      <StateLabel :state="ItemState.IDLE" />
-      <StateLabel :state="ItemState.RUN" />
-      <StateLabel :state="ItemState.ALERT" />
-      <StateLabel :state="ItemState.COMPLETE" />
+      <StateSelectLabel :state="ItemState.REVIEW" />
+      <StateSelectLabel :state="ItemState.IDLE" />
+      <StateSelectLabel :state="ItemState.RUN" />
+      <StateSelectLabel :state="ItemState.ALERT" />
+      <StateSelectLabel :state="ItemState.COMPLETE" />
     </v-chip-group>
 
     <v-chip-group
@@ -79,11 +79,11 @@ const emitSelected = () => {
       v-if="selected_state_src === ItemState.COMPLETE"
       @update:modelValue="emitSelected"
     >
-      <StateLabel :state="ItemState.COMPLETE" />
-      <StateLabel :state="ItemState.IDLE" />
-      <StateLabel :state="ItemState.RUN" />
-      <StateLabel :state="ItemState.ALERT" />
-      <StateLabel :state="ItemState.REVIEW" />
+      <StateSelectLabel :state="ItemState.COMPLETE" />
+      <StateSelectLabel :state="ItemState.IDLE" />
+      <StateSelectLabel :state="ItemState.RUN" />
+      <StateSelectLabel :state="ItemState.ALERT" />
+      <StateSelectLabel :state="ItemState.REVIEW" />
     </v-chip-group>
   </div>
 </template>

@@ -9,6 +9,7 @@ import MenuEvent from '@/components/panel/MenuEvent.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
 import InformationEvent from '@/components/panel/InformationEvent.vue'
 import CreateFeatureDialog from '@/components/dialog/CreateFeatureDialog.vue'
+import DetailEventDialog from '@/components/dialog/DetailEventDialog.vue'
 import UpdateEventDialog from '@/components/dialog/UpdateEventDialog.vue'
 
 import { tree } from '@/components/panel/relation'
@@ -22,10 +23,15 @@ const props = defineProps<{
 
 const menu = ref(false)
 const dialog_create_feature = ref()
+const dialog_detail_event = ref()
 const dialog_update_event = ref()
 
 const openCreateFeatureDialog = () => {
   dialog_create_feature.value?.open(props.item)
+}
+
+const openDetailEventDialog = (data: Item) => {
+  dialog_detail_event.value?.open(data)
 }
 
 const openUpdateEventDialog = (data: Item) => {
@@ -35,6 +41,10 @@ const openUpdateEventDialog = (data: Item) => {
 const handleCreateFeature = async (data: FeatureCreate) => {
   await store_item.createFeature(data)
   dialog_create_feature.value?.close()
+}
+
+const handleDetailEditEvent = () => {
+  dialog_update_event.value?.open(props.item)
 }
 
 const handleUpdateEvent = async (data: EventUpdate) => {
@@ -60,6 +70,7 @@ const handleDeleteEvent = async (data: EventUpdate) => {
           <MenuEvent
             :item="props.item"
             @create-feature="openCreateFeatureDialog"
+            @detail-event="openDetailEventDialog(props.item)"
             @update-event="openUpdateEventDialog(props.item)"
           />
         </v-menu>
@@ -84,6 +95,7 @@ const handleDeleteEvent = async (data: EventUpdate) => {
   </div>
 
   <CreateFeatureDialog ref="dialog_create_feature" @submit="handleCreateFeature" />
+  <DetailEventDialog ref="dialog_detail_event" @edit="handleDetailEditEvent" />
   <UpdateEventDialog
     ref="dialog_update_event"
     @submit="handleUpdateEvent"

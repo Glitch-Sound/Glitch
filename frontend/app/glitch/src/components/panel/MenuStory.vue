@@ -24,6 +24,9 @@ const handleAddTask = () => {
 const handleAddBug = () => {
   emit('add-bug')
 }
+const handleDetailStory = () => {
+  emit('detail-story')
+}
 const handleUpdateStory = () => {
   emit('update-story')
 }
@@ -49,7 +52,7 @@ const handleUpdateState = (state: ItemState) => {
       <v-list-item-title>Add Bug</v-list-item-title>
     </v-list-item>
 
-    <v-list-item link>
+    <v-list-item link @click="handleDetailStory">
       <template v-slot:prepend>
         <v-icon size="small" class="mr-n4">mdi-view-list</v-icon>
       </template>

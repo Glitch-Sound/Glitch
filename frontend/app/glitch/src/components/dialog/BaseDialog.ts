@@ -46,6 +46,22 @@ export const useFormDialog = <T>(emits: any) => {
   }
 }
 
+export const useDisplayDialog = (emits: any) => {
+  const dialog = ref(false)
+  const target = ref()
+
+  const editData = () => {
+    emits('edit')
+    dialog.value = false
+  }
+
+  return {
+    dialog,
+    target,
+    editData
+  }
+}
+
 export const getDateRange = async (type: ItemType) => {
   const store_project = useProjectStore()
   const store_item = useItemStore()

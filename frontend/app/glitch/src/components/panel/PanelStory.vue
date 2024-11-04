@@ -10,6 +10,7 @@ import UserLabel from '@/components/common/UserLabel.vue'
 import InformationStory from '@/components/panel/InformationStory.vue'
 import CreateTaskDialog from '@/components/dialog/CreateTaskDialog.vue'
 import CreateBugDialog from '@/components/dialog/CreateBugDialog.vue'
+import DetailStoryDialog from '@/components/dialog/DetailStoryDialog.vue'
 import UpdateStoryDialog from '@/components/dialog/UpdateStoryDialog.vue'
 
 import { tree } from '@/components/panel/relation'
@@ -24,6 +25,7 @@ const props = defineProps<{
 const menu = ref(false)
 const dialog_create_task = ref()
 const dialog_create_bug = ref()
+const dialog_detail_story = ref()
 const dialog_update_story = ref()
 
 const openCreateTaskDialog = () => {
@@ -32,6 +34,10 @@ const openCreateTaskDialog = () => {
 
 const openCreateBugDialog = () => {
   dialog_create_bug.value?.open(props.item)
+}
+
+const openDetailStoryDialog = (data: Item) => {
+  dialog_detail_story.value?.open(data)
 }
 
 const openUpdateStoryDialog = (data: Item) => {
@@ -46,6 +52,10 @@ const handleCreateTask = async (data: TaskCreate) => {
 const handleCreateBug = async (data: BugCreate) => {
   await store_item.createBug(data)
   dialog_create_bug.value?.close()
+}
+
+const handleDetailEditStory = () => {
+  dialog_update_story.value?.open(props.item)
 }
 
 const handleUpdateStory = async (data: StoryUpdate) => {
@@ -72,6 +82,7 @@ const handleDeleteStory = async (data: StoryUpdate) => {
             :item="props.item"
             @add-task="openCreateTaskDialog"
             @add-bug="openCreateBugDialog"
+            @detail-story="openDetailStoryDialog(props.item)"
             @update-story="openUpdateStoryDialog(props.item)"
           />
         </v-menu>
@@ -97,6 +108,7 @@ const handleDeleteStory = async (data: StoryUpdate) => {
 
   <CreateTaskDialog ref="dialog_create_task" @submit="handleCreateTask" />
   <CreateBugDialog ref="dialog_create_bug" @submit="handleCreateBug" />
+  <DetailStoryDialog ref="dialog_detail_story" @edit="handleDetailEditStory" />
   <UpdateStoryDialog
     ref="dialog_update_story"
     @submit="handleUpdateStory"
