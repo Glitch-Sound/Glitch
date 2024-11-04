@@ -75,7 +75,7 @@ const handleDeleteBug = async (data: BugUpdate) => {
         <v-icon size="small" :color="tree.b.color">mdi-spider</v-icon>
       </v-col>
 
-      <v-col class="title ml-0">
+      <v-col class="title ml-0" @click="openDetailBugDialog(props.item)">
         {{ props.item.title }}
       </v-col>
 

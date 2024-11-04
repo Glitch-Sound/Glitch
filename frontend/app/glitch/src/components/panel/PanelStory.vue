@@ -92,7 +92,7 @@ const handleDeleteStory = async (data: StoryUpdate) => {
         <v-icon size="small" :color="tree.s.color">mdi-arrow-expand-horizontal</v-icon>
       </v-col>
 
-      <v-col class="title ml-0">
+      <v-col class="title ml-0" @click="openDetailStoryDialog(props.item)">
         {{ props.item.title }}
       </v-col>
 

@@ -80,7 +80,7 @@ const handleDeleteEvent = async (data: EventUpdate) => {
         <v-icon size="small" :color="tree.e.color">mdi-calendar-arrow-left</v-icon>
       </v-col>
 
-      <v-col class="title ml-0">
+      <v-col class="title ml-0" @click="openDetailEventDialog(props.item)">
         {{ props.item.title }}
       </v-col>
 

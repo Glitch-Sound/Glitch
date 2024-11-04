@@ -80,7 +80,7 @@ const handleDeleteFeature = async (data: FeatureUpdate) => {
         <v-icon size="small" :color="tree.f.color">mdi-apps</v-icon>
       </v-col>
 
-      <v-col class="title ml-0">
+      <v-col class="title ml-0" @click="openDetailFeatureDialog(props.item)">
         {{ props.item.title }}
       </v-col>
 

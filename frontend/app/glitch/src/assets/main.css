@@ -25,7 +25,6 @@ a {
 .information {
     margin: 5px 0 0 5px;
     padding: 0;
-    background-color: #000000;
 }
 
 .main {
@@ -65,7 +64,6 @@ a {
     padding: 10px;
     background-color: #1f1f1f;
 }
-
 
 .dialog-detail-icon-edit {
     margin-right: 8px;

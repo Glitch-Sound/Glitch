@@ -75,7 +75,7 @@ const handleDeleteTask = async (data: TaskUpdate) => {
         <v-icon size="small" :color="tree.t.color">mdi-label</v-icon>
       </v-col>
 
-      <v-col class="title ml-0">
+      <v-col class="title ml-0" @click="openDetailTaskDialog(props.item)">
         {{ props.item.title }}
       </v-col>
 
