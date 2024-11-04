@@ -194,7 +194,7 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
   <v-container class="summary">
     <v-row>
       <v-col cols="auto" class="d-flex summary-block">
-        <v-card class="flex-grow-1">
+        <v-card class="flex-grow-1" color="#000000">
           <v-card-text>
             <div class="title-sub">progress</div>
             <div class="title">
@@ -208,7 +208,7 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
       </v-col>
 
       <v-col cols="auto" class="d-flex summary-block">
-        <v-card class="flex-grow-1">
+        <v-card class="flex-grow-1" color="#000000">
           <v-card-text>
             <div class="title-sub">completed rate</div>
             <div class="title">
@@ -222,7 +222,7 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
       </v-col>
 
       <v-col cols="auto" class="d-flex summary-block">
-        <v-card class="flex-grow-1">
+        <v-card class="flex-grow-1" color="#000000">
           <v-card-text>
             <div class="title-sub">completed rate</div>
             <div class="title">

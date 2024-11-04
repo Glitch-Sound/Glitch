@@ -45,7 +45,7 @@ const common = async () => {
   <v-main class="mt-2 ml-n2">
     <v-sheet class="main">
       <v-row>
-        <v-col cols="auto" class="d-flex align-center justify-center">
+        <v-col cols="auto" class="d-flex align-center justify-center hierarchy">
           <ProjectHierarchy :id_project="store_project.selected_id_project" />
         </v-col>
 
@@ -97,4 +97,8 @@ const common = async () => {
 
 <style scoped>
 @import '@/assets/main.css';
+
+.hierarchy {
+  min-width: 450px;
+}
 </style>
