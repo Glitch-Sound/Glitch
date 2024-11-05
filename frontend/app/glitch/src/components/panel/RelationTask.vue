@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { defineProps, ref } from 'vue'
 import { VIcon } from 'vuetify/components'
 
 import { ItemState, type Item, type PanelRelation } from '@/types/Item'
@@ -7,17 +7,35 @@ import { ItemState, type Item, type PanelRelation } from '@/types/Item'
 import useItemStore from '@/stores/ItemStore'
 import { tree } from '@/components/panel/relation'
 
+const COLOR_MOUSE_OVER = '#a5b9f9'
+
 const store_item = useItemStore()
 
 const props = defineProps<{
   item: Item
   relation: PanelRelation
 }>()
+
+const is_hovered = ref(false)
+
+const onMouseOver = () => {
+  is_hovered.value = true
+}
+
+const onMouseOut = () => {
+  is_hovered.value = false
+}
 </script>
 
 <template>
   <div class="svg-container">
-    <svg class="overlap-svg" :width="tree.t.w" :height="tree.t.h">
+    <svg
+      class="overlap-svg"
+      :width="tree.t.w"
+      :height="tree.t.h"
+      @mouseover="onMouseOver"
+      @mouseout="onMouseOut"
+    >
       <!-- event -->
       <line
         v-if="props.relation.is_exist_next_event"
@@ -129,25 +147,37 @@ const props = defineProps<{
         :height="tree.t.ih"
       >
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.IDLE">
-          <v-icon :color="tree.t.color" size="16">mdi-circle-outline</v-icon>
+          <v-icon :color="is_hovered ? COLOR_MOUSE_OVER : tree.t.color" size="16">
+            mdi-circle-outline
+          </v-icon>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.RUN">
-          <v-icon :color="tree.t.color" size="16">mdi-circle</v-icon>
+          <v-icon :color="is_hovered ? COLOR_MOUSE_OVER : tree.t.color" size="16">
+            mdi-circle
+          </v-icon>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.ALERT">
-          <v-icon :color="tree.t.color" size="16">mdi-alert-circle</v-icon>
+          <v-icon :color="is_hovered ? COLOR_MOUSE_OVER : tree.t.color" size="16">
+            mdi-alert-circle
+          </v-icon>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.REVIEW">
-          <v-icon :color="tree.t.color" size="16">mdi-circle-multiple</v-icon>
+          <v-icon :color="is_hovered ? COLOR_MOUSE_OVER : tree.t.color" size="16">
+            mdi-circle-multiple
+          </v-icon>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" v-if="props.item.state == ItemState.COMPLETE">
-          <v-icon :color="tree.t.color" size="16">mdi-circle-slice-8</v-icon>
+          <v-icon :color="is_hovered ? COLOR_MOUSE_OVER : tree.t.color" size="16">
+            mdi-circle-slice-8
+          </v-icon>
         </div>
       </foreignObject>
 
       <foreignObject v-else :x="tree.e.ix" :y="tree.e.iy" :width="tree.e.iw" :height="tree.e.ih">
         <div xmlns="http://www.w3.org/1999/xhtml">
-          <v-icon :color="tree.e.color" size="16">mdi-align-vertical-distribute</v-icon>
+          <v-icon :color="is_hovered ? COLOR_MOUSE_OVER : tree.e.color" size="16">
+            mdi-align-vertical-distribute
+          </v-icon>
         </div>
       </foreignObject>
 
@@ -159,7 +189,9 @@ const props = defineProps<{
         :height="tree.t.ih"
       >
         <div xmlns="http://www.w3.org/1999/xhtml">
-          <v-icon :color="tree.t.color" size="20">mdi-chevron-triple-up</v-icon>
+          <v-icon :color="is_hovered ? COLOR_MOUSE_OVER : tree.t.color" size="20"
+            >mdi-chevron-triple-up</v-icon
+          >
         </div>
       </foreignObject>
     </svg>
