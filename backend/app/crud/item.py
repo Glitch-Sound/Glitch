@@ -695,10 +695,16 @@ def updateItemState(db: Session, target: int, state: int):
             Item
         )\
         .filter(Item.rid == target)
+        item_data = item.first() 
 
         item.update({
             Item.state: state
         })
+
+        if item_data.type in {ItemType.TASK.value, ItemType.BUG.value}:
+            createSummaryItem(db, item_data.id_project, item_data.rid)
+            createSummaryUser(db, item_data.id_project, item_data.rid_users)
+
         db.commit()
 
         item_updated = item.first()
@@ -1096,6 +1102,7 @@ def createTask(db: Session, target:schema_item.TaskCreate):
         _createTree(db, ItemType.TASK, target.rid_items, item.rid)
         db.flush()
 
+        db.flush()
         _setRisk(db, item.rid)
         createSummaryItem(db, target.id_project, item.rid)
         createSummaryUser(db, target.id_project, target.rid_users)
@@ -1141,6 +1148,7 @@ def updateTask(db: Session, target:schema_item.TaskUpdate):
         )\
         .filter(Item.rid == target.rid)
 
+        db.flush()
         _setRisk(db, item.rid)
         createSummaryItem(db, id_project, item.rid)
         createSummaryUser(db, id_project, target.rid_users)
@@ -1214,6 +1222,7 @@ def createBug(db: Session, target:schema_item.BugCreate):
         _createTree(db, ItemType.BUG, target.rid_items, item.rid)
         db.flush()
 
+        db.flush()
         _setRisk(db, item.rid)
         createSummaryItem(db, target.id_project, item.rid)
         createSummaryUser(db, target.id_project, target.rid_users)
@@ -1256,6 +1265,7 @@ def updateBug(db: Session, target:schema_item.BugUpdate):
         )\
         .filter(Item.rid == target.rid)
 
+        db.flush()
         _setRisk(db, item.rid)
         createSummaryItem(db, id_project, item.rid)
         createSummaryUser(db, id_project, target.rid_users)
