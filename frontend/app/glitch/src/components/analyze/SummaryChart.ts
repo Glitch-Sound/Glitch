@@ -3,6 +3,8 @@ import { ref, watch } from 'vue'
 import * as d3 from 'd3'
 
 import type { SummaryItem } from '@/types/Summary'
+
+import useItemStore from '@/stores/ItemStore'
 import useProgressStore from '@/stores/ProgressStore'
 
 export enum SummaryType {
@@ -36,6 +38,7 @@ export function useSummaryChart(
   rid_users: number,
   chartConfigs: ChartConfig[]
 ) {
+  const store_item = useItemStore()
   const store_progress = useProgressStore()
 
   const is_enable = ref<{ [key: string]: boolean }>({})
@@ -49,6 +52,13 @@ export function useSummaryChart(
   }
 
   createChart(id_project, rid_users)
+
+  watch(
+    () => store_item.is_update,
+    () => {
+      createChart(id_project, rid_users)
+    }
+  )
 
   watch(
     () => store_progress.rid_users,
