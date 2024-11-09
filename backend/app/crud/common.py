@@ -45,7 +45,7 @@ class WorkloadType(Enum):
 class RiskType(Enum):
     NONE  = 0
     LIMIT = 1
-    OVER  = 2
+    OVER  = 9
 
 
 def generate_bigrams(text):

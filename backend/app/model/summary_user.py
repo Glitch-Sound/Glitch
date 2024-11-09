@@ -13,6 +13,7 @@ class SummaryUser(Base):
     rid                   = Column(Integer, primary_key=True)
     rid_users             = Column(Integer, ForeignKey('users.rid'))
     id_project            = Column(Integer, default=0)
+    risk                  = Column(Integer, default=0)
     task_count_idle       = Column(Integer, default=0)
     task_count_run        = Column(Integer, default=0)
     task_count_alert      = Column(Integer, default=0)

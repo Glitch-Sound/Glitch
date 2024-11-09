@@ -4,6 +4,7 @@ from typing import Optional
 
 class SummaryItem(BaseModel):
     rid: int
+    risk: int
     task_count_idle: int
     task_count_run: int
     task_count_alert: int
@@ -30,6 +31,7 @@ class SummaryUser(BaseModel):
     rid: int
     id_project: int
     rid_users: int
+    risk: int
     name: Optional[str] = None
     task_count_idle: int
     task_count_run: int
