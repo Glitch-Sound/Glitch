@@ -36,7 +36,7 @@ export enum WorkloadType {
 export enum RiskType {
   NONE = 0,
   LIMIT = 1,
-  OVER = 2
+  OVER = 9
 }
 
 export enum ExtractType {

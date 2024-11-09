@@ -81,7 +81,12 @@ export const getPanelRelation = (items: Item[], index: number): PanelRelation =>
     const has_parent_in_between =
       parent_type !== null &&
       items.slice(index + 1, next_same_type_index).some((item) => item.type === parent_type)
-    condition1 = !has_parent_in_between && previous_type !== type_current
+
+    const previous_type_not_current = previous_type !== type_current
+    const is_next_level_higher =
+      next_same_type_index !== -1 &&
+      getTypeLevel(type_current) < getTypeLevel(items[next_same_type_index].type)
+    condition1 = !has_parent_in_between && previous_type_not_current && is_next_level_higher
   }
 
   const condition2 = previous_type !== type_current && previous_type === parent_type
