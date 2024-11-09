@@ -298,7 +298,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
         )\
         .select_from(Item)\
         .filter(
-            Item.id_project == id_project.scalar_subquery(),
+            Item.id_project == id_project,
             Item.rid_users  == rid_users,
             Item.type.in_([ItemType.TASK.value, ItemType.BUG.value])
         )\
@@ -312,7 +312,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
         .outerjoin(Task, Item.rid == Task.rid_items)\
         .outerjoin(Bug,  Item.rid == Bug.rid_items)\
         .filter(
-            Item.id_project == id_project.scalar_subquery(),
+            Item.id_project == id_project,
             Item.rid_users  == rid_users,
             Item.type.in_([ItemType.TASK.value, ItemType.BUG.value]),
             Item.state != ItemState.IDLE.value
@@ -327,7 +327,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
         .outerjoin(Task, Item.rid == Task.rid_items)\
         .outerjoin(Bug,  Item.rid == Bug.rid_items)\
         .filter(
-            Item.id_project == id_project.scalar_subquery(),
+            Item.id_project == id_project,
             Item.rid_users  == rid_users,
             Item.type.in_([ItemType.TASK.value, ItemType.BUG.value])
         )\
@@ -340,7 +340,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
         )\
         .select_from(Item)\
         .filter(
-            Item.id_project == id_project.scalar_subquery(),
+            Item.id_project == id_project,
             Item.rid_users  == rid_users,
             Item.type.in_([ItemType.TASK.value, ItemType.BUG.value])
         )\
@@ -354,7 +354,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
         )\
         .filter(
             SummaryUser.rid_users  == rid_users,
-            SummaryUser.id_project == id_project.scalar_subquery()
+            SummaryUser.id_project == id_project
         ).all()
 
         if not summary_user:
@@ -390,7 +390,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
         )\
         .filter(
             SummaryUser.rid_users  == rid_users,
-            SummaryUser.id_project == id_project.scalar_subquery(),
+            SummaryUser.id_project == id_project,
             SummaryUser.date_entry == date_current
         ).all()
 
@@ -425,7 +425,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
             )\
             .filter(
                 SummaryUser.rid_users  == rid_users,
-                SummaryUser.id_project == id_project.scalar_subquery(),
+                SummaryUser.id_project == id_project,
                 SummaryUser.date_entry == date_current
             )
 
@@ -462,9 +462,6 @@ def _getSummary(list_sum_risk: any, list_sum_workload: any, list_sum_number: any
         'task_number_total'     : 0,
         'bug_workload'          : 0
     }
-
-    print(list_sum_risk)
-
 
     if list_sum_risk[0].risk:
         result_sum['risk'] = list_sum_risk[0].risk

@@ -301,7 +301,7 @@ def _getRisk(db: Session, rid_item: int):
         if (day_active - workload / 7) <= 0:
             return RiskType.OVER
 
-        if (day_active - workload / 7) <= 2:
+        if (day_active - workload / 7) <= 1:
             return RiskType.LIMIT
 
         return RiskType.NONE
