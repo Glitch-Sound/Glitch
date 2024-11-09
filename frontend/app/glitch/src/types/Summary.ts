@@ -1,6 +1,7 @@
 export interface SummaryItem {
   rid: number
   id_project: number
+  risk: number
   task_count_idle: number
   task_count_run: number
   task_count_alert: number
@@ -25,6 +26,7 @@ export interface SummaryUser {
   id_project: number
   rid_users: number
   name: string
+  risk: number
   task_count_idle: number
   task_count_run: number
   task_count_alert: number

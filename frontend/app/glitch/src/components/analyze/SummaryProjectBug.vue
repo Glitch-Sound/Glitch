@@ -132,7 +132,11 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
 
     case SummaryType.RISK: {
       svg = d3.select(`#graph-alert`).append('svg')
-      const y_risk = d3.scaleLinear().domain([0, 1100]).nice().range([height, 0])
+      const y_risk = d3
+        .scaleLinear()
+        .domain([0, (max_value as number) + 2])
+        .nice()
+        .range([height, 0])
       const y_alert = d3
         .scaleLinear()
         .domain([0, (max_value as number) + 2])
@@ -140,6 +144,12 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
         .range([height, 0])
       yScales = [y_risk, y_alert]
       list_area = [
+        {
+          name: 'Risk',
+          value: (d: SummaryItem) => d.risk,
+          color_line: 'rgba(156, 145, 81, 0.9)',
+          color_area: 'rgba(156, 145, 81, 0.2)'
+        },
         {
           name: 'Alert',
           value: (d: SummaryItem) => d.task_count_alert + d.bug_count_alert,

@@ -38,9 +38,11 @@ const useProgressStore = defineStore('progress', {
     setUser(rid_users: number) {
       this.rid_users = rid_users
     },
-    async fetchSummariesUser(id_project: number, rid_users: number) {
-      const summaries = await service_summary.getSummariesUser(id_project, rid_users)
-      this.summaries_user.set(rid_users, summaries)
+    async fetchSummariesUser(id_project: number | null, rid_users: number) {
+      if (id_project) {
+        const summaries = await service_summary.getSummariesUser(id_project, rid_users)
+        this.summaries_user.set(rid_users, summaries)
+      }
     }
   }
 })
