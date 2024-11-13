@@ -50,10 +50,7 @@ const common = async () => {
         </v-col>
 
         <v-col cols="auto">
-          <div class="title">Summary Item</div>
           <SummaryProjectTask :id_project="store_project.selected_id_project" />
-
-          <div class="title">Summary Bug & Alert</div>
           <SummaryProjectBug :id_project="store_project.selected_id_project" />
         </v-col>
       </v-row>

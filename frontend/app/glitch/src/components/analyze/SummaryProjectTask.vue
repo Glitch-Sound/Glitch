@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, defineProps } from 'vue'
 
+import * as d3 from 'd3'
+
 import type { SummaryItem } from '@/types/Summary'
 import useAnalyzeStore from '@/stores/AnalyzeStore'
-
-import * as d3 from 'd3'
 
 const props = defineProps<{
   id_project: number | null
@@ -13,19 +13,18 @@ const props = defineProps<{
 const store_analyze = useAnalyzeStore()
 
 const is_enable_workload = ref(false)
-const is_enable_count = ref(false)
-const is_enable_nunber = ref(false)
+const is_enable_item_workload = ref(false)
+const is_enable_item_nunber = ref(false)
 
 const value_workload = ref(0)
-const value_count = ref(0)
-const value_number = ref(0)
+const value_item_workload = ref(0)
+const value_item_number = ref(0)
 
 enum SummaryType {
   NONE = 0,
   WORKLOAD,
-  COUNT,
-  NUMBER,
-  RISK
+  ITEM_WORKLOAD,
+  ITEM_NUMBER
 }
 
 onMounted(async () => {
@@ -42,41 +41,50 @@ function createChart() {
   const max_value_workload = d3.max(list_data, (d: SummaryItem) =>
     Math.max(d.task_workload_total, d.bug_workload_total)
   ) as number
-  const max_value_count = d3.max(list_data, (d: SummaryItem) =>
+  const max_value_item_workload = d3.max(list_data, (d: SummaryItem) =>
     Math.max(d.task_count_total)
   ) as number
-  const max_value_number = d3.max(list_data, (d: SummaryItem) =>
+  const max_value_item_number = d3.max(list_data, (d: SummaryItem) =>
     Math.max(d.task_number_total)
   ) as number
 
   if (max_value_workload != 0) {
     is_enable_workload.value = true
   }
-  if (max_value_count != 0) {
-    is_enable_count.value = true
+  if (max_value_item_workload != 0) {
+    is_enable_item_workload.value = true
   }
-  if (max_value_number != 0) {
-    is_enable_nunber.value = true
+  if (max_value_item_number != 0) {
+    is_enable_item_nunber.value = true
   }
 
+  d3.select(`#graph-workload`).selectAll('svg').remove()
   d3.select(`#graph-item-workload`).selectAll('svg').remove()
-  d3.select(`#graph-item-count`).selectAll('svg').remove()
   d3.select(`#graph-item-number`).selectAll('svg').remove()
 
   const latest = list_data[list_data.length - 1]
-  value_workload.value = latest.task_workload_total
-  value_count.value = Math.floor((latest.task_count_complete / latest.task_count_total) * 100)
-  value_number.value = Math.floor((latest.task_number_completed / latest.task_number_total) * 100)
+  value_workload.value = latest.task_workload_total + latest.bug_workload_total
+  value_item_workload.value = Math.floor(
+    (latest.task_count_complete / latest.task_count_total) * 100
+  )
+  value_item_number.value = Math.floor(
+    (latest.task_number_completed / latest.task_number_total) * 100
+  )
 
-  createChartDetail(SummaryType.WORKLOAD, list_data, max_value_workload)
-  createChartDetail(SummaryType.COUNT, list_data, max_value_count)
-  createChartDetail(SummaryType.NUMBER, list_data, max_value_number)
+  createChartDetail(SummaryType.WORKLOAD, list_data, max_value_workload, 0)
+  createChartDetail(SummaryType.ITEM_WORKLOAD, list_data, max_value_item_workload, 0)
+  createChartDetail(SummaryType.ITEM_NUMBER, list_data, max_value_item_number, 0)
 }
 
-function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: number) {
+function createChartDetail(
+  type: SummaryType,
+  data: SummaryItem[],
+  max_value: number,
+  margin: number
+) {
   const date_end = d3.max(data, (d: any) => new Date(d.date_entry)) as Date
   const date_start = new Date(date_end)
-  date_start.setDate(date_end.getDate() - 21)
+  date_start.setDate(date_end.getDate() - 31)
 
   const width = 260
   const height = 80
@@ -84,7 +92,7 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
   const x = d3.scaleTime().domain([date_start, date_end]).range([0, width])
   const y = d3
     .scaleLinear()
-    .domain([0, max_value + 5])
+    .domain([0, max_value + margin])
     .nice()
     .range([height, 0])
 
@@ -93,7 +101,7 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
 
   switch (type) {
     case SummaryType.WORKLOAD:
-      svg = d3.select(`#graph-item-workload`).append('svg')
+      svg = d3.select(`#graph-workload`).append('svg')
       list_area = [
         {
           name: 'Total',
@@ -104,8 +112,8 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
       ]
       break
 
-    case SummaryType.COUNT:
-      svg = d3.select(`#graph-item-count`).append('svg')
+    case SummaryType.ITEM_WORKLOAD:
+      svg = d3.select(`#graph-item-workload`).append('svg')
       list_area = [
         {
           name: 'Total',
@@ -122,7 +130,7 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
       ]
       break
 
-    case SummaryType.NUMBER:
+    case SummaryType.ITEM_NUMBER:
       svg = d3.select(`#graph-item-number`).append('svg')
       list_area = [
         {
@@ -202,7 +210,7 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
               <span class="value" v-if="is_enable_workload">{{ value_workload }} pt</span>
               <span class="value" v-else>-</span>
             </div>
-            <div class="graph" :id="`graph-item-workload`"></div>
+            <div class="graph" :id="`graph-workload`"></div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -213,10 +221,10 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
             <div class="title-sub">completed rate</div>
             <div class="title">
               <span>Item : Workload</span>
-              <span class="value" v-if="is_enable_count">{{ value_count }} %</span>
+              <span class="value" v-if="is_enable_item_workload">{{ value_item_workload }} %</span>
               <span class="value" v-else>-</span>
             </div>
-            <div class="graph" :id="`graph-item-count`"></div>
+            <div class="graph" :id="`graph-item-workload`"></div>
           </v-card-text>
         </v-card>
       </v-col>
@@ -227,7 +235,7 @@ function createChartDetail(type: SummaryType, data: SummaryItem[], max_value: nu
             <div class="title-sub">completed rate</div>
             <div class="title">
               <span>Item : Number</span>
-              <span class="value" v-if="is_enable_nunber">{{ value_number }} %</span>
+              <span class="value" v-if="is_enable_item_nunber">{{ value_item_number }} %</span>
               <span class="value" v-else>-</span>
             </div>
             <div class="graph" :id="`graph-item-number`"></div>
