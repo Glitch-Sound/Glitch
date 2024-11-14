@@ -1,10 +1,10 @@
 .summary {
-    margin: 20px 0 20px 60px;
+    margin: 20px 0 20px 20px;
     padding: 0;
 }
   
 .summary-block {
-    margin: 0 10px 0 0;
+    margin: 5px 10px 5px 0;
     padding: 0;
 }
   
@@ -16,7 +16,7 @@
 .title {
     font-size: 20px;
     font-weight: bold;
-    color: #acacac;
+    color: #cccccc;
 }
   
 .value {

@@ -64,9 +64,9 @@ function createChart() {
   value_bug.value = Math.floor((latest.bug_count_complete / latest.bug_count_total) * 100)
   value_alert.value = latest.task_count_alert + latest.bug_count_alert
 
-  createChartDetail(SummaryType.RISK, list_data, max_value_risk, 0)
-  createChartDetail(SummaryType.BUG, list_data, max_value_bug, 0)
-  createChartDetail(SummaryType.ALERT, list_data, max_value_alert, 0)
+  createChartDetail(SummaryType.RISK, list_data, max_value_risk, 3)
+  createChartDetail(SummaryType.BUG, list_data, max_value_bug, 0.3)
+  createChartDetail(SummaryType.ALERT, list_data, max_value_alert, 3)
 }
 
 function createChartDetail(

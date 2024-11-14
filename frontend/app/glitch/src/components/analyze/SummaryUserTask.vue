@@ -72,9 +72,9 @@ function createChart() {
     (latest.task_number_completed / latest.task_number_total) * 100
   )
 
-  createChartDetail(SummaryType.WORKLOAD, list_data, max_value_workload, 0)
-  createChartDetail(SummaryType.ITEM_WORKLOAD, list_data, max_value_item_workload, 0)
-  createChartDetail(SummaryType.ITEM_NUMBER, list_data, max_value_item_number, 0)
+  createChartDetail(SummaryType.WORKLOAD, list_data, max_value_workload, 3)
+  createChartDetail(SummaryType.ITEM_WORKLOAD, list_data, max_value_item_workload, 0.3)
+  createChartDetail(SummaryType.ITEM_NUMBER, list_data, max_value_item_number, 0.3)
 }
 
 function createChartDetail(
