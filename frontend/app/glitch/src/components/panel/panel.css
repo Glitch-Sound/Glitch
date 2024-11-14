@@ -12,10 +12,6 @@
     margin: 0;
     padding: 0 0 8px 20px;
 }
-
-.title:hover {
-    text-decoration: underline #c0c0c0;
-}
   
 .user {
     margin: 0;
