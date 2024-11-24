@@ -261,6 +261,7 @@ export interface ItemHierarchy {
   rid: number
   rid_users: number
   name: string
+  type: number
   title: string
   workload_task?: number
   workload_bug?: number

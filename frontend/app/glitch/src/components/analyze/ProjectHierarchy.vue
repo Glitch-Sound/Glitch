@@ -3,6 +3,8 @@ import { onMounted } from 'vue'
 
 import * as d3 from 'd3'
 
+import type { ItemHierarchy } from '@/types/Item'
+
 import useAnalyzeStore from '@/stores/AnalyzeStore'
 
 const props = defineProps<{
@@ -16,29 +18,22 @@ onMounted(async () => {
   createSunburstChart()
 })
 
-interface HierarchyData {
-  rid: number
-  rid_users: number
-  name: string
-  title: string
-  workload_task?: number
-  workload_bug?: number
-  children?: HierarchyData[]
-}
-
 function createSunburstChart() {
   const width = 350
   const radius = 150
   const radius_ratio_inncer = 0.6
   const partition = d3
-    .partition<HierarchyData>()
+    .partition<ItemHierarchy>()
     .size([2 * Math.PI, radius * (1 - radius_ratio_inncer)])
 
   const root = d3
-    .hierarchy<HierarchyData>(store_analyze.hierarchy as HierarchyData)
-    .sum((d: HierarchyData) => (d.workload_task || 0) + (d.workload_bug || 0))
-    .sort((a: d3.HierarchyNode<HierarchyData>, b: d3.HierarchyNode<HierarchyData>) => {
-      return (b.value || 0) - (a.value || 0)
+    .hierarchy<ItemHierarchy>(store_analyze.hierarchy as ItemHierarchy)
+    .sum((d: ItemHierarchy) => (d.workload_task || 0) + (d.workload_bug || 0))
+    .sort((a: d3.HierarchyNode<ItemHierarchy>, b: d3.HierarchyNode<ItemHierarchy>) => {
+      if (a.depth === 4 && b.depth === 4) {
+        return a.data.type === 5 ? -1 : b.data.type === 5 ? 1 : 0
+      }
+      return (a.value || 0) - (b.value || 0)
     })
 
   partition(root)
