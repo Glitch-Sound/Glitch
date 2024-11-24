@@ -4,59 +4,58 @@ import { onMounted, ref, defineProps } from 'vue'
 import * as d3 from 'd3'
 
 import type { SummaryItem } from '@/types/Summary'
-import useProgressStore from '@/stores/ProgressStore'
+
+import useItemStore from '@/stores/ItemStore'
 
 const props = defineProps<{
   id_project: number | null
-  rid_users: number
+  rid_item: number
 }>()
 
-const store_progress = useProgressStore()
+const store_item = useItemStore()
 
-const is_enable_workload = ref(false)
 const is_enable_item_workload = ref(false)
 const is_enable_item_nunber = ref(false)
+const is_enable_bug = ref(false)
 
-const value_workload = ref(0)
 const value_item_workload = ref(0)
 const value_item_number = ref(0)
+const value_bug = ref(0)
 
 enum SummaryType {
   NONE = 0,
-  WORKLOAD,
   ITEM_WORKLOAD,
-  ITEM_NUMBER
+  ITEM_NUMBER,
+  ITEM_BUG
 }
 
 onMounted(async () => {
-  await store_progress.fetchSummariesUser(props.id_project, props.rid_users)
+  await store_item.fetchSummaryItem(props.rid_item)
   createChart()
 })
 
 function createChart() {
-  const list_data = store_progress.summaries_user.get(props.rid_users)
+  const list_data = store_item.summaries_item
   if (!list_data || list_data.length === 0) {
     return
   }
 
-  const max_value_workload = d3.max(list_data, (d: SummaryItem) =>
-    Math.max(d.task_workload_total, d.bug_workload_total)
-  ) as number
   const max_value_item_workload = d3.max(list_data, (d: SummaryItem) =>
     Math.max(d.task_count_total)
   ) as number
   const max_value_item_number = d3.max(list_data, (d: SummaryItem) =>
     Math.max(d.task_number_total)
   ) as number
+  const max_value_bug = d3.max(list_data, (d: SummaryItem) => Math.max(d.bug_count_total)) as number
 
-  if (max_value_workload != 0) {
-    is_enable_workload.value = true
-  }
   if (max_value_item_workload != 0) {
     is_enable_item_workload.value = true
   }
   if (max_value_item_number != 0) {
     is_enable_item_nunber.value = true
+  }
+  if (max_value_bug != 0) {
+    is_enable_bug.value = true
   }
 
   d3.select(`#graph-workload`).selectAll('svg').remove()
@@ -64,17 +63,17 @@ function createChart() {
   d3.select(`#graph-item-number`).selectAll('svg').remove()
 
   const latest = list_data[list_data.length - 1]
-  value_workload.value = latest.task_workload_total + latest.bug_workload_total
   value_item_workload.value = Math.floor(
     (latest.task_count_complete / latest.task_count_total) * 100
   )
   value_item_number.value = Math.floor(
     (latest.task_number_completed / latest.task_number_total) * 100
   )
+  value_bug.value = latest.task_workload_total + latest.bug_workload_total
 
-  createChartDetail(SummaryType.WORKLOAD, list_data, max_value_workload, 3)
   createChartDetail(SummaryType.ITEM_WORKLOAD, list_data, max_value_item_workload, 0.3)
   createChartDetail(SummaryType.ITEM_NUMBER, list_data, max_value_item_number, 0.3)
+  createChartDetail(SummaryType.ITEM_BUG, list_data, max_value_bug, 0.3)
 }
 
 function createChartDetail(
@@ -101,18 +100,6 @@ function createChartDetail(
   let list_area: any[] = []
 
   switch (type) {
-    case SummaryType.WORKLOAD:
-      svg = d3.select(`#graph-workload`).append('svg')
-      list_area = [
-        {
-          name: 'Total',
-          value: (d: SummaryItem) => d.task_workload_total + d.bug_workload_total,
-          color_line: 'rgba(180, 180, 180, 0.9)',
-          color_area: 'rgba(180, 180, 180, 0.2)'
-        }
-      ]
-      break
-
     case SummaryType.ITEM_WORKLOAD:
       svg = d3.select(`#graph-item-workload`).append('svg')
       list_area = [
@@ -148,6 +135,25 @@ function createChartDetail(
         }
       ]
       break
+
+    case SummaryType.ITEM_BUG: {
+      svg = d3.select(`#graph-bug`).append('svg')
+      list_area = [
+        {
+          name: 'Total',
+          value: (d: SummaryItem) => d.bug_count_total,
+          color_line: 'rgba(120, 92, 10, 0.9)',
+          color_area: 'rgba(120, 92, 10, 0.2)'
+        },
+        {
+          name: 'Complete',
+          value: (d: SummaryItem) => d.bug_count_complete,
+          color_line: 'rgba(90, 90, 90, 0.9)',
+          color_area: 'rgba(90, 90, 90, 0.7)'
+        }
+      ]
+      break
+    }
   }
 
   svg.attr('width', width).attr('height', height).append('g')
@@ -205,20 +211,6 @@ function createChartDetail(
       <v-col cols="auto" class="d-flex summary-block">
         <v-card class="flex-grow-1" color="#000000">
           <v-card-text>
-            <div class="title-sub">progress</div>
-            <div class="title">
-              <span>Workload</span>
-              <span class="value" v-if="is_enable_workload">{{ value_workload }} pt</span>
-              <span class="value" v-else>-</span>
-            </div>
-            <div class="graph" :id="`graph-workload`"></div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-
-      <v-col cols="auto" class="d-flex summary-block">
-        <v-card class="flex-grow-1" color="#000000">
-          <v-card-text>
             <div class="title-sub">completed rate</div>
             <div class="title">
               <span>Item : Workload</span>
@@ -240,6 +232,20 @@ function createChartDetail(
               <span class="value" v-else>-</span>
             </div>
             <div class="graph" :id="`graph-item-number`"></div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col cols="auto" class="d-flex summary-block">
+        <v-card class="flex-grow-1" color="#000000">
+          <v-card-text>
+            <div class="title-sub">completed rate</div>
+            <div class="title">
+              <span>Bug</span>
+              <span class="value" v-if="is_enable_bug">{{ value_bug }} %</span>
+              <span class="value" v-else>-</span>
+            </div>
+            <div class="graph" :id="`graph-bug`"></div>
           </v-card-text>
         </v-card>
       </v-col>

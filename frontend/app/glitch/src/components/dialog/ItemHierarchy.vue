@@ -3,17 +3,21 @@ import { onMounted } from 'vue'
 
 import * as d3 from 'd3'
 
-import useAnalyzeStore from '@/stores/AnalyzeStore'
+import type { RID } from '@/types/Item'
+
+import useItemStore from '@/stores/ItemStore'
 
 const props = defineProps<{
   id_project: number | null
+  rid_item: number
 }>()
 
-const store_analyze = useAnalyzeStore()
+const store_item = useItemStore()
 
 onMounted(async () => {
-  await store_analyze.fetchHierarchy(props.id_project)
-  createSunburstChart()
+  await store_item.fetchHierarchy(props.id_project)
+  const targets = await store_item.getItemsRelationRID(props.rid_item)
+  createSunburstChart(targets)
 })
 
 interface HierarchyData {
@@ -26,16 +30,16 @@ interface HierarchyData {
   children?: HierarchyData[]
 }
 
-function createSunburstChart() {
-  const width = 350
-  const radius = 150
+function createSunburstChart(targets: RID[]) {
+  const width = 180
+  const radius = 90
   const radius_ratio_inncer = 0.6
   const partition = d3
     .partition<HierarchyData>()
     .size([2 * Math.PI, radius * (1 - radius_ratio_inncer)])
 
   const root = d3
-    .hierarchy<HierarchyData>(store_analyze.hierarchy as HierarchyData)
+    .hierarchy<HierarchyData>(store_item.hierarchy as HierarchyData)
     .sum((d: HierarchyData) => (d.workload_task || 0) + (d.workload_bug || 0))
     .sort((a: d3.HierarchyNode<HierarchyData>, b: d3.HierarchyNode<HierarchyData>) => {
       return (b.value || 0) - (a.value || 0)
@@ -59,9 +63,9 @@ function createSunburstChart() {
     .outerRadius((d: any) => radius * radius_ratio_inncer + d.y1)
     .cornerRadius(2)
 
-  const colors = ['#efbf4d', '#9c357c', '#028c06']
+  const colors = ['#efbf4d', '#b34b92', '#028c06']
   const color_task = '#4169e1'
-  const color_bug = '#cd0000'
+  const color_bug = '#a80000'
 
   const max_depth = Math.max(...root.descendants().map((d: any) => d.depth))
 
@@ -86,14 +90,16 @@ function createSunburstChart() {
       return '#000000'
     })
     .style('stroke', '#101010')
-    .style('stroke-width', 1.5)
-    .style('fill-opacity', () => 0.8)
+    .style('stroke-width', 2.0)
+    .style('fill-opacity', (d: any) =>
+      targets.some((target) => target.rid === d.data.rid) ? 0.9 : 0.3
+    )
 }
 </script>
 
 <template>
   <v-container class="summary">
-    <div id="sunburst"></div>
+    <div width="180px" id="sunburst"></div>
   </v-container>
 </template>
 

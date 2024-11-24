@@ -105,7 +105,7 @@ function createChartDetail(
       list_area = [
         {
           name: 'Total',
-          value: (d: SummaryItem) => d.task_workload_total,
+          value: (d: SummaryItem) => d.task_workload_total + d.bug_workload_total,
           color_line: 'rgba(180, 180, 180, 0.9)',
           color_area: 'rgba(180, 180, 180, 0.2)'
         }

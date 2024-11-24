@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 
 import { ItemType, ExtractType } from '@/types/Item'
 import type {
+  RID,
   Item,
   ItemRange,
   EventCreate,
@@ -16,17 +17,21 @@ import type {
   BugCreate,
   BugUpdate,
   BugPriorityUpdate,
-  ItemState
+  ItemState,
+  ItemHierarchy
 } from '@/types/Item'
+import type { SummaryItem } from '@/types/Summary'
 import type { Activity, ActivityCreate, ActivityUpdate } from '@/types/Activity'
 
 import ItemService from '@/services/ItemService'
+import SummaryService from '@/services/SummaryService'
 import ActivityService from '@/services/ActivityService'
 import useCommonStore from '@/stores/CommonStore'
 import useUserStore from '@/stores/UserStore'
 import useProjectStore from '@/stores/ProjectStore'
 
 const service_item = new ItemService()
+const service_summary = new SummaryService()
 const service_activity = new ActivityService()
 
 const useItemStore = defineStore('item', {
@@ -38,7 +43,9 @@ const useItemStore = defineStore('item', {
     extract_search_target: '' as string,
     type_enabled: ItemType.BUG as ItemType,
     items_closed: [] as Array<number>,
-    is_enable_closed: true as boolean
+    is_enable_closed: true as boolean,
+    hierarchy: null as ItemHierarchy | null,
+    summaries_item: [] as Array<SummaryItem>
   }),
   actions: {
     updated() {
@@ -146,6 +153,17 @@ const useItemStore = defineStore('item', {
     },
     async getItemRange(id_project: number): Promise<ItemRange[]> {
       return service_item.getItemRange(id_project)
+    },
+    async fetchSummaryItem(rid_item: number | null) {
+      if (rid_item) {
+        this.summaries_item = await service_summary.getSummariesItem(rid_item)
+      }
+    },
+    async getItemsRelationRID(target: number): Promise<RID[]> {
+      return service_item.getItemsRelationRID(target)
+    },
+    async fetchHierarchy(id_project: number | null) {
+      this.hierarchy = await service_item.getHierarchy(id_project)
     },
     setExtractIncomplete() {
       this.type_extract = ExtractType.INCOMPLETE

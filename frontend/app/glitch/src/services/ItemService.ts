@@ -1,6 +1,7 @@
 import http from '@/services/ApiClient'
 
 import type {
+  RID,
   Item,
   ItemRange,
   StateUpdate,
@@ -365,6 +366,16 @@ class ItemService {
   public async getHierarchy(id_project: number | null): Promise<ItemHierarchy> {
     try {
       const response = await http.get<ItemHierarchy>(`/api/item/hierarchy/${id_project}`)
+      return response.data
+    } catch (error) {
+      console.trace()
+      throw new Error('error: ${error}')
+    }
+  }
+
+  public async getItemsRelationRID(target: number | null): Promise<RID[]> {
+    try {
+      const response = await http.get<RID[]>(`/api/item/relation-rid/${target}`)
       return response.data
     } catch (error) {
       console.trace()

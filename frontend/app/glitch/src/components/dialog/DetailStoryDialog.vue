@@ -2,6 +2,8 @@
 import { type Item } from '@/types/Item'
 
 import { useDisplayDialog } from '@/components/dialog/BaseDialog'
+import ItemHierarchy from '@/components/dialog/ItemHierarchy.vue'
+import ItemSummary from '@/components/dialog/ItemSummary.vue'
 import StateLabel from '@/components/common/StateLabel.vue'
 import UserLabel from '@/components/common/UserLabel.vue'
 
@@ -46,6 +48,16 @@ defineExpose({
       </template>
 
       <v-card-text>
+        <v-row>
+          <v-col cols="auto" class="d-flex align-center justify-center hierarchy">
+            <ItemHierarchy :id_project="target.id_project" :rid_item="target.rid" />
+          </v-col>
+
+          <v-col cols="auto">
+            <ItemSummary :id_project="target.id_project" :rid_item="target.rid" />
+          </v-col>
+        </v-row>
+
         <div class="dialog-detail-title">Detail :</div>
         <div class="dialog-detail-detail">
           {{ target.detail }}
