@@ -1388,6 +1388,35 @@ def getHierarchy(db: Session, id_project: int, visited=None):
     }
 
 
+def getItemsRelationRID(db: Session, target):
+    try:
+        cte_extruct_ancestor = db.query(
+            Tree.rid_ancestor.label('rid')
+        )\
+        .filter(Tree.rid_descendant == target)
+
+        cte_extruct_descendant = db.query(
+            Tree.rid_descendant.label('rid')
+        ).filter(Tree.rid_ancestor == target)
+
+        cte_extruct = cte_extruct_ancestor.union(cte_extruct_descendant)
+        cte_extruct = cte_extruct.cte(name='targets')
+
+        query = db.query(
+            Item.rid
+        )\
+        .select_from(cte_extruct)\
+        .join(Item, Item.rid == cte_extruct.c.rid)\
+        .where(Item.is_deleted == 0)\
+        .order_by(Item.rid)
+
+        result = query.all()
+        return result
+
+    except Exception as e:
+        raise e
+
+
 def getFrequency(db: Session, id_project):
     try:
         query = db.query(
