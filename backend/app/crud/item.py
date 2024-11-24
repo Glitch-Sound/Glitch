@@ -491,8 +491,7 @@ def _extructItem(db: Session, params: ItemParam):
                 subquery_target = (
                     select(Item.rid)
                     .where(
-                        Item.rid_users == params.rid_users,
-                        datetime_week_ago <= Item.datetime_update
+                        Item.rid_users == params.rid_users
                     )
                 ).subquery()
 
@@ -634,6 +633,7 @@ def getItemsNotice(db: Session, id_project):
                         ItemType.STORY.value,
                         ItemType.BUG.value
                     ]),
+                    0 < Item.risk,
                     Item.state == ItemState.ALERT.value
                 )
             )
