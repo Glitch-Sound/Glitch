@@ -2,10 +2,12 @@
 import { onMounted, ref } from 'vue'
 
 import type { Project, ProjectCreate, ProjectUpdate } from '@/types/Item'
+import type { MemberCreate } from '@/types/User'
 
 import useProjectStore from '@/stores/ProjectStore'
 import CreateProjectDialog from '@/components/dialog/CreateProjectDialog.vue'
 import UpdateProjectDialog from '@/components/dialog/UpdateProjectDialog.vue'
+import MemberDialog from '@/components/dialog/MemberDialog.vue'
 
 const headers = [
   { title: 'ID', width: ' 50px' },
@@ -19,6 +21,7 @@ const store_project = useProjectStore()
 
 const dialog_project_create = ref()
 const dialog_project_update = ref()
+const dialog_member = ref()
 
 onMounted(() => {
   store_project.fetchProjects()
@@ -30,6 +33,10 @@ const openCreateProjectDialog = () => {
 
 const openUpdateProjectDialog = (data: Project) => {
   dialog_project_update.value?.open(data)
+}
+
+const openMemberDialog = (data: Project) => {
+  dialog_member.value?.open(data)
 }
 
 const handleEntry = async (data: ProjectCreate) => {
@@ -45,6 +52,10 @@ const handleUpdate = async (data: ProjectUpdate) => {
 const handleDelete = async (data: ProjectUpdate) => {
   await store_project.deleteProject(data.rid)
   dialog_project_update.value?.close()
+}
+
+const handleEntryMember = async (data: MemberCreate[]) => {
+  console.log(data)
 }
 </script>
 
@@ -69,14 +80,25 @@ const handleDelete = async (data: ProjectUpdate) => {
             <td>{{ item.project_datetime_end }}</td>
             <td>{{ item.name }}</td>
             <td>
-              <v-btn
-                size="small"
-                prepend-icon="mdi-pencil"
-                variant="outlined"
-                @click="openUpdateProjectDialog(item)"
-              >
-                UPDATE
-              </v-btn>
+              <div class="d-flex">
+                <v-btn
+                  size="small"
+                  prepend-icon="mdi-pencil"
+                  variant="outlined"
+                  class="me-5"
+                  @click="openUpdateProjectDialog(item)"
+                >
+                  UPDATE
+                </v-btn>
+                <v-btn
+                  size="small"
+                  prepend-icon="mdi-account-supervisor"
+                  variant="outlined"
+                  @click="openMemberDialog(item)"
+                >
+                  MEMBER
+                </v-btn>
+              </div>
             </td>
           </tr>
         </template>
@@ -86,6 +108,7 @@ const handleDelete = async (data: ProjectUpdate) => {
 
   <CreateProjectDialog ref="dialog_project_create" @submit="handleEntry" />
   <UpdateProjectDialog ref="dialog_project_update" @submit="handleUpdate" @delete="handleDelete" />
+  <MemberDialog ref="dialog_member" @submit="handleEntryMember" />
 </template>
 
 <style scoped>

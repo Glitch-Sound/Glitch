@@ -10,6 +10,7 @@ const service_user = new UserService()
 const useUserStore = defineStore('user', {
   state: () => ({
     users: [] as Array<User>,
+    users_project: {} as Record<number, User[]>,
     login_user: loadLoginUser() as User | null
   }),
   actions: {
@@ -35,6 +36,18 @@ const useUserStore = defineStore('user', {
       const result = await service_user.login(user)
       this.login_user = result
       saveLoginUser(result)
+      return result
+    },
+    async fetchMembers(id_project: number) {
+      const members = await service_user.getMembers(id_project)
+      this.users_project = {
+        ...this.users_project,
+        [id_project]: members
+      }
+    },
+    async createMembers(id_project: number, targets: UserCreate[]): Promise<User[]> {
+      const result = await service_user.createMembers(id_project, targets)
+      await this.fetchUsers()
       return result
     }
   }

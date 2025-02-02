@@ -46,6 +46,22 @@ export const useFormDialog = <T>(emits: any) => {
   }
 }
 
+export const useNoFormDialog = <T>(emits: any) => {
+  const dialog = ref(false)
+  const return_data = ref<T>({} as T)
+
+  const submitData = () => {
+    emits('submit', return_data.value)
+    dialog.value = false
+  }
+
+  return {
+    dialog,
+    return_data,
+    submitData
+  }
+}
+
 export const useDisplayDialog = (emits: any) => {
   const dialog = ref(false)
   const target = ref()

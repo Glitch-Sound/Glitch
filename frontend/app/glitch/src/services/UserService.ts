@@ -61,6 +61,26 @@ class UserService {
       throw new Error('error: ${error}')
     }
   }
+
+  public async getMembers(id_project: number | null): Promise<User[]> {
+    try {
+      const response = await http.get<User[]>(`/api/member/${id_project}`)
+      return response.data
+    } catch (error) {
+      console.trace()
+      throw new Error('error: ${error}')
+    }
+  }
+
+  public async createMembers(id_project: number | null, targets: UserCreate[]): Promise<User[]> {
+    try {
+      const response = await http.post<User[]>('/api/member', { id_project, targets })
+      return response.data
+    } catch (error) {
+      console.trace()
+      throw new Error('error: ${error}')
+    }
+  }
 }
 
 export default UserService
