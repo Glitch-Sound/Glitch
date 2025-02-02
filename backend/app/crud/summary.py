@@ -1,11 +1,7 @@
-from sqlalchemy import desc, func, case, cast, Integer
+from sqlalchemy import desc, func
 from sqlalchemy.orm import Session, aliased
-from sqlalchemy.sql import func
 
-import sys
-sys.path.append('~/app')
-
-from crud.common import getCurrentDate, getPreviousDate, ItemType, ItemState
+from crud.common import get_date_previous, get_date_current, ItemType, ItemState
 
 from model.summary_item import SummaryItem
 from model.summary_user import SummaryUser
@@ -16,7 +12,7 @@ from model.task import Task
 from model.bug import Bug
 
 
-def getSummariesProject(db: Session, id_project: int):
+def get_summaries_project(db: Session, id_project: int):
     try:
         query = db.query(
             SummaryItem.rid_items.label('rid'),
@@ -48,7 +44,7 @@ def getSummariesProject(db: Session, id_project: int):
         raise e
 
 
-def getSummariesItem(db: Session, rid: int):
+def get_summaries_item(db: Session, rid: int):
     try:
         query = db.query(
             SummaryItem.rid_items.label('rid'),
@@ -81,15 +77,15 @@ def getSummariesItem(db: Session, rid: int):
         raise e
 
 
-def getSummariesUser(db: Session, id_project: int, rid_users: int):
+def get_summaries_user(db: Session, id_project: int, rid_users: int):
     try:
-        UserAlias = aliased(User)
+        alias_user = aliased(User)
 
         query = db.query(
             SummaryUser.rid,
             SummaryUser.id_project,
-            UserAlias.rid.label('rid_users'),
-            UserAlias.name.label('name'),
+            alias_user.rid.label('rid_users'),
+            alias_user.name.label('name'),
             SummaryUser.risk,
             SummaryUser.task_count_idle,
             SummaryUser.task_count_run,
@@ -109,7 +105,7 @@ def getSummariesUser(db: Session, id_project: int, rid_users: int):
             SummaryUser.bug_workload_total,
             SummaryUser.date_entry
         )\
-        .join(UserAlias,  UserAlias.rid == SummaryUser.rid_users)\
+        .join(alias_user,  alias_user.rid == SummaryUser.rid_users)\
         .filter(
             SummaryUser.rid_users  == rid_users,
             SummaryUser.id_project == id_project
@@ -123,7 +119,7 @@ def getSummariesUser(db: Session, id_project: int, rid_users: int):
         raise e
 
 
-def createSummaryItem(db: Session, id_project: int, rid_target: int):
+def create_summary_item(db: Session, id_project: int, rid_target: int):
     try:
         trees = db.query(
             Tree
@@ -133,7 +129,7 @@ def createSummaryItem(db: Session, id_project: int, rid_target: int):
         .all()
 
         if not trees:
-            raise
+            raise ValueError("No trees.")
 
         for tree in trees:
             if tree.rid_ancestor == tree.rid_descendant:
@@ -177,7 +173,7 @@ def createSummaryItem(db: Session, id_project: int, rid_target: int):
                 Tree.rid_descendant != tree.rid_ancestor
             )\
             .all()
- 
+
             list_count = db.query(
                 Item.type,
                 Item.state,
@@ -192,14 +188,14 @@ def createSummaryItem(db: Session, id_project: int, rid_target: int):
             .group_by(Item.type, Item.state)\
             .all()
 
-            result_sum, result_count = _getSummary(list_sum_risk, list_sum_workload, list_sum_number, list_count)
+            result_sum, result_count = _get_summary(list_sum_risk, list_sum_workload, list_sum_number, list_count)
 
             summary_item = db.query(SummaryItem).filter(
                 SummaryItem.rid_items == tree.rid_ancestor,
             ).all()
 
             if not summary_item:
-                date_previous = getPreviousDate()
+                date_previous = get_date_previous()
                 summary = SummaryItem(
                     id_project=id_project,
                     rid_items=tree.rid_ancestor,
@@ -224,7 +220,7 @@ def createSummaryItem(db: Session, id_project: int, rid_target: int):
                 )
                 db.add(summary)
 
-            date_current = getCurrentDate()
+            date_current = get_date_current()
             summary_item = db.query(
                 SummaryItem
             )\
@@ -291,7 +287,7 @@ def createSummaryItem(db: Session, id_project: int, rid_target: int):
         raise e
 
 
-def createSummaryUser(db: Session, id_project: int, rid_users: int):
+def create_summary_user(db: Session, id_project: int, rid_users: int):
     try:
         list_sum_risk = db.query(
             func.sum(Item.risk).label('risk'),
@@ -347,7 +343,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
         .group_by(Item.type, Item.state)\
         .all()
 
-        result_sum, result_count = _getSummary(list_sum_risk, list_sum_workload, list_sum_number, list_count)
+        result_sum, result_count = _get_summary(list_sum_risk, list_sum_workload, list_sum_number, list_count)
 
         summary_user = db.query(
             SummaryUser
@@ -358,7 +354,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
         ).all()
 
         if not summary_user:
-            date_previous = getPreviousDate()
+            date_previous = get_date_previous()
             summary = SummaryUser(
                 rid_users=rid_users,
                 id_project=id_project,
@@ -383,7 +379,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
             )
             db.add(summary)
 
-        date_current = getCurrentDate()
+        date_current = get_date_current()
 
         summary_user = db.query(
             SummaryUser
@@ -429,7 +425,6 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
                 SummaryUser.date_entry == date_current
             )
 
- 
             summary.update({
                 SummaryUser.risk: result_sum['risk'],
                 SummaryUser.task_count_idle: result_count['task_count_idle'],
@@ -454,7 +449,7 @@ def createSummaryUser(db: Session, id_project: int, rid_users: int):
         raise e
 
 
-def _getSummary(list_sum_risk: any, list_sum_workload: any, list_sum_number: any, list_count: any):
+def _get_summary(list_sum_risk: any, list_sum_workload: any, list_sum_number: any, list_count: any):
     result_sum = {
         'risk'                  : 0,
         'task_workload'         : 0,

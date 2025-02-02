@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from pytz import timezone
@@ -6,12 +5,9 @@ from pytz import timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-import sys
-sys.path.append('~/app')
-
 from database import engine, Base, setup_fts
 from endpoints.item import router as router_item
-from endpoints.item import scheduledItem
+from endpoints.item import scheduled_item
 from endpoints.user import router as router_user
 from endpoints.activity import router as router_activity
 from endpoints.summary import router as router_summary
@@ -31,7 +27,7 @@ app.add_middleware(
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(
-    scheduledItem, 
+    scheduled_item,
     CronTrigger(hour=0, minute=0, timezone=timezone('Asia/Tokyo'))
 )
 scheduler.start()

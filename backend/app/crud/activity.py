@@ -1,16 +1,13 @@
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-import sys
-sys.path.append('~/app')
-
-from crud.common import getCurrentDatetime
+from crud.common import get_datetime_current
 from schema import activity as schema_activity
 from model.activity import Activity
 from model.user import User
 
 
-def getActivities(db: Session, rid_items: int, search_query: str = None):
+def get_activities(db: Session, rid_items: int, search_query: str = None):
     try:
         query = db.query(
             Activity.rid,
@@ -40,9 +37,9 @@ def getActivities(db: Session, rid_items: int, search_query: str = None):
         raise e
 
 
-def createActivity(db: Session, target:schema_activity.ActivityCreate):
+def create_activity(db: Session, target:schema_activity.ActivityCreate):
     try:
-        current_datetime = getCurrentDatetime()
+        current_datetime = get_datetime_current()
 
         db.begin()
         activity = Activity(
@@ -62,9 +59,9 @@ def createActivity(db: Session, target:schema_activity.ActivityCreate):
         raise e
 
 
-def updateActivity(db: Session, target:schema_activity.ActivityUpdate):
+def update_activity(db: Session, target:schema_activity.ActivityUpdate):
     try:
-        current_datetime = getCurrentDatetime()
+        current_datetime = get_datetime_current()
 
         activity = db.query(
             Activity
@@ -72,7 +69,8 @@ def updateActivity(db: Session, target:schema_activity.ActivityUpdate):
         .filter(Activity.rid == target.rid)
 
         activity.update({
-            Activity.activity: target.activity
+            Activity.activity: target.activity,
+            Activity.datetime_update: current_datetime
         })
 
         activity_updated = activity.first()
@@ -83,9 +81,9 @@ def updateActivity(db: Session, target:schema_activity.ActivityUpdate):
         raise e
 
 
-def deleteActivity(db: Session, rid: int):
+def delete_activity(db: Session, rid: int):
     try:
-        current_datetime = getCurrentDatetime()
+        current_datetime = get_datetime_current()
 
         db.begin()
         item = db.query(

@@ -1,9 +1,6 @@
 from sqlalchemy import Column, Integer, String, Index
 from sqlalchemy.orm import relationship
 
-import sys
-sys.path.append('~/app')
-
 from database import Base
 
 
@@ -19,8 +16,10 @@ class User(Base):
 
     items          = relationship('Item',        foreign_keys='Item.rid_users',        back_populates='user')
     items_review   = relationship('Item',        foreign_keys='Item.rid_users_review', back_populates='user_review')
+
     activities     = relationship('Activity',    back_populates='user')
     summaries_user = relationship('SummaryUser', back_populates='user')
+    member         = relationship('Member',      back_populates='user')
 
     __table_args__ = (
         Index('idx_users_01', 'is_deleted', 'rid'),

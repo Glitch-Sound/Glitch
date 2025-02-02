@@ -1,9 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer, String, Index
 from sqlalchemy.orm import relationship
 
-import sys
-sys.path.append('~/app')
-
 from database import Base
 
 
@@ -28,19 +25,17 @@ class Item(Base):
 
     ancestors    = relationship('Tree', foreign_keys='Tree.rid_descendant', back_populates='descendant', cascade="all, delete-orphan")
     descendants  = relationship('Tree', foreign_keys='Tree.rid_ancestor',   back_populates='ancestor',   cascade="all, delete-orphan")
+    user         = relationship('User', foreign_keys=[rid_users],           back_populates='items')
+    user_review  = relationship('User', foreign_keys=[rid_users_review],    back_populates='items_review')
 
+    project      = relationship('Project',     back_populates='items')
+    event        = relationship('Event',       back_populates='items')
+    feature      = relationship('Feature',     back_populates='items')
+    story        = relationship('Story',       back_populates='items')
+    task         = relationship('Task',        back_populates='items')
+    bug          = relationship('Bug',         back_populates='items')
+    activity     = relationship('Activity',    back_populates='items')
     summary_item = relationship('SummaryItem', back_populates='items')
-
-    project      = relationship('Project',  back_populates='items')
-    event        = relationship('Event',    back_populates='items')
-    feature      = relationship('Feature',  back_populates='items')
-    story        = relationship('Story',    back_populates='items')
-    task         = relationship('Task',     back_populates='items')
-    bug          = relationship('Bug',      back_populates='items')
-    activity     = relationship('Activity', back_populates='items')
-
-    user         = relationship('User', foreign_keys=[rid_users], back_populates='items')
-    user_review  = relationship('User', foreign_keys=[rid_users_review], back_populates='items_review')
 
     __table_args__ = (
         Index('idx_items_01', 'is_deleted', 'type', 'rid'),

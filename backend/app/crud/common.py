@@ -1,7 +1,6 @@
-import pytz
 from datetime import datetime, timedelta
-
 from enum import Enum
+import pytz
 
 
 class ItemType(Enum):
@@ -56,27 +55,20 @@ def generate_bigrams(text):
     return ' '.join(bigrams)
 
 
-def getWeekAgoDate():
-    current_utc_time = datetime.now(pytz.timezone('Asia/Tokyo'))
-    week_date_time = current_utc_time - timedelta(days=7)
-    week_date = week_date_time.strftime('%Y-%m-%d')
-    return week_date
-
-
-def getPreviousDate():
+def get_date_previous():
     current_utc_time = datetime.now(pytz.timezone('Asia/Tokyo'))
     previous_date_time = current_utc_time - timedelta(days=1)
     previous_date = previous_date_time.strftime('%Y-%m-%d')
     return previous_date
 
 
-def getCurrentDate():
+def get_date_current():
     current_utc_time = datetime.now(pytz.timezone('Asia/Tokyo'))
     current_date = current_utc_time.strftime('%Y-%m-%d')
     return current_date
 
 
-def getCurrentDatetime():
+def get_datetime_current():
     current_utc_time = datetime.now(pytz.timezone('Asia/Tokyo'))
     current_datetime = current_utc_time.strftime('%Y-%m-%d %H:%M:%S')
     return current_datetime

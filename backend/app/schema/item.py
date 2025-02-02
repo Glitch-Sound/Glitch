@@ -1,5 +1,5 @@
+from typing import Optional, List
 from pydantic import BaseModel
-from typing import List, Optional
 
 
 class RID(BaseModel):
@@ -49,7 +49,7 @@ class ItemRange(BaseModel):
     datetime_end: str
 
     class Config:
-        from_attributes = True 
+        from_attributes = True
 
 
 class StateUpdate(BaseModel):
@@ -58,7 +58,7 @@ class StateUpdate(BaseModel):
 
     class Config:
         from_attributes = True
-    
+
 
 class Project(BaseModel):
     rid: int
@@ -267,4 +267,4 @@ class ItemHierarchy(BaseModel):
     children: Optional[List['ItemHierarchy']] = None
 
     class Config:
-        from_attributes = True 
+        from_attributes = True

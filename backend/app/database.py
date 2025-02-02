@@ -2,9 +2,6 @@ from sqlalchemy import create_engine, text, event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-import sys
-sys.path.append('~/app')
-
 from crud.common import generate_bigrams
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./glitch.db"
@@ -16,7 +13,7 @@ engine = create_engine(
 
 
 @event.listens_for(engine, "connect")
-def connect(dbapi_connection, connection_record):
+def connect(dbapi_connection, _connection_record):
     dbapi_connection.create_function('generate_bigrams', 1, generate_bigrams)
 
 

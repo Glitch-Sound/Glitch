@@ -1,12 +1,11 @@
+import datetime
+import jpholiday
+
 from sqlalchemy import select, update, distinct, and_, or_, func, case, text, literal
 from sqlalchemy.orm import Session, aliased
-from sqlalchemy.sql import func
 
-import sys
-sys.path.append('~/app')
-
-from crud.common import generate_bigrams, getWeekAgoDate, getCurrentDatetime, ItemType, ItemState, ExtractType, TaskType, RiskType
-from crud.summary import createSummaryItem, createSummaryUser
+from crud.common import generate_bigrams, get_datetime_current, ItemType, ItemState, ExtractType, TaskType, RiskType
+from crud.summary import create_summary_item, create_summary_user
 
 from schema import item as schema_item
 from model.item import Item
@@ -18,9 +17,6 @@ from model.story import Story
 from model.task import Task
 from model.bug import Bug
 from model.user import User
-
-import jpholiday
-import datetime
 
 
 class ItemParam():
@@ -43,7 +39,7 @@ class ItemUpdateCommon():
         self.result           = result
 
 
-def _createTree(db: Session, type_create: ItemType, rid_parent: int, rid: int):
+def _create_tree(db: Session, type_create: ItemType, rid_parent: int, rid: int):
     try:
         trees = db.query(
             Tree.rid_ancestor
@@ -52,20 +48,20 @@ def _createTree(db: Session, type_create: ItemType, rid_parent: int, rid: int):
         .order_by(Tree.rid_ancestor).all()
 
         if not trees:
-            raise
+            raise ValueError("No trees.")
 
         list_rid_ancestor = [r[0] for r in trees]
         list_rid_ancestor.append(rid)
 
         for index, rid_ancestor in enumerate(list_rid_ancestor):
-            type = index + 1
+            type_tree = index + 1
             if rid_ancestor == rid:
-                type = type_create.value
+                type_tree = type_create.value
 
             tree = Tree(
                 rid_ancestor=rid_ancestor,
                 rid_descendant=rid,
-                type=type
+                type=type_tree
             )
             db.add(tree)
 
@@ -73,7 +69,7 @@ def _createTree(db: Session, type_create: ItemType, rid_parent: int, rid: int):
         raise e
 
 
-def _createNextRID(db: Session):
+def _create_next_rid(db: Session):
     try:
         next_rid = db.query(
             func.coalesce(func.max(Item.rid), 0) + 1
@@ -86,13 +82,13 @@ def _createNextRID(db: Session):
         raise e
 
 
-def _createSortPathProject(id_project: int):
+def _create_sort_path_project(id_project: int):
     return str(id_project).zfill(4) + "00000000000000000000000000000"
 
 
-def _createSortPathEvent(db: Session, target:schema_item.EventCreate):
+def _create_sort_path_event(db: Session, target:schema_item.EventCreate):
     try:
-        next_rid  = _createNextRID(db)
+        next_rid  = _create_next_rid(db)
         path_sort = str(target.id_project).zfill(4) + target.event_datetime_end.replace('-', '') + str(next_rid).zfill(4) + '00000000000000000'
 
         return path_sort
@@ -101,7 +97,7 @@ def _createSortPathEvent(db: Session, target:schema_item.EventCreate):
         raise e
 
 
-def _createSortPathFeature(db: Session, target:schema_item.FeatureCreate):
+def _create_sort_path_feature(db: Session, target:schema_item.FeatureCreate):
     try:
         path_sort_event = db.query(
             Item.path_sort
@@ -111,7 +107,7 @@ def _createSortPathFeature(db: Session, target:schema_item.FeatureCreate):
         )\
         .one()[0]
 
-        next_rid  = _createNextRID(db)
+        next_rid  = _create_next_rid(db)
 
         path_sort = path_sort_event[:16] + str(next_rid).zfill(4) + '0000000000000'
         return path_sort
@@ -120,7 +116,7 @@ def _createSortPathFeature(db: Session, target:schema_item.FeatureCreate):
         raise e
 
 
-def _createSortPathStory(db: Session, target:schema_item.StoryCreate):
+def _create_sort_path_story(db: Session, target:schema_item.StoryCreate):
     try:
         path_sort_feature = db.query(
             Item.path_sort
@@ -130,7 +126,7 @@ def _createSortPathStory(db: Session, target:schema_item.StoryCreate):
         )\
         .one()[0]
 
-        next_rid  = _createNextRID(db)
+        next_rid  = _create_next_rid(db)
 
         path_sort = path_sort_feature[:20] + target.story_datetime_end.replace('-', '') + str(next_rid).zfill(4) + '0'
         return path_sort
@@ -139,7 +135,7 @@ def _createSortPathStory(db: Session, target:schema_item.StoryCreate):
         raise e
 
 
-def _createSortPathTask(db: Session, target:schema_item.TaskCreate):
+def _create_sort_path_task(db: Session, target:schema_item.TaskCreate):
     try:
         path_sort_story = db.query(
             Item.path_sort
@@ -156,7 +152,7 @@ def _createSortPathTask(db: Session, target:schema_item.TaskCreate):
         raise e
 
 
-def _createSortPathBug(db: Session, target:schema_item.BugCreate):
+def _create_sort_path_bug(db: Session, target:schema_item.BugCreate):
     try:
         path_sort_story = db.query(
             Item.path_sort
@@ -173,7 +169,7 @@ def _createSortPathBug(db: Session, target:schema_item.BugCreate):
         raise e
 
 
-def _updateSortPathEvent(db: Session, rid: int, event_datetime_end: str):
+def _update_sort_path_event(db: Session, rid: int, event_datetime_end: str):
     try:
         t1 = aliased(Tree)
         t2 = aliased(Item)
@@ -204,7 +200,7 @@ def _updateSortPathEvent(db: Session, rid: int, event_datetime_end: str):
         raise e
 
 
-def _updateSortPathStory(db: Session, rid: int, story_datetime_end: str):
+def _update_sort_path_story(db: Session, rid: int, story_datetime_end: str):
     try:
         t1 = aliased(Tree)
         t2 = aliased(Item)
@@ -235,7 +231,7 @@ def _updateSortPathStory(db: Session, rid: int, story_datetime_end: str):
         raise e
 
 
-def _getDateLimit(db: Session, rid: int):
+def _get_date_limit(db: Session, rid: int):
     try:
         story = db.query(
             Story.datetime_end
@@ -253,7 +249,7 @@ def _getDateLimit(db: Session, rid: int):
         raise e
 
 
-def _getTargetItem(db: Session, rid_item: int):
+def _get_target_item(db: Session, rid_item: int):
     try:
         query = db.query(
             Item.rid,
@@ -272,10 +268,10 @@ def _getTargetItem(db: Session, rid_item: int):
         raise e
 
 
-def _getRisk(db: Session, rid_item: int):
+def _get_risk(db: Session, rid_item: int):
     try:
-        datetime_limit   = _getDateLimit(db, rid_item)
-        datetime_current = getCurrentDatetime()
+        datetime_limit   = _get_date_limit(db, rid_item)
+        datetime_current = get_datetime_current()
 
         date_format  = "%Y-%m-%d"
         date_limit   = datetime.datetime.strptime(datetime_limit.split(' ')[0], date_format).date()
@@ -290,7 +286,7 @@ def _getRisk(db: Session, rid_item: int):
                 day_active += 1
             date += delta
 
-        item = _getTargetItem(db, rid_item)
+        item = _get_target_item(db, rid_item)
 
         workload = 0
         if item.task_workload is not None:
@@ -310,9 +306,9 @@ def _getRisk(db: Session, rid_item: int):
         raise e
 
 
-def _setRisk(db: Session, rid_item: int):
+def _set_risk(db: Session, rid_item: int):
     try:
-        risk = _getRisk(db, rid_item)
+        risk = _get_risk(db, rid_item)
 
         target_item = db.query(
             Item
@@ -327,9 +323,9 @@ def _setRisk(db: Session, rid_item: int):
         raise e
 
 
-def _updateItem(db: Session, target: ItemUpdateCommon):
+def _update_item(db: Session, target: ItemUpdateCommon):
     try:
-        datetime_current = getCurrentDatetime()
+        datetime_current = get_datetime_current()
 
         item = db.query(
             Item
@@ -365,9 +361,9 @@ def _updateItem(db: Session, target: ItemUpdateCommon):
         raise e
 
 
-def _deleteItem(db: Session, rid: int):
+def _delete_item(db: Session, rid: int):
     try:
-        datetime_current = getCurrentDatetime()
+        datetime_current = get_datetime_current()
 
         db.begin()
         item = db.query(
@@ -386,7 +382,7 @@ def _deleteItem(db: Session, rid: int):
         raise e
 
 
-def _extructItem(db: Session, params: ItemParam):
+def _extruct_item(db: Session, params: ItemParam):
     try:
         cte_extruct = None
         match params.type_extract:
@@ -486,8 +482,6 @@ def _extructItem(db: Session, params: ItemParam):
                 .filter(Tree.rid_descendant == params.rid_items)
 
             case ExtractType.SUMMARY_USER.value:
-                datetime_week_ago = getWeekAgoDate()
-
                 subquery_target = (
                     select(Item.rid)
                     .where(
@@ -506,12 +500,12 @@ def _extructItem(db: Session, params: ItemParam):
         raise e
 
 
-def getItems(db: Session, params: ItemParam):
+def get_items(db: Session, params: ItemParam):
     try:
-        UserAlias1 = aliased(User)
-        UserAlias2 = aliased(User)
+        alias_user_1 = aliased(User)
+        alias_user_2 = aliased(User)
 
-        cte_extruct = _extructItem(db, params)
+        cte_extruct = _extruct_item(db, params)
 
         query = db.query(
             Item.rid,
@@ -525,10 +519,10 @@ def getItems(db: Session, params: ItemParam):
             Item.result,
             Item.datetime_entry,
             Item.datetime_update,
-            UserAlias1.rid.label('rid_users'),
-            UserAlias1.name.label('name'),
-            UserAlias2.rid.label('rid_users_review'),
-            UserAlias2.name.label('name_review'),
+            alias_user_1.rid.label('rid_users'),
+            alias_user_1.name.label('name'),
+            alias_user_2.rid.label('rid_users_review'),
+            alias_user_2.name.label('name_review'),
             Project.datetime_start.label('project_datetime_start'),
             Project.datetime_end.label('project_datetime_end'),
             Event.datetime_end.label('event_datetime_end'),
@@ -541,8 +535,8 @@ def getItems(db: Session, params: ItemParam):
             Bug.workload.label('bug_workload'))\
         .select_from(cte_extruct)\
         .join(Item, Item.rid == cte_extruct.c.rid)\
-        .outerjoin(UserAlias1,  UserAlias1.rid == Item.rid_users)\
-        .outerjoin(UserAlias2,  UserAlias2.rid == Item.rid_users_review)\
+        .outerjoin(alias_user_1,  alias_user_1.rid == Item.rid_users)\
+        .outerjoin(alias_user_2,  alias_user_2.rid == Item.rid_users_review)\
         .outerjoin(Project, Project.rid_items == Item.rid)\
         .outerjoin(Event, Event.rid_items == Item.rid)\
         .outerjoin(Feature, Feature.rid_items == Item.rid)\
@@ -559,10 +553,10 @@ def getItems(db: Session, params: ItemParam):
         raise e
 
 
-def getItemsNotice(db: Session, id_project):
+def get_items_notice(db: Session, id_project):
     try:
-        UserAlias1 = aliased(User)
-        UserAlias2 = aliased(User)
+        alias_user_1 = aliased(User)
+        alias_user_2 = aliased(User)
 
         cte_extruct_ancestor = db.query(
             Tree.rid_ancestor.label('rid')
@@ -598,10 +592,10 @@ def getItemsNotice(db: Session, id_project):
             Item.result,
             Item.datetime_entry,
             Item.datetime_update,
-            UserAlias1.rid.label('rid_users'),
-            UserAlias1.name.label('name'),
-            UserAlias2.rid.label('rid_users_review'),
-            UserAlias2.name.label('name_review'),
+            alias_user_1.rid.label('rid_users'),
+            alias_user_1.name.label('name'),
+            alias_user_2.rid.label('rid_users_review'),
+            alias_user_2.name.label('name_review'),
             Project.datetime_start.label('project_datetime_start'),
             Project.datetime_end.label('project_datetime_end'),
             Event.datetime_end.label('event_datetime_end'),
@@ -614,8 +608,8 @@ def getItemsNotice(db: Session, id_project):
             Bug.workload.label('bug_workload'))\
         .select_from(cte_extruct)\
         .join(Item, Item.rid == cte_extruct.c.rid)\
-        .outerjoin(UserAlias1,  UserAlias1.rid == Item.rid_users)\
-        .outerjoin(UserAlias2,  UserAlias2.rid == Item.rid_users_review)\
+        .outerjoin(alias_user_1,  alias_user_1.rid == Item.rid_users)\
+        .outerjoin(alias_user_2,  alias_user_2.rid == Item.rid_users_review)\
         .outerjoin(Project, Project.rid_items == Item.rid)\
         .outerjoin(Event, Event.rid_items == Item.rid)\
         .outerjoin(Feature, Feature.rid_items == Item.rid)\
@@ -647,7 +641,7 @@ def getItemsNotice(db: Session, id_project):
         raise e
 
 
-def getItemRange(db: Session, id_project: int):
+def get_items_range(db: Session, id_project: int):
     try:
         query = db.query(
             Item.rid,
@@ -673,6 +667,7 @@ def getItemRange(db: Session, id_project: int):
         .outerjoin(Story, Story.rid_items == Item.rid)\
         .filter(
             Item.is_deleted == 0,
+            Item.id_project == id_project,
             Item.type.in_([
                 ItemType.PROJECT.value,
                 ItemType.EVENT.value,
@@ -688,22 +683,22 @@ def getItemRange(db: Session, id_project: int):
         raise e
 
 
-def updateItemState(db: Session, target: int, state: int):
+def update_item_state(db: Session, target: int, state: int):
     try:
         db.begin()
         item = db.query(
             Item
         )\
         .filter(Item.rid == target)
-        item_data = item.first() 
+        item_data = item.first()
 
         item.update({
             Item.state: state
         })
 
         if item_data.type in {ItemType.TASK.value, ItemType.BUG.value}:
-            createSummaryItem(db, item_data.id_project, item_data.rid)
-            createSummaryUser(db, item_data.id_project, item_data.rid_users)
+            create_summary_item(db, item_data.id_project, item_data.rid)
+            create_summary_user(db, item_data.id_project, item_data.rid_users)
 
         db.commit()
 
@@ -716,9 +711,9 @@ def updateItemState(db: Session, target: int, state: int):
         raise e
 
 
-def getProjects(db: Session):
+def get_projects(db: Session):
     try:
-        UserAlias = aliased(User)
+        alias_user = aliased(User)
 
         query = db.query(
             Item.rid,
@@ -730,11 +725,11 @@ def getProjects(db: Session):
             Item.result,
             Item.datetime_entry,
             Item.datetime_update,
-            UserAlias.rid.label('rid_users'),
-            UserAlias.name.label('name'),
+            alias_user.rid.label('rid_users'),
+            alias_user.name.label('name'),
             Project.datetime_start.label('project_datetime_start'),
             Project.datetime_end.label('project_datetime_end'))\
-        .outerjoin(UserAlias,  UserAlias.rid == Item.rid_users)\
+        .outerjoin(alias_user,  alias_user.rid == Item.rid_users)\
         .outerjoin(Project, Project.rid_items == Item.rid)\
         .filter(
             Item.is_deleted == 0,
@@ -749,15 +744,15 @@ def getProjects(db: Session):
         raise e
 
 
-def createProject(db: Session, target: schema_item.ProjectCreate):
+def create_project(db: Session, target: schema_item.ProjectCreate):
     try:
-        datetime_current = getCurrentDatetime()
+        datetime_current = get_datetime_current()
 
         db.begin()
-        max_id_project = _createNextRID(db)
+        max_id_project = _create_next_rid(db)
 
         item = Item(
-            path_sort=_createSortPathProject(max_id_project),
+            path_sort=_create_sort_path_project(max_id_project),
             rid_users=target.rid_users,
             rid_users_review=None,
             id_project=max_id_project,
@@ -794,7 +789,7 @@ def createProject(db: Session, target: schema_item.ProjectCreate):
         raise e
 
 
-def updateProject(db: Session, target:schema_item.ProjectUpdate):
+def update_project(db: Session, target:schema_item.ProjectUpdate):
     try:
         param_item = ItemUpdateCommon(
             rid=target.rid,
@@ -807,7 +802,7 @@ def updateProject(db: Session, target:schema_item.ProjectUpdate):
         )
 
         db.begin()
-        item = _updateItem(db, param_item)
+        item = _update_item(db, param_item)
 
         addition = db.query(
             Project
@@ -827,21 +822,21 @@ def updateProject(db: Session, target:schema_item.ProjectUpdate):
         raise e
 
 
-def deleteProject(db: Session, rid: int):
+def delete_project(db: Session, rid: int):
     try:
-        _deleteItem(db, rid)
+        _delete_item(db, rid)
 
     except Exception as e:
         raise e
 
 
-def createEvent(db: Session, target:schema_item.EventCreate):
+def create_event(db: Session, target:schema_item.EventCreate):
     try:
-        datetime_current = getCurrentDatetime()
+        datetime_current = get_datetime_current()
 
         db.begin()
         item = Item(
-            path_sort=_createSortPathEvent(db, target),
+            path_sort=_create_sort_path_event(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
@@ -862,7 +857,7 @@ def createEvent(db: Session, target:schema_item.EventCreate):
         )
         db.add(addition)
 
-        _createTree(db, ItemType.EVENT, target.rid_items, item.rid)
+        _create_tree(db, ItemType.EVENT, target.rid_items, item.rid)
         db.flush()
         db.commit()
 
@@ -874,7 +869,7 @@ def createEvent(db: Session, target:schema_item.EventCreate):
         raise e
 
 
-def updateEvent(db: Session, target:schema_item.EventUpdate):
+def update_event(db: Session, target:schema_item.EventUpdate):
     try:
         param_item = ItemUpdateCommon(
             rid=target.rid,
@@ -887,7 +882,7 @@ def updateEvent(db: Session, target:schema_item.EventUpdate):
         )
 
         db.begin()
-        item = _updateItem(db, param_item)
+        item = _update_item(db, param_item)
 
         addition = db.query(
             Event
@@ -898,7 +893,7 @@ def updateEvent(db: Session, target:schema_item.EventUpdate):
             Event.datetime_end: target.event_datetime_end
         })
 
-        _updateSortPathEvent(db, target.rid, target.event_datetime_end)
+        _update_sort_path_event(db, target.rid, target.event_datetime_end)
         db.commit()
         db.refresh(item)
         return item
@@ -908,21 +903,21 @@ def updateEvent(db: Session, target:schema_item.EventUpdate):
         raise e
 
 
-def deleteEvent(db: Session, rid: int):
+def delete_event(db: Session, rid: int):
     try:
-        _deleteItem(db, rid)
+        _delete_item(db, rid)
 
     except Exception as e:
         raise e
 
 
-def createFeature(db: Session, target:schema_item.FeatureCreate):
+def create_feature(db: Session, target:schema_item.FeatureCreate):
     try:
-        datetime_current = getCurrentDatetime()
+        datetime_current = get_datetime_current()
 
         db.begin()
         item = Item(
-            path_sort=_createSortPathFeature(db, target),
+            path_sort=_create_sort_path_feature(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
@@ -942,7 +937,7 @@ def createFeature(db: Session, target:schema_item.FeatureCreate):
         )
         db.add(addition)
 
-        _createTree(db, ItemType.FEATURE, target.rid_items, item.rid)
+        _create_tree(db, ItemType.FEATURE, target.rid_items, item.rid)
         db.flush()
         db.commit()
 
@@ -954,7 +949,7 @@ def createFeature(db: Session, target:schema_item.FeatureCreate):
         raise e
 
 
-def updateFeature(db: Session, target:schema_item.FeatureUpdate):
+def update_feature(db: Session, target:schema_item.FeatureUpdate):
     try:
         param_item = ItemUpdateCommon(
             rid=target.rid,
@@ -967,7 +962,7 @@ def updateFeature(db: Session, target:schema_item.FeatureUpdate):
         )
 
         db.begin()
-        item = _updateItem(db, param_item)
+        item = _update_item(db, param_item)
         db.commit()
         db.refresh(item)
         return item
@@ -977,21 +972,21 @@ def updateFeature(db: Session, target:schema_item.FeatureUpdate):
         raise e
 
 
-def deleteFeature(db: Session, rid: int):
+def delete_feature(db: Session, rid: int):
     try:
-        _deleteItem(db, rid)
+        _delete_item(db, rid)
 
     except Exception as e:
         raise e
 
 
-def createStory(db: Session, target:schema_item.StoryCreate):
+def create_story(db: Session, target:schema_item.StoryCreate):
     try:
-        datetime_current = getCurrentDatetime()
+        datetime_current = get_datetime_current()
 
         db.begin()
         item = Item(
-            path_sort=_createSortPathStory(db, target),
+            path_sort=_create_sort_path_story(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
@@ -1013,7 +1008,7 @@ def createStory(db: Session, target:schema_item.StoryCreate):
         )
         db.add(addition)
 
-        _createTree(db, ItemType.STORY, target.rid_items, item.rid)
+        _create_tree(db, ItemType.STORY, target.rid_items, item.rid)
         db.flush()
         db.commit()
 
@@ -1025,7 +1020,7 @@ def createStory(db: Session, target:schema_item.StoryCreate):
         raise e
 
 
-def updateStory(db: Session, target:schema_item.StoryUpdate):
+def update_story(db: Session, target:schema_item.StoryUpdate):
     try:
         param_item = ItemUpdateCommon(
             rid=target.rid,
@@ -1038,7 +1033,7 @@ def updateStory(db: Session, target:schema_item.StoryUpdate):
         )
 
         db.begin()
-        item = _updateItem(db, param_item)
+        item = _update_item(db, param_item)
 
         addition = db.query(
             Story
@@ -1051,7 +1046,7 @@ def updateStory(db: Session, target:schema_item.StoryUpdate):
 
         })
 
-        _updateSortPathStory(db, target.rid, target.story_datetime_end)
+        _update_sort_path_story(db, target.rid, target.story_datetime_end)
         db.commit()
         db.refresh(item)
         return item
@@ -1061,21 +1056,21 @@ def updateStory(db: Session, target:schema_item.StoryUpdate):
         raise e
 
 
-def deleteStory(db: Session, rid: int):
+def delete_story(db: Session, rid: int):
     try:
-        _deleteItem(db, rid)
+        _delete_item(db, rid)
 
     except Exception as e:
         raise e
 
 
-def createTask(db: Session, target:schema_item.TaskCreate):
+def create_task(db: Session, target:schema_item.TaskCreate):
     try:
-        datetime_current = getCurrentDatetime()
+        datetime_current = get_datetime_current()
 
         db.begin()
         item = Item(
-            path_sort=_createSortPathTask(db, target),
+            path_sort=_create_sort_path_task(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
@@ -1099,13 +1094,13 @@ def createTask(db: Session, target:schema_item.TaskCreate):
         )
         db.add(addition)
 
-        _createTree(db, ItemType.TASK, target.rid_items, item.rid)
+        _create_tree(db, ItemType.TASK, target.rid_items, item.rid)
         db.flush()
 
         db.flush()
-        _setRisk(db, item.rid)
-        createSummaryItem(db, target.id_project, item.rid)
-        createSummaryUser(db, target.id_project, target.rid_users)
+        _set_risk(db, item.rid)
+        create_summary_item(db, target.id_project, item.rid)
+        create_summary_user(db, target.id_project, target.rid_users)
         db.commit()
 
         db.refresh(item)
@@ -1116,7 +1111,7 @@ def createTask(db: Session, target:schema_item.TaskCreate):
         raise e
 
 
-def updateTask(db: Session, target:schema_item.TaskUpdate):
+def update_task(db: Session, target:schema_item.TaskUpdate):
     try:
         param_item = ItemUpdateCommon(
             rid=target.rid,
@@ -1129,7 +1124,7 @@ def updateTask(db: Session, target:schema_item.TaskUpdate):
         )
 
         db.begin()
-        item = _updateItem(db, param_item)
+        item = _update_item(db, param_item)
 
         addition = db.query(
             Task
@@ -1149,9 +1144,9 @@ def updateTask(db: Session, target:schema_item.TaskUpdate):
         .filter(Item.rid == target.rid)
 
         db.flush()
-        _setRisk(db, item.rid)
-        createSummaryItem(db, id_project, item.rid)
-        createSummaryUser(db, id_project, target.rid_users)
+        _set_risk(db, item.rid)
+        create_summary_item(db, id_project, item.rid)
+        create_summary_user(db, id_project, target.rid_users)
         db.commit()
 
         db.refresh(item)
@@ -1162,15 +1157,15 @@ def updateTask(db: Session, target:schema_item.TaskUpdate):
         raise e
 
 
-def deleteTask(db: Session, rid: int):
+def delete_task(db: Session, rid: int):
     try:
-        _deleteItem(db, rid)
+        _delete_item(db, rid)
 
     except Exception as e:
         raise e
 
 
-def updateTaskPriority(db: Session, target:schema_item.TaskPriorityUpdate):
+def update_task_priority(db: Session, target:schema_item.TaskPriorityUpdate):
     try:
         db.begin()
         item = db.query(
@@ -1192,13 +1187,13 @@ def updateTaskPriority(db: Session, target:schema_item.TaskPriorityUpdate):
         raise e
 
 
-def createBug(db: Session, target:schema_item.BugCreate):
+def create_bug(db: Session, target:schema_item.BugCreate):
     try:
-        datetime_current = getCurrentDatetime()
+        datetime_current = get_datetime_current()
 
         db.begin()
         item = Item(
-            path_sort=_createSortPathBug(db, target),
+            path_sort=_create_sort_path_bug(db, target),
             id_project=target.id_project,
             rid_users=target.rid_users,
             rid_users_review=None,
@@ -1219,13 +1214,13 @@ def createBug(db: Session, target:schema_item.BugCreate):
         )
         db.add(addition)
 
-        _createTree(db, ItemType.BUG, target.rid_items, item.rid)
+        _create_tree(db, ItemType.BUG, target.rid_items, item.rid)
         db.flush()
 
         db.flush()
-        _setRisk(db, item.rid)
-        createSummaryItem(db, target.id_project, item.rid)
-        createSummaryUser(db, target.id_project, target.rid_users)
+        _set_risk(db, item.rid)
+        create_summary_item(db, target.id_project, item.rid)
+        create_summary_user(db, target.id_project, target.rid_users)
         db.commit()
 
         db.refresh(item)
@@ -1236,7 +1231,7 @@ def createBug(db: Session, target:schema_item.BugCreate):
         raise e
 
 
-def updateBug(db: Session, target:schema_item.BugUpdate):
+def update_bug(db: Session, target:schema_item.BugUpdate):
     try:
         param_item = ItemUpdateCommon(
             rid=target.rid,
@@ -1249,7 +1244,7 @@ def updateBug(db: Session, target:schema_item.BugUpdate):
         )
 
         db.begin()
-        item = _updateItem(db, param_item)
+        item = _update_item(db, param_item)
 
         addition = db.query(
             Bug
@@ -1266,9 +1261,9 @@ def updateBug(db: Session, target:schema_item.BugUpdate):
         .filter(Item.rid == target.rid)
 
         db.flush()
-        _setRisk(db, item.rid)
-        createSummaryItem(db, id_project, item.rid)
-        createSummaryUser(db, id_project, target.rid_users)
+        _set_risk(db, item.rid)
+        create_summary_item(db, id_project, item.rid)
+        create_summary_user(db, id_project, target.rid_users)
         db.commit()
 
         db.refresh(item)
@@ -1279,15 +1274,15 @@ def updateBug(db: Session, target:schema_item.BugUpdate):
         raise e
 
 
-def deleteBug(db: Session, rid: int):
+def delete_bug(db: Session, rid: int):
     try:
-        _deleteItem(db, rid)
+        _delete_item(db, rid)
 
     except Exception as e:
         raise e
 
 
-def updateBugPriority(db: Session, target:schema_item.BugPriorityUpdate):
+def update_bug_priority(db: Session, target:schema_item.BugPriorityUpdate):
     try:
         db.begin()
         item = db.query(
@@ -1309,7 +1304,7 @@ def updateBugPriority(db: Session, target:schema_item.BugPriorityUpdate):
         raise e
 
 
-def getAncestorsItemsRID(db: Session, rid: int):
+def get_ancestors_items_rid(db: Session, rid: int):
     try:
         query = db.query(
             Tree.rid_ancestor.label('rid')
@@ -1325,7 +1320,7 @@ def getAncestorsItemsRID(db: Session, rid: int):
         raise e
 
 
-def getHierarchy(db: Session, id_project: int, visited=None):
+def get_hierarchy(db: Session, id_project: int, visited=None):
     if visited is None:
         visited = set()
 
@@ -1334,14 +1329,14 @@ def getHierarchy(db: Session, id_project: int, visited=None):
 
     visited.add(id_project)
 
-    UserAlias = aliased(User)
+    alias_user = aliased(User)
 
     ancestor = db.query(
         Item.rid,
         Item.type,
         Item.title,
-        UserAlias.rid.label('rid_users'),
-        UserAlias.name.label('name'),
+        alias_user.rid.label('rid_users'),
+        alias_user.name.label('name'),
         case(
             (Task.type == TaskType.WORKLOAD.value, Task.workload),
             (Task.type == TaskType.NUMBER.value,   35)
@@ -1349,7 +1344,7 @@ def getHierarchy(db: Session, id_project: int, visited=None):
         Bug.workload.label('bug_workload')
     )\
     .select_from(Item)\
-    .outerjoin(UserAlias,  UserAlias.rid == Item.rid_users)\
+    .outerjoin(alias_user,  alias_user.rid == Item.rid_users)\
     .outerjoin(Task, Task.rid_items == Item.rid)\
     .outerjoin(Bug, Bug.rid_items == Item.rid)\
     .filter(Item.rid == id_project).first()
@@ -1358,8 +1353,8 @@ def getHierarchy(db: Session, id_project: int, visited=None):
         Item.rid,
         Item.type,
         Item.title,
-        UserAlias.rid.label('rid_users'),
-        UserAlias.name.label('name'),
+        alias_user.rid.label('rid_users'),
+        alias_user.name.label('name'),
         case(
             (Task.type == TaskType.WORKLOAD.value, Task.workload),
             (Task.type == TaskType.NUMBER.value,   35)
@@ -1368,14 +1363,14 @@ def getHierarchy(db: Session, id_project: int, visited=None):
     )\
     .select_from(Item)\
     .join(Tree, Item.rid == Tree.rid_descendant)\
-    .outerjoin(UserAlias,  UserAlias.rid == Item.rid_users)\
+    .outerjoin(alias_user,  alias_user.rid == Item.rid_users)\
     .outerjoin(Task, Task.rid_items == Item.rid)\
     .outerjoin(Bug, Bug.rid_items == Item.rid)\
     .filter(Tree.rid_ancestor == id_project)\
     .all()
 
-    children = [getHierarchy(db, desc.rid, visited) for desc in descendants]
-    
+    children = [get_hierarchy(db, desc.rid, visited) for desc in descendants]
+
     return {
         "rid": ancestor.rid,
         "rid_users": ancestor.rid_users,
@@ -1388,7 +1383,7 @@ def getHierarchy(db: Session, id_project: int, visited=None):
     }
 
 
-def getItemsRelationRID(db: Session, target):
+def get_items_relation_rid(db: Session, target):
     try:
         cte_extruct_ancestor = db.query(
             Tree.rid_ancestor.label('rid')
@@ -1417,7 +1412,7 @@ def getItemsRelationRID(db: Session, target):
         raise e
 
 
-def getFrequency(db: Session, id_project):
+def get_frequency(db: Session, id_project):
     try:
         query = db.query(
             func.date(Item.datetime_entry).label('datetime_entry'),
@@ -1431,7 +1426,7 @@ def getFrequency(db: Session, id_project):
         )\
         .group_by(func.date(Item.datetime_entry))\
         .order_by(func.date(Item.datetime_entry))
-    
+
         result = query.all()
         return result
 
@@ -1439,7 +1434,7 @@ def getFrequency(db: Session, id_project):
         raise e
 
 
-def updateSummary(db: Session):
+def update_summary(db: Session):
     try:
         db.begin()
 
@@ -1455,7 +1450,7 @@ def updateSummary(db: Session):
         .all()
 
         for target in targets_item:
-            createSummaryItem(db, target.id_project, target.rid)
+            create_summary_item(db, target.id_project, target.rid)
 
         targets_user = db.query(
             Item.id_project,
@@ -1473,7 +1468,7 @@ def updateSummary(db: Session):
         .all()
 
         for target in targets_user:
-            createSummaryUser(db, target.id_project, target.rid_users)
+            create_summary_user(db, target.id_project, target.rid_users)
 
         db.commit()
 

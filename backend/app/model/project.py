@@ -1,9 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-import sys
-sys.path.append('~/app')
-
 from database import Base
 
 
@@ -15,4 +12,5 @@ class Project(Base):
     datetime_start = Column(String,  default='')
     datetime_end   = Column(String,  default='')
 
-    items = relationship('Item', back_populates='project')
+    items  = relationship('Item',   back_populates='project')
+    member = relationship('Member', back_populates='projects')

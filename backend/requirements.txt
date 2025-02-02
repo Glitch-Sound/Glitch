@@ -1,8 +1,8 @@
-fastapi
-pydantic
-uvicorn
-sqlalchemy
-pytz
-bcrypt
-jpholiday
-apscheduler
+fastapi~=0.115
+pydantic~=2.10
+uvicorn~=0.34
+sqlalchemy~=2.0
+pytz~=2024.1
+bcrypt~=4.2
+jpholiday~=0.1
+apscheduler~=3.11

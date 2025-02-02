@@ -1,14 +1,14 @@
+from enum import Enum
+from typing import List
+
 import bcrypt
 from sqlalchemy.orm import Session, aliased
 
-from enum import Enum
-
-import sys
-sys.path.append('~/app')
-
+from schema import user as schema_user
 from model.user import User
 from model.item import Item
-from schema import user as schema_user
+from model.project import Project
+from model.member import Member
 
 
 class Authority(Enum):
@@ -16,17 +16,17 @@ class Authority(Enum):
     ADMIN = 1
 
 
-def _createHashPassword(password: str) -> str:
+def _create_hash_password(password: str) -> str:
     password_bytes = password.encode('utf-8')
     hashed = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
     return hashed.decode('utf-8')
 
 
-def _verifyHashPassword(plain_password: str, hashed_password: str) -> bool:
+def _verify_hash_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 
-def getUsers(db: Session):
+def get_users(db: Session):
     try:
         query = db.query(
             User
@@ -41,9 +41,9 @@ def getUsers(db: Session):
         raise e
 
 
-def getUsersProject(db: Session, id_project: int):
+def get_users_project(db: Session, id_project: int):
     try:
-        UserAlias = aliased(User)
+        alias_user = aliased(User)
 
         cte_target = (
             db.query(
@@ -60,11 +60,11 @@ def getUsersProject(db: Session, id_project: int):
 
         query = (
             db.query(
-                UserAlias
+                alias_user
             )\
-            .join(cte_target, UserAlias.rid == cte_target.c.rid_users)
-            .filter(UserAlias.is_deleted == 0) 
-            .order_by(UserAlias.rid)
+            .join(cte_target, alias_user.rid == cte_target.c.rid_users)
+            .filter(alias_user.is_deleted == 0)
+            .order_by(alias_user.rid)
         )
 
         result = query.all()
@@ -74,7 +74,7 @@ def getUsersProject(db: Session, id_project: int):
         raise e
 
 
-def getUser(db: Session, rid_users: int):
+def get_user(db: Session, rid_users: int):
     try:
         query = db.query(
             User
@@ -91,11 +91,11 @@ def getUser(db: Session, rid_users: int):
         raise e
 
 
-def createUser(db: Session, target: schema_user.UserCreate):
+def create_user(db: Session, target: schema_user.UserCreate):
     try:
         user = User(
              user=target.user,
-             password=_createHashPassword(target.password),
+             password=_create_hash_password(target.password),
              name=target.name,
              is_admin=target.is_admin
         )
@@ -110,7 +110,7 @@ def createUser(db: Session, target: schema_user.UserCreate):
         raise e
 
 
-def updateUser(db: Session, target: schema_user.UserUpdate):
+def update_user(db: Session, target: schema_user.UserUpdate):
     try:
         db.begin()
         user = db.query(
@@ -120,7 +120,7 @@ def updateUser(db: Session, target: schema_user.UserUpdate):
 
         user.update({
             User.user: target.user,
-            User.password: _createHashPassword(target.password),
+            User.password: _create_hash_password(target.password),
             User.name: target.name,
             User.is_admin: target.is_admin
         })
@@ -135,7 +135,7 @@ def updateUser(db: Session, target: schema_user.UserUpdate):
         raise e
 
 
-def deleteUser(db: Session, rid: int):
+def delete_user(db: Session, rid: int):
     try:
         db.begin()
         user = db.query(
@@ -163,11 +163,65 @@ def login(db: Session, target: schema_user.Login):
 
         if user is None:
             return None
-        
-        if not _verifyHashPassword(target.password, user.password):
+
+        if not _verify_hash_password(target.password, user.password):
             return None
 
         return user
 
     except Exception as e:
+        raise e
+
+
+def get_members(db: Session, id_project: int):
+    try:
+        query = (
+            db.query(
+                User
+            )\
+            .join(Member, Member.rid_users == User.rid)
+            .join(Project, Project.rid == Member.rid_projects)
+            .join(Item, Item.rid == Project.rid_items)
+            .filter(
+                User.is_deleted == 0,
+                Item.id_project == id_project
+            )
+            .order_by(User.rid)
+        )
+
+        result = query.all()
+        return result
+
+    except Exception as e:
+        raise e
+
+
+def create_members(db: Session, id_project: int, targets: List[schema_user.MemberCreate]):
+    try:
+        db.begin()
+
+        db.query(
+            Member
+        )\
+        .join(Member, Member.rid_users == User.rid)\
+        .join(Project, Project.rid == Member.rid_projects)\
+        .join(Item, Item.rid == Project.rid_items)\
+        .filter(
+            Item.id_projects == id_project
+        )\
+        .delete(synchronize_session=False)
+
+        for target in targets:
+            user = Member(
+                rid_projects=id_project,
+                rid_users=target.rid
+            )
+            db.add(user)
+
+        db.commit()
+
+        return get_members(db, id_project)
+
+    except Exception as e:
+        db.rollback()
         raise e

@@ -38,3 +38,10 @@ class Login(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class MemberCreate(BaseModel):
+    rid: int
+
+    class Config:
+        from_attributes = True

@@ -1,9 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 
-import sys
-sys.path.append('~/app')
-
 from database import Base
 
 
