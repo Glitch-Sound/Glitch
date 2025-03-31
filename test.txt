@@ -1,157 +1,141 @@
-以下は、DINO（Distillation with No Labels）を用いて、任意の画像群から特徴を抽出し、クラスタリング（例：k-means）により任意のグループ数に分類する一例のワークフローと実装方法です。
-以下の手順は、オンプレミスのGPU環境（Linux + CUDA対応GPUなど）での構築を前提としています。
+■ 全体の流れ
+① ラベル付き教師データの準備
+まず、クレームの文章とそれぞれの問題を示すラベル（カテゴリ）を用意する。
+例：
 
+テキスト（クレーム内容）	ラベル（カテゴリ）
+商品が破損していたので返品したい	商品不良
+担当者の態度が悪かった	接客態度
+配達が遅れて届かなかった	配送問題
+教師データ数の目安は、数百〜数千件程度以上が望ましい。
+（例：500件以上推奨）
 
-必要なもの
-OS: Linux（Ubuntu 18.04/20.04など）推奨
-GPU: CUDA対応GPU（例：NVIDIA GPU）
-CUDA & cuDNN: GPUに合わせたCUDAおよびcuDNNのインストール
-Python: 3.7以降
-ライブラリ: PyTorch（CUDA対応版）、torchvision、numpy、scikit-learn、Pillow、tqdm　など
+② BERTの事前学習済みモデルを準備する
+日本語のテキスト分類なら、日本語向けのBERTを利用する。
 
+主な選択肢：
 
-セットアップ例（Anacondaを利用）
-Anaconda環境の作成
+cl-tohoku/bert-base-japanese（東北大学の事前学習モデル）
+
+cl-tohoku/bert-base-japanese-whole-word-masking
+
+Googleが公開するMultilingual BERT など
+
+日本語なら「cl-tohoku/bert-base-japanese-whole-word-masking」が精度が高い傾向にあり、おすすめだよ。
+
+③ BERTのファインチューニング（Fine-tuning）
+事前学習済みのBERTを元に、自分の教師データを使って「ファインチューニング（微調整）」を行う。
+簡単に言えば、クレームを読み込ませ、正しいラベルを予測できるように学習させる。
+
+ここでは主にPyTorchやTransformersライブラリ（Hugging Face社）を使うのが便利。
+
+必要なライブラリ：
 
 bash
 コピーする
-conda create -n dino_env python=3.8 -y
-conda activate dino_env
-PyTorch（CUDA対応版）のインストール
-※お使いのCUDAバージョンに合わせて公式サイト（PyTorch Get Started）の指示に従ってください。
+編集する
+pip install transformers datasets torch scikit-learn
+③ 実際のコード例（シンプルな実装）
+実際にコードを書くと、以下のような形になるよ。
 
-bash
+Step-by-stepコード例（Python＋Transformers）:
+
+python
 コピーする
-conda install pytorch torchvision cudatoolkit=11.3 -c pytorch
-その他ライブラリのインストール
-
-bash
-コピーする
-pip install numpy scikit-learn pillow tqdm
-DINOのリポジトリをクローン（または必要な実装を取得）
-Facebook Research の DINO GitHub リポジトリ などからコードを取得してください。
-※GitHub上の実装例では、事前学習済みモデルのダウンロード方法や推論用スクリプトが提供されています。
-
-
-2. DINOによる特徴抽出とクラスタリングの流れ
-(1) 特徴抽出の基本戦略
-DINOは自己教師あり学習モデル
-→ 本来はラベルなしデータから優れた特徴表現を学習する手法ですが、推論時には既に学習済みのモデルを用いて各画像から特徴（ベクトル）を抽出できます。
-特徴の取得方法
-→ Vision Transformer (ViT) などのアーキテクチャを使っている場合、一般的には最終層の[CLS]トークンや、適切なプーリング後の出力を用いて画像の特徴表現を得ます。
-(2) クラスタリング（例：k-means）の適用
-特徴抽出後、各画像に対する特徴ベクトルに対して、scikit-learn の KMeans などのクラスタリング手法を適用し、ユーザ指定のクラスタ数に分割します。
-
-
-
-3. 実装例
-以下に、DINOを利用して画像から特徴を抽出し、k-means によるクラスタリングを行うサンプルコード例（Python / PyTorch利用）を示します。
-
----
-
-import os
+編集する
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments
 import torch
-import torchvision.transforms as T
-from PIL import Image
-from tqdm import tqdm
-import numpy as np
-from sklearn.cluster import KMeans
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
-# --- 事前準備 ---
-# ※DINOの推論用モデルを読み込みます。
-# ここでは、torch.hub経由でDINOの事前学習済みViTモデルをロードする例を示します（リポジトリによっては実装方法が異なります）。
-# 例: 'dino_vits8'（ViT-S/8）など。環境に合わせて変更してください。
-model = torch.hub.load('facebookresearch/dino:main', 'dino_vits8')
-model.eval()  # 推論モード
-model.cuda()  # GPUへ移動
+# データを読み込み（CSV想定）
+df = pd.read_csv('claims.csv')  # 例: "text", "label"の列
+train_df, eval_df = train_test_split(df, test_size=0.2, random_state=42)
 
-# --- 画像前処理 ---
-# DINOで学習されたモデルと同じ前処理（リサイズ、正規化）を適用します。
-transform = T.Compose([
-    T.Resize(256),
-    T.CenterCrop(224),
-    T.ToTensor(),
-    T.Normalize(mean=[0.485, 0.456, 0.406],  std=[0.229, 0.224, 0.225])
-])
+# ラベルを数値化
+label_encoder = LabelEncoder()
+train_labels = label_encoder.fit_transform(train_df['label'])
+val_labels = label_encoder.transform(eval_df['label'])
 
-# --- 特徴抽出 ---
-# 画像フォルダのパス（例: './images/'）を指定
-image_folder = './images/'
-features_list = []
-image_names = []
+# モデルとトークナイザーを読み込み（日本語BERT使用）
+model_name = 'cl-tohoku/bert-base-japanese-whole-word-masking'
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=len(label_encoder.classes_))
 
-# 画像フォルダ内の各画像について処理
-for filename in tqdm(os.listdir(image_folder)):
-    if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
-        image_path = os.path.join(image_folder, filename)
-        image = Image.open(image_path).convert("RGB")
-        input_tensor = transform(image).unsqueeze(0).cuda()  # バッチ次元を追加してGPUへ
+# データセットの準備
+class ClaimsDataset(torch.utils.data.Dataset):
+    def __init__(self, texts, labels):
+        self.encodings = tokenizer(texts, truncation=True, padding=True, max_length=128)
+        self.labels = labels
 
-        with torch.no_grad():
-            # 推論時の出力（例：最終層の特徴ベクトル）
-            # モデルにより取得するレイヤーが異なる場合は、DINOの実装に合わせて変更する必要があります。
-            output = model(input_tensor)
+    def __getitem__(self, idx):
+        item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
+        item['labels'] = torch.tensor(self.labels[idx])
+        return item
 
-        # 出力の形状はモデルに依存します。ここでは1次元ベクトルにフラット化する例を示します。
-        feature = output.squeeze().cpu().numpy()  # GPUからCPUへ戻す
-        features_list.append(feature)
-        image_names.append(filename)
+    def __len__(self):
+        return len(self.labels)
 
-# --- 特徴ベクトルの準備 ---
-features = np.array(features_list)
-print("抽出した特徴数:", features.shape)  # 例: (画像数, 次元数)
+train_dataset = ClaimsDataset(train_df['text'].tolist(), train_labels)
+val_dataset = ClaimsDataset(eval_df['text'].tolist(), val_labels)
 
-# --- クラスタリング ---
-# ユーザが指定するクラスタ数（例: 5グループ）
-n_clusters = 5  # ※任意の値に変更可能
+# 学習の設定
+training_args = TrainingArguments(
+    output_dir='./results',
+    num_train_epochs=3,          # 通常3〜5エポック程度
+    per_device_train_batch_size=16,
+    per_device_eval_batch_size=16,
+    evaluation_strategy="epoch",
+    logging_strategy="epoch",
+    save_strategy="epoch"
+)
 
-# k-means を実行（初期シードは再現性のため設定）
-kmeans = KMeans(n_clusters=n_clusters, random_state=42)
-labels = kmeans.fit_predict(features)
+# モデル準備
+trainer = Trainer(
+    model=AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=len(label_encoder.classes_)),
+    args=training_args,
+    train_dataset=train_dataset,
+    eval_dataset=eval_dataset,
+)
 
-# --- 結果の保存・可視化 ---
-# 例えば、各クラスタごとにフォルダを作成して画像を振り分ける処理例
-output_base = './clustered_images/'
-os.makedirs(output_base, exist_ok=True)
+# 学習実行
+trainer.train()
 
-for label, filename in zip(labels, image_names):
-    cluster_folder = os.path.join(output_base, f'cluster_{label}')
-    os.makedirs(cluster_folder, exist_ok=True)
-    src_path = os.path.join(image_folder, filename)
-    dst_path = os.path.join(cluster_folder, filename)
-    # 画像ファイルのコピー（shutilを利用）
-    import shutil
-    shutil.copy(src_path, dst_path)
+# 評価
+trainer.evaluate()
+③ モデルの評価と運用
+学習後は、精度（Accuracy）、再現率（Recall）、適合率（Precision）、F1スコアなどを評価。
 
-print("クラスタリング完了。各クラスタはフォルダに保存されました。")
+分類精度が十分なら、作成したモデルを本番環境にデプロイし、運用。
 
----
+精度不足の場合、データの追加やチューニングを繰り返す。
 
-イント解説
-GPU利用:
-input_tensor.cuda() や model.cuda() により、画像とモデルがGPU上で処理されるようにしています。GPUオンプレミス環境で高速に推論が可能です。
+■ よくある工夫ポイント
+データ量が少ない場合
+転移学習やデータ拡張（Back Translationなど）で対応する。
 
-特徴の抽出:
-DINOの事前学習済みモデルを用いて画像から特徴ベクトルを抽出します。どの層の出力を用いるかは、タスクや画像の性質に応じて調整してください（CLSトークンやプーリング層の出力など）。
+多クラス分類の場合
+クラス間のデータのバランスを取る。
+サンプリングや重み付け（class_weights）で対処する。
 
-クラスタリング:
-scikit-learn の KMeans を用いて、抽出した特徴ベクトルに基づき任意のクラスタ数（ここでは例として5）に分割します。任意の値を指定できるため、要件に合わせて調整可能です。
+運用時の工夫
+クレームが多様で曖昧な場合、モデルが迷ったものは人間のレビューを挟むフローにすると安定運用が可能になるよ。
 
-結果の整理:
-各クラスタごとにフォルダに画像をコピーすることで、視覚的にグループ分けされた結果を確認できます。
+■ 具体的な運用事例
+実際に企業では以下のようなケースで活用されている。
 
+顧客サポートへの問い合わせメール自動分類
 
-4. まとめ
-環境構築:
-オンプレミスのGPU環境でCUDA、cuDNN、PyTorchなどをセットアップします。
+SNSやレビューサイトでの問題点抽出
 
-DINOの利用:
-事前学習済みのDINOモデル（例：ViTベース）を読み込み、画像に対する前処理を施した上で特徴抽出を行います。
+コールセンターでの問い合わせ内容の自動整理
 
-クラスタリング:
-抽出した特徴に対して、任意のクラスタ数を指定して k-means などのクラスタリング手法を適用します。
+■ より良い精度を得るために（追加での工夫）
+ファインチューニングのハイパーパラメータ調整（学習率、エポック数）
 
-結果の確認:
-クラスタごとに画像をグループ化し、結果を保存または可視化することで、似た特徴を持つ画像同士がグループ化されているか確認します。
+クロスバリデーションによる検証精度向上
 
-この手法により、DINOによる高品質な特徴抽出と、任意のグループ数でのクラスタリングが実現でき、オンプレミスのGPU環境で効率的に画像のグループ分けを行うことが可能となります。
+分類結果の誤りを再学習データに活用するサイクルを構築（Active Learning）
+
